@@ -1,0 +1,43 @@
+name: Build unsigned KeyboardKit Demo IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: xcodebuild -version && swift --version
+
+      - name: Resolve SPM dependencies
+        run: xcodebuild -project Demo/Demo.xcodeproj -scheme Demo -resolvePackageDependencies
+
+      - name: Build (unsigned, Release)
+        run: |
+          xcodebuild -project Demo/Demo.xcodeproj \
+            -scheme Demo \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -R "build/Build/Products/Release-iphoneos/Demo.app" Payload/
+          zip -r KeyboardKit-Demo.ipa Payload
+          ls -lh KeyboardKit-Demo.ipa
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyboardKit-Demo-unsigned
+          path: KeyboardKit-Demo.ipa
+          retention-days: 7
