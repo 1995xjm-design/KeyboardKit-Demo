@@ -3,17 +3,19 @@ name: Build unsigned OpenClaw iOS IPA
 on:
   push:
     branches: [main]
+    paths:
+      - '.github/workflows/build-deepclaw-ipa.yml'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: macos-26
     steps:
-      - name: Checkout DeepClaw source
+      - name: Checkout CI repo
         uses: actions/checkout@v4
-        with:
-          repository: deepgram/dglabs-deepclaw
-          path: DeepClaw
+
+      - name: Clone DeepClaw source
+        run: git clone --depth 1 https://github.com/deepgram/dglabs-deepclaw.git DeepClaw
 
       - name: Show toolchain
         run: |
@@ -51,7 +53,18 @@ jobs:
           zip -r ../../../ipa/OpenClaw.ipa Payload
           ls -lh ../../../ipa/
 
-      - name: Upload artifact
+      - name: Commit IPA back to CI repo
+        run: |
+          mkdir -p dist
+          cp DeepClaw/apps/ios/build/ipa/OpenClaw.ipa dist/
+          git config user.name "CI Bot"
+          git config user.email "actions@github.com"
+          git add dist/OpenClaw.ipa
+          git commit -m "build: OpenClaw unsigned IPA [skip ci]" || echo "no changes"
+          git push
+
+      - name: Upload artifact (fallback)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: OpenClaw-iOS-unsigned

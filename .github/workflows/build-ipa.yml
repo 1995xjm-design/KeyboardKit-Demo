@@ -3,6 +3,8 @@ name: Build unsigned KeyboardKit Demo IPA
 on:
   push:
     branches: [main]
+    paths:
+      - '.github/workflows/build-ipa.yml'
   workflow_dispatch:
 
 jobs:
