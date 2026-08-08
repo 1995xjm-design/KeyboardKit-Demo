@@ -20,7 +20,6 @@
 		A99A1EDC2E640D5A0014973F /* Keyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A99A1ED52E640D5A0014973F /* Keyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A99A1F082E640E130014973F /* fuse.wav in Resources */ = {isa = PBXBuildFile; fileRef = A99A1EF82E640E130014973F /* fuse.wav */; };
 		A99A1F0A2E640E130014973F /* DemoActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99A1EFA2E640E130014973F /* DemoActionHandler.swift */; };
-		A99A1F0D2E640E150014973F /* ChineseKeyboardLayoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99A1EFE2E640E150014973F /* ChineseKeyboardLayoutService.swift */; };
 		A99A1F0B2E640E130014973F /* DemoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99A1EFC2E640E130014973F /* DemoSheet.swift */; };
 		A99A1F0C2E640E130014973F /* FullDocumentContextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99A1EFD2E640E130014973F /* FullDocumentContextSheet.swift */; };
 		A99A1F0E2E640E130014973F /* DemoKeyboardMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99A1F002E640E130014973F /* DemoKeyboardMenu.swift */; };
@@ -74,7 +73,6 @@
 		A99A1ED52E640D5A0014973F /* Keyboard.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Keyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A99A1EF82E640E130014973F /* fuse.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = fuse.wav; sourceTree = "<group>"; };
 		A99A1EFA2E640E130014973F /* DemoActionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoActionHandler.swift; sourceTree = "<group>"; };
-		A99A1EFE2E640E150014973F /* ChineseKeyboardLayoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChineseKeyboardLayoutService.swift; sourceTree = "<group>"; };
 		A99A1EFC2E640E130014973F /* DemoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoSheet.swift; sourceTree = "<group>"; };
 		A99A1EFD2E640E130014973F /* FullDocumentContextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullDocumentContextSheet.swift; sourceTree = "<group>"; };
 		A99A1F002E640E130014973F /* DemoKeyboardMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoKeyboardMenu.swift; sourceTree = "<group>"; };
@@ -190,7 +188,6 @@
 			isa = PBXGroup;
 			children = (
 				A99A1EFA2E640E130014973F /* DemoActionHandler.swift */,
-				A99A1EFE2E640E150014973F /* ChineseKeyboardLayoutService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -368,7 +365,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A99A1F0A2E640E130014973F /* DemoActionHandler.swift in Sources */,
-				A99A1F0D2E640E150014973F /* ChineseKeyboardLayoutService.swift in Sources */,
 				A99A1F0B2E640E130014973F /* DemoSheet.swift in Sources */,
 				A99A1F0C2E640E130014973F /* FullDocumentContextSheet.swift in Sources */,
 				A99A1F142E640E2B0014973F /* KeyboardApp+Demo.swift in Sources */,

@@ -79,11 +79,13 @@ private extension KeyboardViewController {
             controller: self
         )
 
-        // 💡 Provide a Chinese (zh-Hans) pinyin layout service.
-        // This makes the Chinese locale use a pinyin keyboard
-        // layout. For all other locales it falls back to the
-        // standard layout.
-        services.layoutService = ChineseKeyboardLayoutService()
+        // 💡 A custom Chinese (zh-Hans) pinyin layout service is
+        // currently disabled: KeyboardKit 10.7.3's layout-service API
+        // differs from what we initially targeted. The zh-Hans locale
+        // therefore falls back to the standard QWERTY layout, which is
+        // exactly the pinyin layout, so typing pinyin works as-is.
+        // (Re-enable once the correct API is confirmed from the module
+        // interface — see ChineseKeyboardLayoutService.swift.)
     }
 
     /// Make demo-specific changes to your keyboard's state.
