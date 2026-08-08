@@ -1,5 +1,6 @@
 name: Build unsigned OpenClaw iOS IPA
 
+# Trigger: edit this file or run workflow_dispatch (Actions tab).
 on:
   push:
     branches: [main]
