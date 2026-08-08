@@ -1,0 +1,59 @@
+name: Build unsigned OpenClaw iOS IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-26
+    steps:
+      - name: Checkout DeepClaw source
+        uses: actions/checkout@v4
+        with:
+          repository: deepgram/dglabs-deepclaw
+          path: DeepClaw
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          swift --version
+
+      - name: Install XcodeGen / SwiftLint / SwiftFormat
+        run: brew install xcodegen swiftlint swiftformat
+
+      - name: Generate iOS project
+        working-directory: DeepClaw/apps/ios
+        run: xcodegen generate
+
+      - name: Build archive (unsigned, Release)
+        working-directory: DeepClaw/apps/ios
+        run: |
+          xcodebuild archive \
+            -project OpenClaw.xcodeproj \
+            -scheme OpenClaw \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath build/OpenClaw.xcarchive \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package IPA
+        working-directory: DeepClaw/apps/ios
+        run: |
+          mkdir -p build/ipa
+          cd build/OpenClaw.xcarchive/Products/Applications
+          mkdir -p Payload
+          cp -r *.app Payload/
+          zip -r ../../../ipa/OpenClaw.ipa Payload
+          ls -lh ../../../ipa/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenClaw-iOS-unsigned
+          path: DeepClaw/apps/ios/build/ipa/OpenClaw.ipa
+          retention-days: 7
