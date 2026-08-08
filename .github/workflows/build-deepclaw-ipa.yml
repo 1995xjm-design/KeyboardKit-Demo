@@ -1,11 +1,11 @@
-name: Build unsigned OpenClaw iOS IPA
+name: Build unsigned OpenClaw iOS IPA (zh-Hans)
 
-# Trigger: edit this file or run workflow_dispatch (Actions tab).
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/build-deepclaw-ipa.yml'
+      - 'deepclaw-zh.patch'
   workflow_dispatch:
 
 jobs:
@@ -19,6 +19,10 @@ jobs:
 
       - name: Clone DeepClaw source
         run: git clone --depth 1 https://github.com/deepgram/dglabs-deepclaw.git DeepClaw
+
+      - name: Apply zh-Hans localization patch
+        working-directory: DeepClaw
+        run: git apply --verbose ../deepclaw-zh.patch
 
       - name: Show toolchain
         run: |
@@ -63,13 +67,13 @@ jobs:
           git config user.name "CI Bot"
           git config user.email "actions@github.com"
           git add dist/OpenClaw.ipa
-          git commit -m "build: OpenClaw unsigned IPA [skip ci]" || echo "no changes"
+          git commit -m "build: OpenClaw zh-Hans IPA [skip ci]" || echo "no changes"
           git push
 
       - name: Upload artifact (fallback)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: OpenClaw-iOS-unsigned
+          name: OpenClaw-iOS-zh-unsigned
           path: DeepClaw/apps/ios/build/ipa/OpenClaw.ipa
           retention-days: 7
