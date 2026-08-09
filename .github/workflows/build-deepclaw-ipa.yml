@@ -94,6 +94,10 @@ jobs:
           cd build/OpenClaw.xcarchive/Products/Applications
           mkdir -p Payload
           cp -r *.app Payload/
+          # 免费签名 sideload 兼容：移除 Watch companion（避免 WKCompanionAppBundleIdentifier 校验失败）
+          rm -rf Payload/OpenClaw.app/Watch
+          # zh-Hans.lproj 补翻译（Xcode 只生成 zh-CN.lproj，简体中文系统按 zh-Hans 匹配会回退英文）
+          cp Payload/OpenClaw.app/zh-CN.lproj/Localizable.strings Payload/OpenClaw.app/zh-Hans.lproj/Localizable.strings
           zip -r ../../../ipa/OpenClaw.ipa Payload
           ls -lh ../../../ipa/
 

@@ -413,7 +413,7 @@ extension SettingsProTab {
                     value: .verbatim(
                         self.appModel.isOperatorGatewayConnected
                             ? (self.appModel.hasOperatorAdminScope ? "Full" : "Limited")
-                            : "Not available"))
+                            : String(localized: "Not available")))
             }
 
             if self.appModel.isOperatorGatewayConnected,
@@ -570,8 +570,8 @@ extension SettingsProTab {
             }
 
             Section("Direct node features") {
-                SettingsDetailRow("Device", value: "Info and status")
-                SettingsDetailRow("Notifications", value: "While app is active")
+                SettingsDetailRow("Device", value: String(localized: "Info and status"))
+                SettingsDetailRow("Notifications", value: String(localized: "While app is active"))
             }
         }
     }
@@ -882,7 +882,7 @@ extension SettingsProTab {
         let documents = LicenseDocumentLoader.bundledDocuments()
         if documents.isEmpty {
             ContentUnavailableView(
-                "No Licenses Bundled",
+                String(localized: "No Licenses Bundled"),
                 systemImage: "doc.text",
                 description: Text("License files are not available in this build."))
                 .font(OpenClawType.body)
