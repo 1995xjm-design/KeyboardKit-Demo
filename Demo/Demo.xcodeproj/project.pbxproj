@@ -146,6 +146,7 @@
 				A99A1F072E640E130014973F /* Keyboard */,
 				A921152325D58A94003510D9 /* Products */,
 				A921155425D58D95003510D9 /* Frameworks */,
+				A9CC0000000000000000010D /* Shared */,
 			);
 			sourceTree = "<group>";
 		};
@@ -169,7 +170,6 @@
 				A95A567C2D7081430036FAAD /* License */,
 				A9DBBFDA2CF3C519007B48F4 /* Localization */,
 				A921155925D58E39003510D9 /* Supporting Files */,
-				A9CC0000000000000000010D /* Shared */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
