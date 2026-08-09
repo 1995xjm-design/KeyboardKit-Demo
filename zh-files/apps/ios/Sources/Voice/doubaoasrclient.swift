@@ -99,9 +99,14 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
 
     /// Appends an audio buffer. The client resamples to 16k mono PCM
     /// and streams it to the recognizer.
+    ///
+    /// NOTE: tap buffers are reused by AVAudioEngine, so callers on the
+    /// audio thread must hand over a `Data` copy (see `resample`), never
+    /// the buffer itself across a thread boundary.
     func append(_ buffer: AVAudioPCMBuffer) {
         guard isStarted, let task else { return }
-        guard let pcm = Self.to16kMonoPCM(buffer, converter: &converter) else { return }
+        var converter: AVAudioConverter?
+        guard let pcm = Self.resample(buffer, converter: &converter) else { return }
         sendAudio(pcm)
     }
 
@@ -222,9 +227,10 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         }
     }
 
-    /// Resamples any audio buffer to 16k mono PCM float32, then converts
-    /// to 16-bit little-endian PCM for the recognizer.
-    private static func to16kMonoPCM(
+    /// Resamples any audio buffer to 16k mono 16-bit little-endian PCM.
+    /// Safe to call on the audio tap thread; pass an audio-thread-local
+    /// `converter` cache to avoid rebuilding it on every buffer.
+    static func resample(
         _ buffer: AVAudioPCMBuffer,
         converter: inout AVAudioConverter?) -> Data?
     {
