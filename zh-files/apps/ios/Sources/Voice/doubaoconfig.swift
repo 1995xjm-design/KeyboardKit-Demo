@@ -19,9 +19,30 @@ enum DoubaoConfig {
     static let voiceTypeKey = "talk.doubao.voiceType"
     static let asrLanguageKey = "talk.doubao.asrLanguage"
 
-    /// Default big-model voice: 万趣大叔-月月 (natural Chinese narrator).
+    /// Default big-model voice: 月月（万趣大叔）.
     static let defaultVoiceType = "zh_female_wanqudashu_moon_bigtts"
     static let defaultASRLanguage = "zh-CN"
+
+    /// Tag used by the settings picker for a manually entered voice ID.
+    static let customVoiceTag = "__custom__"
+
+    /// Preset big-model voices shown in the settings picker.
+    struct DoubaoVoicePreset: Identifiable, Hashable {
+        let name: String
+        let id: String
+
+        var voiceTypeID: String { id }
+    }
+
+    static let presetVoices: [DoubaoVoicePreset] = [
+        DoubaoVoicePreset(name: "鸡汤妹妹2.0", id: "zh_female_jitangmei_uranus_bigtts"),
+        DoubaoVoicePreset(name: "月月（万趣大叔）", id: "zh_female_wanqudashu_moon_bigtts"),
+    ]
+
+    /// Whether a voice type is one of the presets.
+    static func isPresetVoice(_ voiceType: String) -> Bool {
+        presetVoices.contains { $0.id == voiceType }
+    }"
 
     static let ttsEndpoint = URL(string: "https://openspeech.bytedance.com/api/v1/tts")!
     static let asrEndpoint = URL(string: "wss://openspeech.bytedance.com/api/v3/sauc/bigmodel/recognize")!
