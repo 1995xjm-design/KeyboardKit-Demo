@@ -220144,6 +220144,38 @@
           }
         }
       }
+    },
+    "Doubao Credentials": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doubao Credentials"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "豆包凭据"
+          }
+        }
+      }
+    },
+    "Enter your Volcano Engine speech App ID and Access Token to use Doubao TTS and ASR.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter your Volcano Engine speech App ID and Access Token to use Doubao TTS and ASR."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请输入火山引擎语音的 App ID 和 Access Token 以使用豆包语音合成与识别。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
