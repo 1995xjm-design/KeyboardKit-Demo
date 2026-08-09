@@ -2512,7 +2512,7 @@ final class TalkModeManager: NSObject {
             provider: provider,
             model: model,
             voice: voice,
-            capabilities: ["voice-transcript"])
+            capabilities: nil)
         let data = try JSONEncoder().encode(params)
         let json = String(data: data, encoding: .utf8)
         let res = try await gateway.request(
