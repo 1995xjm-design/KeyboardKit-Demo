@@ -18,6 +18,7 @@ enum DemoSheet: String, Identifiable {
     case feedbackSettings
     case fontSettings
     case fullDocumentReader
+    case apiSettings
     case keyboardSettings
     case themeSettings
 

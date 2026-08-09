@@ -57,6 +57,7 @@ private struct AppearanceSettingsScreen: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(RootSidebar.visibleAgentCountKey) private var sidebarVisibleAgentCount: Int = 1
     @State private var showLanguageRestartNotice: Bool = false
+
     var body: some View {
         List {
             Section {
@@ -165,19 +166,6 @@ private struct AppearanceSettingsScreen: View {
 }
 
 extension SettingsProTab {
-    /// Doubao credential bindings (UserDefaults-backed; extensions cannot
-    /// declare @AppStorage stored properties).
-    private var doubaoAppIDBinding: Binding<String> {
-        Binding(get: { DoubaoConfig.appID }, set: { DoubaoConfig.appID = $0 })
-    }
-
-    private var doubaoTokenBinding: Binding<String> {
-        Binding(get: { DoubaoConfig.token }, set: { DoubaoConfig.token = $0 })
-    }
-
-    private var doubaoVoiceTypeBinding: Binding<String> {
-        Binding(get: { DoubaoConfig.voiceType }, set: { DoubaoConfig.voiceType = $0 })
-    }
     var appearanceRow: some View {
         AppearanceSettingsRow()
     }
@@ -1499,25 +1487,6 @@ extension SettingsProTab {
                         }
                     }
                     .font(OpenClawType.body)
-                }
-                if self.talkProviderSelectionRaw == TalkModeProviderSelection.doubao.rawValue {
-                    Section("Doubao Credentials") {
-                        TextField("App ID", text: self.doubaoAppIDBinding)
-                            .font(OpenClawType.body)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                        SecureField("Access Token", text: self.doubaoTokenBinding)
-                            .font(OpenClawType.body)
-                        TextField("Voice Type", text: self.doubaoVoiceTypeBinding)
-                            .font(OpenClawType.body)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                        if !DoubaoConfig.isConfigured {
-                            Text("Enter your Volcano Engine speech App ID and Access Token to use Doubao TTS and ASR.")
-                                .font(OpenClawType.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
                 }
                 SettingsDetailRow(
                     "Voice Mode",

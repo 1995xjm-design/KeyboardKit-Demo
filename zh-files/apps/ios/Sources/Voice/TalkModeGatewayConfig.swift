@@ -195,7 +195,6 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
     case gatewayDefault = "gateway"
     case nativeElevenLabs = "elevenlabs"
     case openAIRealtime = "openai-realtime"
-    case doubao = "doubao"
 
     static let storageKey = "talk.providerSelection"
 
@@ -211,8 +210,6 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
             "ElevenLabs"
         case .openAIRealtime:
             "Realtime-2 (OpenAI)"
-        case .doubao:
-            "Doubao (Volcano)"
         }
     }
 
@@ -224,7 +221,6 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
 
 enum TalkModeRuntimeRoute: Equatable {
     case localElevenLabs
-    case localDoubao
     case gatewayTalkSpeak
     case realtimeWebRTC
     case realtimeRelay
@@ -238,7 +234,7 @@ enum TalkModeRuntimeRoute: Equatable {
     }
 
     var gatewayOwnsCredentials: Bool {
-        self != .localElevenLabs && self != .localDoubao
+        self != .localElevenLabs
     }
 }
 
@@ -279,9 +275,6 @@ enum TalkModeRoutingResolver {
         case .nativeElevenLabs:
             activeProvider = defaultProvider
             route = .localElevenLabs
-        case .doubao:
-            activeProvider = "doubao"
-            route = .localDoubao
         case .openAIRealtime:
             activeProvider = "openai"
             realtimeProvider = "openai"
@@ -301,7 +294,7 @@ enum TalkModeRoutingResolver {
 
     private static func executionMode(for route: TalkModeRuntimeRoute) -> TalkModeExecutionMode {
         switch route {
-        case .localElevenLabs, .localDoubao, .gatewayTalkSpeak:
+        case .localElevenLabs, .gatewayTalkSpeak:
             .native
         case .realtimeWebRTC:
             .realtimeWebRTC

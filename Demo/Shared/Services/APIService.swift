@@ -3,13 +3,14 @@ import Foundation
 // MARK: - DeepSeek 配置
 enum DeepSeekConfig {
 
-    /// API Key：从 Info.plist 的 DeepSeekAPIKey 读取（主 App 和键盘扩展都要配置）
+    /// API Key：从共享存储读取（App 内配置，键盘共享）
     static var apiKey: String {
-        Bundle.main.object(forInfoDictionaryKey: "DeepSeekAPIKey") as? String ?? ""
+        APIKeyStore.shared.readPasteboardFallbackIfNeeded()
+        return APIKeyStore.shared.apiKey
     }
 
-    static let baseURL = "https://api.deepseek.com"
-    static let model = "deepseek-chat"
+    static var baseURL: String { APIKeyStore.shared.baseURL }
+    static var model: String { APIKeyStore.shared.model }
     static let timeout: TimeInterval = 60
 }
 
@@ -27,6 +28,19 @@ class APIService {
 
     static let shared = APIService()
     private init() {}
+
+    // MARK: - 连接测试
+
+    /// Sends a minimal chat request to verify the configured
+    /// API connection. Returns the model's reply on success.
+    func testConnection() async throws -> String {
+        let reply = try await chat(
+            [.system("You are a connectivity test. Reply with exactly: OK"), .user("ping")],
+            temperature: 0,
+            maxTokens: 8
+        )
+        return reply
+    }
 
     // MARK: - 帮你回 - 生成回复
     func generateHelpReply(

@@ -13,7 +13,7 @@ import SwiftUI
 // MARK: - App常量
 struct AppConstants {
     // App Groups ID
-    static let appGroupId = "group.com.love.keyboard"
+    static let appGroupId = "group.com.keyboardkit.demo"
 
     // Bundle IDs
     static let mainAppBundleId = "com.love.keyboard"

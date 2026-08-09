@@ -47,6 +47,50 @@ jobs:
             exit $status
           fi
 
+      - name: Inject Chinese localization into KeyboardKit framework
+        run: |
+          python3 - <<'PYEOF'
+          import os, plistlib
+          framework = "build/Build/Products/Release-iphoneos/Demo.app/Frameworks/KeyboardKit.framework"
+          lproj = os.path.join(framework, "zh-Hans.lproj")
+          os.makedirs(lproj, exist_ok=True)
+          data = {
+              "space": "??",
+              "return": "??",
+              "done": "??",
+              "capsLock": "????",
+              "next": "???",
+              "ok": "?",
+              "search": "??",
+              "send": "??",
+              "continue": "??",
+              "go": "??",
+              "join": "??",
+              "route": "??",
+              "emergencyCall": "????",
+              "locale": "??",
+              "switcherAlphabetic": "ABC",
+              "switcherNumeric": "123",
+              "switcherSymbolic": "#+=",
+              "searchEmoji": "????",
+              "EmojiCategory.smileysAndPeople": "?????",
+              "EmojiCategory.animalsAndNature": "?????",
+              "EmojiCategory.foodAndDrink": "?????",
+              "EmojiCategory.travelAndPlaces": "?????",
+              "EmojiCategory.activity": "??",
+              "EmojiCategory.objects": "??",
+              "EmojiCategory.symbols": "??",
+              "EmojiCategory.flags": "??",
+              "EmojiCategory.favorites": "??",
+              "EmojiCategory.frequent": "??",
+              "EmojiCategory.recent": "????",
+          }
+          with open(os.path.join(lproj, "Localizable.strings"), "wb") as f:
+              plistlib.dump(data, f, fmt=plistlib.FMT_BINARY, sort_keys=False)
+          print("wrote", os.path.join(lproj, "Localizable.strings"), len(data), "keys")
+          PYEOF
+          ls -la "build/Build/Products/Release-iphoneos/Demo.app/Frameworks/KeyboardKit.framework/zh-Hans.lproj"
+
       - name: Package IPA
         run: |
           mkdir -p Payload

@@ -15,6 +15,26 @@
 		A9CC00000000000000000205 /* HelpReplyPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000105 /* HelpReplyPanelView.swift */; };
 		A9CC00000000000000000206 /* SuperTalkPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000106 /* SuperTalkPanelView.swift */; };
 		A9CC0000000000000000020E /* MoreOptionsPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000110 /* MoreOptionsPanelView.swift */; };
+		A9CC0000000000000000020F /* APIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000111 /* APIKeyStore.swift */; };
+		A9CC00000000000000000210 /* APIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000111 /* APIKeyStore.swift */; };
+		A9CC00000000000000000211 /* LKFeatureCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000112 /* LKFeatureCenterView.swift */; };
+		A9CC00000000000000000213 /* APISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000113 /* APISettingsView.swift */; };
+		A9CC00000000000000000214 /* APISettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000113 /* APISettingsView.swift */; };
+		A9CC00000000000000000215 /* ChineseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000114 /* ChineseSettingsView.swift */; };
+		A9CC00000000000000000216 /* ChineseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000114 /* ChineseSettingsView.swift */; };
+		A9CC00000000000000000217 /* ChineseFeatureStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000100 /* ChineseFeatureStrings.swift */; };
+		A9CC00000000000000000218 /* PinyinEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000101 /* PinyinEngine.swift */; };
+		A9CC00000000000000000219 /* ChineseInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000102 /* ChineseInputController.swift */; };
+		A9CC0000000000000000021A /* CandidateBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000103 /* CandidateBarView.swift */; };
+		A9CC0000000000000000021B /* SymbolKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000104 /* SymbolKeyboardView.swift */; };
+		A9CC0000000000000000021C /* HelpReplyPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000105 /* HelpReplyPanelView.swift */; };
+		A9CC0000000000000000021D /* SuperTalkPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000106 /* SuperTalkPanelView.swift */; };
+		A9CC0000000000000000021E /* MoreOptionsPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000110 /* MoreOptionsPanelView.swift */; };
+		A9CC0000000000000000021F /* ChatRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000108 /* ChatRole.swift */; };
+		A9CC00000000000000000220 /* ReplyStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000109 /* ReplyStyle.swift */; };
+		A9CC00000000000000000221 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC0000000000000000010A /* UserPreferences.swift */; };
+		A9CC00000000000000000222 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC0000000000000000010B /* StorageService.swift */; };
+		A9CC00000000000000000223 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC0000000000000000010C /* APIService.swift */; };
 		A9CC00000000000000000207 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000107 /* Constants.swift */; };
 		A9CC00000000000000000208 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000107 /* Constants.swift */; };
 		A9CC00000000000000000209 /* ChatRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000108 /* ChatRole.swift */; };
@@ -91,6 +111,10 @@
 		A9CC0000000000000000010A /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		A9CC0000000000000000010B /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		A9CC0000000000000000010C /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000111 /* APIKeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyStore.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000112 /* LKFeatureCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LKFeatureCenterView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000113 /* APISettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APISettingsView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000114 /* ChineseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChineseSettingsView.swift; sourceTree = "<group>"; };
 		A921152225D58A94003510D9 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A921152525D58A94003510D9 /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		A921152725D58A94003510D9 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
@@ -170,6 +194,9 @@
 				A95A567C2D7081430036FAAD /* License */,
 				A9DBBFDA2CF3C519007B48F4 /* Localization */,
 				A921155925D58E39003510D9 /* Supporting Files */,
+				A9CC00000000000000000112 /* LKFeatureCenterView.swift */,
+				A9CC00000000000000000113 /* APISettingsView.swift */,
+				A9CC00000000000000000114 /* ChineseSettingsView.swift */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -297,6 +324,7 @@
 			children = (
 				A9CC0000000000000000010B /* StorageService.swift */,
 				A9CC0000000000000000010C /* APIService.swift */,
+				A9CC00000000000000000111 /* APIKeyStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -425,6 +453,23 @@
 				A96F413B2C73F2FE007344D2 /* KeyboardApp+Demo.swift in Sources */,
 				A9CC00000000000000000208 /* Constants.swift in Sources */,
 				A9A58B812CF4C0EF004DC7BE /* StandardSpeechRecognizer.swift in Sources */,
+				A9CC0000000000000000020F /* APIKeyStore.swift in Sources */,
+				A9CC00000000000000000211 /* LKFeatureCenterView.swift in Sources */,
+				A9CC00000000000000000213 /* APISettingsView.swift in Sources */,
+				A9CC00000000000000000215 /* ChineseSettingsView.swift in Sources */,
+				A9CC00000000000000000217 /* ChineseFeatureStrings.swift in Sources */,
+				A9CC00000000000000000218 /* PinyinEngine.swift in Sources */,
+				A9CC00000000000000000219 /* ChineseInputController.swift in Sources */,
+				A9CC0000000000000000021A /* CandidateBarView.swift in Sources */,
+				A9CC0000000000000000021B /* SymbolKeyboardView.swift in Sources */,
+				A9CC0000000000000000021C /* HelpReplyPanelView.swift in Sources */,
+				A9CC0000000000000000021D /* SuperTalkPanelView.swift in Sources */,
+				A9CC0000000000000000021E /* MoreOptionsPanelView.swift in Sources */,
+				A9CC0000000000000000021F /* ChatRole.swift in Sources */,
+				A9CC00000000000000000220 /* ReplyStyle.swift in Sources */,
+				A9CC00000000000000000221 /* UserPreferences.swift in Sources */,
+				A9CC00000000000000000222 /* StorageService.swift in Sources */,
+				A9CC00000000000000000223 /* APIService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,6 +501,9 @@
 				A9CC0000000000000000020C /* StorageService.swift in Sources */,
 				A9CC0000000000000000020D /* APIService.swift in Sources */,
 				A9CC0000000000000000020E /* MoreOptionsPanelView.swift in Sources */,
+				A9CC00000000000000000210 /* APIKeyStore.swift in Sources */,
+				A9CC00000000000000000214 /* APISettingsView.swift in Sources */,
+				A9CC00000000000000000216 /* ChineseSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

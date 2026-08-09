@@ -273,8 +273,9 @@ private extension DemoKeyboardView {
         case .feedbackSettings: Feedback.SettingsScreen()
         case .fontSettings: Fonts.SettingsScreen()
         case .fullDocumentReader: FullDocumentContextSheet()
-        case .keyboardSettings: KeyboardSettingsScreen()
+        case .keyboardSettings: ChineseSettingsView()
         case .themeSettings: KeyboardThemeSettingsScreen()
+        case .apiSettings: APISettingsView()
         case .none: EmptyView()
         }
     }

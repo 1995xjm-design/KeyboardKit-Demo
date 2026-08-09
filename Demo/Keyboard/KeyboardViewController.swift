@@ -6,6 +6,7 @@
 //  Copyright © 2023-2025 Daniel Saidi. All rights reserved.
 //
 
+import Foundation
 import KeyboardKit
 import SwiftUI
 
@@ -89,7 +90,7 @@ private extension KeyboardViewController {
 
     /// Make demo-specific changes to your keyboard's state.
     ///
-    /// 💡 Many configurations and settings can be made from
+    /// Many configurations and settings can be made from
     /// the demo keyboard's custom toolbar.
     func setupDemoState() {
 
@@ -99,6 +100,9 @@ private extension KeyboardViewController {
 
         /// 💡 Configure the space key's behavior and action.
         state.keyboardContext.settings.spacebarLongPressBehavior = .moveInputCursor
+
+        // Apply settings saved in the Chinese settings page.
+        applySharedSettings()
         // state.keyboardContext.settings.spacebarContextMenuLeading = .locale
 
         /// 💡 Disable autocorrection.
@@ -110,4 +114,41 @@ private extension KeyboardViewController {
         feedback.registerCustomFeedback(.audio(.rocketFuse, for: .press, on: .rocket))
         feedback.registerCustomFeedback(.audio(.rocketLaunch, for: .release, on: .rocket))
     }
+
+    /// Applies keyboard behavior saved by the Chinese settings
+    /// page. Values are stored in the App Group defaults so
+    /// the main app and the keyboard share the same config.
+    func applySharedSettings() {
+        guard let defaults = UserDefaults(suiteName: AppConstants.appGroupId) else { return }
+
+        if defaults.object(forKey: "kk.settings.isAutocorrectEnabled") != nil {
+            state.keyboardContext.settings.isAutocorrectEnabled =
+                defaults.bool(forKey: "kk.settings.isAutocorrectEnabled")
+        }
+        if defaults.object(forKey: "kk.settings.isPredictiveTextEnabled") != nil {
+            state.keyboardContext.settings.isPredictiveTextEnabled =
+                defaults.bool(forKey: "kk.settings.isPredictiveTextEnabled")
+        }
+        if defaults.object(forKey: "kk.settings.isAutocapitalizationEnabled") != nil {
+            state.keyboardContext.settings.isAutocapitalizationEnabled =
+                defaults.bool(forKey: "kk.settings.isAutocapitalizationEnabled")
+        }
+        if defaults.object(forKey: "kk.settings.isPeriodShortcutEnabled") != nil {
+            state.keyboardContext.settings.isPeriodShortcutEnabled =
+                defaults.bool(forKey: "kk.settings.isPeriodShortcutEnabled")
+        }
+        if defaults.object(forKey: "kk.settings.isAudioFeedbackEnabled") != nil {
+            state.keyboardContext.settings.isAudioFeedbackEnabled =
+                defaults.bool(forKey: "kk.settings.isAudioFeedbackEnabled")
+        }
+        if defaults.object(forKey: "kk.settings.isHapticFeedbackEnabled") != nil {
+            state.keyboardContext.settings.isHapticFeedbackEnabled =
+                defaults.bool(forKey: "kk.settings.isHapticFeedbackEnabled")
+        }
+        if let raw = defaults.string(forKey: "kk.settings.spacebarLongPressBehavior") {
+            state.keyboardContext.settings.spacebarLongPressBehavior =
+                raw == "openLocaleContextMenu" ? .openLocaleContextMenu : .moveInputCursor
+        }
+    }
+
 }

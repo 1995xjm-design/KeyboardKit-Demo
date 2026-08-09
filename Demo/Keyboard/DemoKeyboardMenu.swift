@@ -57,45 +57,10 @@ extension DemoKeyboardMenu {
         )
 
         menuItem(
-            title: "Dictation",
-            icon: .keyboardDictation,
-            tint: .orange,
-            action: { actionHandler.handle(.dictation) }
-            )
-
-        menuItem(
-            title: "Menu.Autocomplete",
-            icon: .keyboardAutocomplete,
-            tint: .orange,
-            action: { sheet = .autocompleteSettings }
-        )
-
-        menuItem(
-            title: "Menu.Feedback",
-            icon: .keyboardFeedback,
-            tint: .green,
-            action: { sheet = .feedbackSettings }
-        )
-
-        menuItem(
-            title: "Menu.Clipboard",
-            icon: .keyboardClipboard,
-            tint: .brown,
-            action: { sheet = .clipboardSettings }
-        )
-
-        menuItem(
-            title: "Menu.Fonts",
-            icon: .keyboardFont,
-            tint: .gray,
-            action: { sheet = .fontSettings }
-        )
-
-        menuItem(
-            title: "Menu.Themes",
-            icon: .keyboardTheme,
-            tint: .pink,
-            action: { sheet = .themeSettings }
+            title: "?? API",
+            icon: .init(systemName: "key.horizontal"),
+            tint: .blue,
+            action: { sheet = .apiSettings }
         )
 
         menuItem(
@@ -117,13 +82,6 @@ extension DemoKeyboardMenu {
             icon: .init(systemName: "apps.iphone"),
             tint: .purple,
             action: { tryOpenUrl(app.deepLinks?.app) }
-        )
-        
-        menuItem(
-            title: "Menu.Experiments",
-            icon: .init(systemName: "flask"),
-            tint: .green,
-            action: { sheet = .experimentSettings }
         )
         
         menuItem(
