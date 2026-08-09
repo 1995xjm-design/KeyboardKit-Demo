@@ -122,6 +122,66 @@ final class ChineseInputController: ObservableObject {
         candidates = []
     }
 
+    // MARK: - T9 handling
+
+    /// Whether the T9 (nine-grid) keyboard is active.
+    @Published var isT9Mode = false
+
+    /// The T9 digit buffer accumulated so far.
+    @Published var t9Buffer = ""
+
+    /// Toggles between QWERTY and T9 (nine-grid) layouts.
+    @discardableResult
+    func toggleT9Mode() -> Bool {
+        isT9Mode.toggle()
+        clearT9()
+        if isT9Mode {
+            isSymbolKeyboard = false
+            activePanel = nil
+        }
+        return isT9Mode
+    }
+
+    /// Handles a tapped T9 digit key. Returns the text that
+    /// should be inserted, or `nil` when consumed by the buffer.
+    func handleT9Digit(_ digit: String) -> String? {
+        guard isChineseMode, digit.count == 1, let d = digit.first, d.isNumber else {
+            return digit
+        }
+        t9Buffer.append(String(d))
+        refreshT9Candidates()
+        return nil
+    }
+
+    /// Handles backspace in T9 mode. Returns `true` when the
+    /// press was consumed by the digit buffer.
+    func handleT9Delete() -> Bool {
+        guard !t9Buffer.isEmpty else { return false }
+        t9Buffer.removeLast()
+        refreshT9Candidates()
+        return true
+    }
+
+    /// Handles space in T9 mode. Returns the text to insert
+    /// (the first candidate when available, otherwise a space).
+    func handleT9Space() -> String? {
+        if !t9Buffer.isEmpty, let first = candidates.first {
+            return select(first)
+        }
+        return " "
+    }
+
+    /// Clears the T9 digit buffer.
+    func clearT9() {
+        t9Buffer = ""
+        candidates = []
+    }
+
+    private func refreshT9Candidates() {
+        candidates = t9Buffer.isEmpty
+            ? []
+            : engine.getCandidates(forT9: t9Buffer)
+    }
     // MARK: - Panels
 
     func showHelpReply() {

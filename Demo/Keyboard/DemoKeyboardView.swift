@@ -147,6 +147,32 @@ private extension DemoKeyboardView {
             )
         } else if let panel = chinese.activePanel {
             panelView(panel)
+        } else if chinese.isT9Mode {
+            T9KeyboardView(
+                isChineseMode: chinese.isChineseMode,
+                onDigit: { digit in
+                    if let output = chinese.handleT9Digit(digit) {
+                        insertText(output)
+                    }
+                },
+                onSymbols: { chinese.toggleSymbolKeyboard() },
+                onSwitchToQwerty: { chinese.toggleT9Mode() },
+                onToggleMode: { toggleInputMode() },
+                onSpace: {
+                    if let output = chinese.handleT9Space() {
+                        insertText(output)
+                    }
+                },
+                onSpaceDrag: { delta in
+                    moveCursor(by: delta)
+                },
+                onDelete: {
+                    if !chinese.handleT9Delete() {
+                        deleteBackward()
+                    }
+                },
+                onReturn: { insertText("\n") }
+            )
         } else {
             mainKeyboard
         }
@@ -211,6 +237,10 @@ private extension DemoKeyboardView {
                     chinese.toggleSymbolKeyboard()
                     chinese.closePanel()
                 },
+                onToggleT9: {
+                    chinese.toggleT9Mode()
+                    chinese.closePanel()
+                },
                 onPasteFromClipboard: {
                     guard controller.hasFullAccess else { return }
                     if let pasted = UIPasteboard.general.string {
@@ -235,6 +265,14 @@ private extension DemoKeyboardView {
 
     func deleteBackward() {
         controller.textDocumentProxy.deleteBackward()
+    }
+
+    /// Moves the input cursor by the given horizontal offset.
+    /// Used by the T9 space key's long-press drag gesture.
+    func moveCursor(by offset: CGFloat) {
+        let steps = Int(offset / 16)
+        guard steps != 0 else { return }
+        controller.textDocumentProxy.adjustTextPosition(byCharacterOffset: steps)
     }
 
     // 💡 Setup a custom keyboard layout

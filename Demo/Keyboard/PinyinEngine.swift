@@ -47,6 +47,46 @@ class PinyinEngine {
         return Array(results.prefix(9))
     }
 
+    // MARK: - T9 (nine-grid) support
+
+    /// Maps letters to their standard T9 digit keys.
+    private static let t9Map: [Character: Character] = [
+        "a": "2", "b": "2", "c": "2",
+        "d": "3", "e": "3", "f": "3",
+        "g": "4", "h": "4", "i": "4",
+        "j": "5", "k": "5", "l": "5",
+        "m": "6", "n": "6", "o": "6",
+        "p": "7", "q": "7", "r": "7", "s": "7",
+        "t": "8", "u": "8", "v": "8",
+        "w": "9", "x": "9", "y": "9", "z": "9"
+    ]
+
+    /// Returns candidate characters for a T9 digit sequence.
+    /// Exact syllable matches come first, then prefix matches.
+    func getCandidates(forT9 digits: String) -> [String] {
+        guard !digits.isEmpty else { return [] }
+        var exact: [String] = []
+        var prefix: [String] = []
+        for (pinyin, values) in pinyinDict {
+            guard let code = t9Code(for: pinyin) else { continue }
+            if code == digits {
+                exact.append(contentsOf: values)
+            } else if code.hasPrefix(digits) {
+                prefix.append(contentsOf: values.prefix(2))
+            }
+        }
+        return Array((exact + prefix).prefix(9))
+    }
+
+    /// Returns the T9 digit code for a pinyin syllable.
+    private func t9Code(for pinyin: String) -> String? {
+        var code = ""
+        for char in pinyin.lowercased() {
+            guard let digit = Self.t9Map[char] else { return nil }
+            code.append(digit)
+        }
+        return code.isEmpty ? nil : code
+    }
     // MARK: - Dictionary
 
     /// Loads the built-in pinyin dictionary.

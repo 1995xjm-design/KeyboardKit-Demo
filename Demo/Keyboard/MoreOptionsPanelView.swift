@@ -15,6 +15,7 @@ struct MoreOptionsPanelView: View {
 
     let onClose: () -> Void
     let onToggleSymbolKeyboard: () -> Void
+    let onToggleT9: () -> Void
     let onPasteFromClipboard: () -> Void
 
     var body: some View {
@@ -29,7 +30,22 @@ struct MoreOptionsPanelView: View {
 
             HStack(spacing: 8) {
                 optionButton(title: LKString("26键", "QWERTY"), subtitle: LKString("当前", "Current"), isEnabled: false)
-                optionButton(title: LKString("九宫格", "T9"), subtitle: LKString("开发中", "Soon"), isEnabled: false)
+                Button {
+                    onToggleT9()
+                } label: {
+                    VStack(spacing: 4) {
+                        Text(LKString("九宫格", "T9"))
+                            .font(.body)
+                        Text(LKString("点击切换", "Switch"))
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color(.secondarySystemBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+                .buttonStyle(.plain)
                 optionButton(title: LKString("手写", "Handwriting"), subtitle: LKString("开发中", "Soon"), isEnabled: false)
             }
             .padding(.horizontal, 12)
