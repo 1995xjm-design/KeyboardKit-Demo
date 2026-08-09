@@ -19,7 +19,6 @@ enum DemoSheet: String, Identifiable {
     case fontSettings
     case fullDocumentReader
     case keyboardSettings
-    case localeSettings
     case themeSettings
 
     var id: String { rawValue }

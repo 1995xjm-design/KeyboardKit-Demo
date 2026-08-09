@@ -64,13 +64,6 @@ extension DemoKeyboardMenu {
             )
 
         menuItem(
-            title: "Menu.Languages",
-            icon: .keyboardGlobe,
-            tint: .blue,
-            action: { sheet = .localeSettings }
-        )
-
-        menuItem(
             title: "Menu.Autocomplete",
             icon: .keyboardAutocomplete,
             tint: .orange,

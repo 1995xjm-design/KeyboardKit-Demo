@@ -274,7 +274,6 @@ private extension DemoKeyboardView {
         case .fontSettings: Fonts.SettingsScreen()
         case .fullDocumentReader: FullDocumentContextSheet()
         case .keyboardSettings: KeyboardSettingsScreen()
-        case .localeSettings: KeyboardLocaleSettingsScreen()
         case .themeSettings: KeyboardThemeSettingsScreen()
         case .none: EmptyView()
         }

@@ -36,7 +36,7 @@ struct DemoToolbar<Toolbar: View>: View {
     var body: some View {
         try? Keyboard.ToggleToolbar(
             isToggled: $isToolbarToggled,
-            toolbar: autocompleteToolbar,                   // Add a locale switcher to the toolbar
+            toolbar: autocompleteToolbar,                   // Suggestions + system keyboard switcher
             toggledToolbar: toggledToolbar
         )
         .tint(.primary)
@@ -52,7 +52,6 @@ private extension DemoToolbar {
         HStack {
             toolbar.frame(maxWidth: .infinity)
             systemKeyboardSwitcher
-            localeSwitcher
         }
     }
 
@@ -69,14 +68,6 @@ private extension DemoToolbar {
 }
 
 private extension DemoToolbar {
-
-    var localeSwitcher: some View {
-        Image.keyboardGlobe
-            .background(Color.clearInteractable)
-            .localeContextMenu {
-                services.actionHandler.handle(.nextLocale)
-            }
-    }
 
     /// This button switches to the next iOS system keyboard.
     /// It's how users can type real Chinese with the built-in
