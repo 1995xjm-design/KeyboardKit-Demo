@@ -45,7 +45,7 @@ enum DoubaoConfig {
     /// Whether a voice type is one of the presets.
     static func isPresetVoice(_ voiceType: String) -> Bool {
         presetVoices.contains { $0.id == voiceType }
-    }"
+    }
 
     static let ttsEndpoint = URL(string: "https://openspeech.bytedance.com/api/v1/tts")!
     static let asrEndpoint = URL(string: "wss://openspeech.bytedance.com/api/v3/sauc/bigmodel/recognize")!
