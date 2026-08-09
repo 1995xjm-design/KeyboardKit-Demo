@@ -122,7 +122,7 @@ private extension KeyboardViewController {
         guard let defaults = UserDefaults(suiteName: AppConstants.appGroupId) else { return }
 
         if defaults.object(forKey: "kk.settings.isAutocorrectEnabled") != nil {
-            state.keyboardContext.settings.isAutocorrectEnabled =
+            state.autocompleteContext.isAutocorrectEnabled =
                 defaults.bool(forKey: "kk.settings.isAutocorrectEnabled")
         }
         if defaults.object(forKey: "kk.settings.isPredictiveTextEnabled") != nil {
@@ -138,11 +138,11 @@ private extension KeyboardViewController {
                 defaults.bool(forKey: "kk.settings.isPeriodShortcutEnabled")
         }
         if defaults.object(forKey: "kk.settings.isAudioFeedbackEnabled") != nil {
-            state.keyboardContext.settings.isAudioFeedbackEnabled =
+            state.feedbackContext.isAudioFeedbackEnabled =
                 defaults.bool(forKey: "kk.settings.isAudioFeedbackEnabled")
         }
         if defaults.object(forKey: "kk.settings.isHapticFeedbackEnabled") != nil {
-            state.keyboardContext.settings.isHapticFeedbackEnabled =
+            state.feedbackContext.isHapticFeedbackEnabled =
                 defaults.bool(forKey: "kk.settings.isHapticFeedbackEnabled")
         }
         if let raw = defaults.string(forKey: "kk.settings.spacebarLongPressBehavior") {
