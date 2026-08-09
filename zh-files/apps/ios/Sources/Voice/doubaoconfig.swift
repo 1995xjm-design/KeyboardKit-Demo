@@ -38,6 +38,7 @@ enum DoubaoConfig {
         DoubaoVoicePreset(name: "鸡汤妹妹2.0", id: "zh_female_jitangmei_uranus_bigtts"),
         DoubaoVoicePreset(name: "小何2.0", id: "zh_female_xiaohe_uranus_bigtts"),
         DoubaoVoicePreset(name: "Tina老师2.0", id: "zh_female_yingyujiaoxue_uranus_bigtts"),
+        DoubaoVoicePreset(name: "魅力女友2.0", id: "zh_female_meilinvyou_uranus_bigtts"),
         DoubaoVoicePreset(name: "月月（万趣大叔）", id: "zh_female_wanqudashu_moon_bigtts"),
     ]
 
