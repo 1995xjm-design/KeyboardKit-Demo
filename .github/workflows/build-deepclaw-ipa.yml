@@ -61,6 +61,7 @@ jobs:
       - name: Build archive (unsigned, Release)
         working-directory: OpenClaw/apps/ios
         run: |
+          set -o pipefail
           xcodebuild archive \
             -project OpenClaw.xcodeproj \
             -scheme OpenClaw \
@@ -69,7 +70,8 @@ jobs:
             -archivePath build/OpenClaw.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/xcodebuild.log
+          exit ${PIPESTATUS[0]}
 
       - name: Package IPA
         working-directory: OpenClaw/apps/ios
@@ -96,5 +98,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OpenClaw-iOS-zh-unsigned
-          path: OpenClaw/apps/ios/build/ipa/OpenClaw.ipa
+          path: |
+            OpenClaw/apps/ios/build/ipa/OpenClaw.ipa
+            OpenClaw/apps/ios/build/xcodebuild.log
+          if-no-files-found: ignore
           retention-days: 7
