@@ -12,7 +12,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "完成"
           }
         }
       }
@@ -24,7 +24,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "听写"
           }
         }
       }
@@ -42,7 +42,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "自动补全"
           }
         }
       }
@@ -60,7 +60,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "???"
+            "value": "剪贴板"
           }
         }
       }
@@ -76,7 +76,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "关闭"
           }
         }
       }
@@ -94,7 +94,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "实验功能"
           }
         }
       }
@@ -112,7 +112,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "反馈"
           }
         }
       }
@@ -130,7 +130,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "字体"
           }
         }
       }
@@ -146,7 +146,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "语言"
           }
         }
       }
@@ -162,7 +162,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "?? App"
+            "value": "打开 Demo App"
           }
         }
       }
@@ -178,7 +178,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "网站"
           }
         }
       }
@@ -194,7 +194,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "读取全部文本"
           }
         }
       }
@@ -210,7 +210,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "设置"
           }
         }
       }
@@ -226,7 +226,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "文本输入"
           }
         }
       }
@@ -242,7 +242,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "主题"
           }
         }
       }
@@ -254,7 +254,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????????????????????????????"
+            "value": "此演示版未签名，无法与键盘同步数据，因此听写功能不可用。"
           }
         }
       }
@@ -270,7 +270,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "输入测试"
           }
         }
       }
@@ -286,7 +286,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "全文阅读器"
           }
         }
       }
@@ -302,7 +302,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "?????"
+            "value": "正在读取…"
           }
         }
       }
@@ -318,7 +318,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "???"
+            "value": "结果："
           }
         }
       }
@@ -334,7 +334,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "邮箱…"
           }
         }
       }
@@ -350,7 +350,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "多行文本…"
           }
         }
       }
@@ -366,7 +366,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "数字键盘"
           }
         }
       }
@@ -382,7 +382,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "普通文本…"
           }
         }
       }
@@ -398,7 +398,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "??"
+            "value": "网址…"
           }
         }
       }
@@ -414,7 +414,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "????"
+            "value": "网页搜索…"
           }
         }
       }

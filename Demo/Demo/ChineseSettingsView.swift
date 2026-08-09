@@ -2,14 +2,14 @@
 //  ChineseSettingsView.swift
 //  Demo
 //
-//  ?????????????? App Group ?????
-//  ???????????? KeyboardViewController.setupDemoState??
+//  中文输入设置：通过 App Group 与键盘共享
+//  修改后由键盘 KeyboardViewController.applySharedSettings 实时生效
 //
 
 import SwiftUI
 
-/// ????????????? KK ??????????
-/// ??????????????????????????
+/// 中文输入设置：控制 KK 键盘的输入与反馈选项
+/// 设置保存在 App Group，App 与键盘实时同步
 struct ChineseSettingsView: View {
 
     @AppStorage("kk.settings.isAutocorrectEnabled",
@@ -43,44 +43,44 @@ struct ChineseSettingsView: View {
     var body: some View {
         Form {
             Section {
-                Toggle("????", isOn: $isAutocorrectEnabled)
-                Toggle("????", isOn: $isPredictiveTextEnabled)
-                Toggle("????", isOn: $isAutocapitalizationEnabled)
+                Toggle("自动纠正", isOn: $isAutocorrectEnabled)
+                Toggle("预测文本", isOn: $isPredictiveTextEnabled)
+                Toggle("自动大写", isOn: $isAutocapitalizationEnabled)
             } header: {
-                Text("??")
+                Text("输入")
             }
 
             Section {
-                Toggle("?????", isOn: $isPeriodShortcutEnabled)
+                Toggle("句号快捷键", isOn: $isPeriodShortcutEnabled)
             } header: {
-                Text("?????")
+                Text("标点快捷键")
             } footer: {
-                Text("??????????????????")
+                Text("双击句号键可快速输入句号。")
             }
 
             Section {
-                Toggle("???", isOn: $isAudioFeedbackEnabled)
-                Toggle("????", isOn: $isHapticFeedbackEnabled)
+                Toggle("按键声", isOn: $isAudioFeedbackEnabled)
+                Toggle("触感反馈", isOn: $isHapticFeedbackEnabled)
             } header: {
-                Text("??")
+                Text("反馈")
             }
 
             Section {
-                Picker("?????", selection: $spacebarLongPressBehavior) {
-                    Text("????").tag("moveInputCursor")
-                    Text("?????").tag("openLocaleContextMenu")
+                Picker("长按空格键", selection: $spacebarLongPressBehavior) {
+                    Text("移动光标").tag("moveInputCursor")
+                    Text("切换输入法").tag("openLocaleContextMenu")
                 }
             } header: {
-                Text("???")
+                Text("空格键")
             }
 
             Section {
-                Text("??????? App ????????????????????????")
+                Text("这些设置保存在 App Group 中，App 与键盘实时共享，修改后立即生效。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
         }
-        .navigationTitle("????")
+        .navigationTitle("中文设置")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

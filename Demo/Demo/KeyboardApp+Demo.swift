@@ -30,7 +30,7 @@ extension KeyboardApp {
     /// See `DemoApp.swift` for more info about the demo app.
     static var keyboardKitDemo: KeyboardApp {
         .init(
-            name: "????",
+            name: "中文键盘",
             // licenseKey: "299B33C6-061C-4285-8189-90525BCAF098",  // Sets up KeyboardKit Pro!
             appGroupId: "group.com.keyboardkit.demo",               // Sets up App Group data sync
             locales: .keyboardKitSupported,                         // Sets up the enabled locales

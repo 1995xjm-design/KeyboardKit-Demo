@@ -2,13 +2,13 @@
 //  APISettingsView.swift
 //  Demo
 //
-//  ?? API??? Base URL??????????? App ??????
+//  接入 API 设置：Base URL、密钥、模型，供 App 和键盘共用
 //
 
 import SwiftUI
 
-/// ?? API ????????????APIKeyStore??
-/// ?????????????????
+/// 设置 App 与键盘共用的 AI 接口，保存到 APIKeyStore
+/// 支持 DeepSeek 等 OpenAI 兼容接口
 struct APISettingsView: View {
 
     @State private var baseURL = ""
@@ -23,20 +23,20 @@ struct APISettingsView: View {
     var body: some View {
         Form {
             Section {
-                TextField("????", text: $baseURL)
+                TextField("接口地址", text: $baseURL)
                     .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
-                SecureField("API ??", text: $apiKey)
+                SecureField("API 密钥", text: $apiKey)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
-                TextField("????", text: $model)
+                TextField("模型名称", text: $model)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
             } header: {
-                Text("????")
+                Text("接口配置")
             } footer: {
-                Text("? App ?????????????????????? DeepSeek?https://api.deepseek.com / deepseek-chat")
+                Text("App 与键盘共用一套接口，默认支持 DeepSeek：https://api.deepseek.com / deepseek-chat")
             }
 
             Section {
@@ -46,10 +46,10 @@ struct APISettingsView: View {
                     if isSaving {
                         HStack(spacing: 8) {
                             ProgressView()
-                            Text("????")
+                            Text("保存中…")
                         }
                     } else {
-                        Text("????")
+                        Text("保存设置")
                     }
                 }
                 .disabled(isSaving)
@@ -60,10 +60,10 @@ struct APISettingsView: View {
                     if isTesting {
                         HStack(spacing: 8) {
                             ProgressView()
-                            Text("????")
+                            Text("测试中…")
                         }
                     } else {
-                        Text("????")
+                        Text("测试连接")
                     }
                 }
                 .disabled(isTesting || apiKey.isEmpty)
@@ -76,7 +76,7 @@ struct APISettingsView: View {
                 }
             }
         }
-        .navigationTitle("?? API")
+        .navigationTitle("API 设置")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear(perform: load)
     }
@@ -93,7 +93,7 @@ struct APISettingsView: View {
         APIKeyStore.shared.save(baseURL: baseURL, apiKey: apiKey, model: model)
         isSaving = false
         statusIsError = false
-        statusMessage = "???????????????"
+        statusMessage = "已保存，设置会同步到键盘"
     }
 
     private func testConnection() async {
@@ -103,10 +103,10 @@ struct APISettingsView: View {
         do {
             let reply = try await APIService.shared.testConnection()
             statusIsError = false
-            statusMessage = "?????" + reply
+            statusMessage = "连接成功：" + reply
         } catch {
             statusIsError = true
-            statusMessage = "?????" + error.localizedDescription
+            statusMessage = "连接失败：" + error.localizedDescription
         }
     }
 }

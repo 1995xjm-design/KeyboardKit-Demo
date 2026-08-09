@@ -59,25 +59,25 @@ struct HomeScreen: View {
                             .lineLimit(4, reservesSpace: true)
                             .keyboardType(.default)
                     }
-                    Section("LK ??") {
+                    Section("LK 功能") {
                         NavigationLink {
                             LKFeatureCenterView()
                         } label: {
-                            Label("LK ??", systemImage: "sparkles")
+                            Label("LK 功能", systemImage: "sparkles")
                         }
                     }
-                    Section("?? API") {
+                    Section("API 设置") {
                         NavigationLink {
                             APISettingsView()
                         } label: {
-                            Label("?? API", systemImage: "key.horizontal")
+                            Label("API 设置", systemImage: "key.horizontal")
                         }
                     }
-                    Section("????") {
+                    Section("中文设置") {
                         NavigationLink {
                             ChineseSettingsView()
                         } label: {
-                            Label("????", systemImage: "gearshape")
+                            Label("中文设置", systemImage: "gearshape")
                         }
                     }
                 }

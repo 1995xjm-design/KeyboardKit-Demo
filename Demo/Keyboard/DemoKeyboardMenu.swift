@@ -57,7 +57,7 @@ extension DemoKeyboardMenu {
         )
 
         menuItem(
-            title: "?? API",
+            title: "API 设置",
             icon: .init(systemName: "key.horizontal"),
             tint: .blue,
             action: { sheet = .apiSettings }
