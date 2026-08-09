@@ -6,7 +6,7 @@ import Speech
 enum TalkSpeechLocale {
     static let storageKey = "talk.speechLocale"
     static let automaticID = "auto"
-    static let fallbackLocaleID = "en-US"
+    static let fallbackLocaleID = "zh-CN"
 
     struct Option: Identifiable {
         let id: String
@@ -38,9 +38,12 @@ enum TalkSpeechLocale {
     {
         TalkConfigParsing.resolvedSpeechRecognitionLocaleID(
             preferredLocaleIDs: [
+                // Explicit user selection wins, then follow the phone's
+                // system language (Chinese system -> Chinese recognition),
+                // and only then the gateway-provided locale.
                 TalkConfigParsing.normalizedExplicitSpeechLocaleID(localSelection),
-                TalkConfigParsing.normalizedExplicitSpeechLocaleID(gatewaySelection),
                 deviceLocaleID,
+                TalkConfigParsing.normalizedExplicitSpeechLocaleID(gatewaySelection),
             ],
             fallbackLocaleID: fallbackLocaleID,
             supportedLocaleIDs: supportedLocaleIDs)
