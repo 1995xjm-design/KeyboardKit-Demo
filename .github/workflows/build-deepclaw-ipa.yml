@@ -107,9 +107,11 @@ jobs:
           cp OpenClaw/apps/ios/build/ipa/OpenClaw.ipa dist/
           git config user.name "CI Bot"
           git config user.email "actions@github.com"
+          # Robust merge: rebase when possible, otherwise reset to origin and re-add.
+          git pull --rebase origin main || (git fetch origin main && git reset --hard origin/main)
+          cp OpenClaw/apps/ios/build/ipa/OpenClaw.ipa dist/
           git add dist/OpenClaw.ipa
           git commit -m "build: OpenClaw official zh IPA [skip ci]" || echo "no changes"
-          git pull --rebase origin main || true
           git push
 
       - name: Upload artifact (fallback)
