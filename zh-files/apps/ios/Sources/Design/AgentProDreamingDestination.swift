@@ -261,7 +261,7 @@ struct AgentProDreamingDestination: View {
                                     format: String(
                                         localized: "%@ exists but has no readable content."),
                                     diary.path))
-                                : "The gateway did not find DREAMS.md or dreams.md in the active agent workspace."))
+                                : "The gateway did not find DREAMS.md or dreams.md in the active agent workspace.")
                             .padding(14)
                     }
                 } else {
