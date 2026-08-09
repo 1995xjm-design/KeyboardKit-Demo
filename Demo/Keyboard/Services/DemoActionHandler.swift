@@ -14,16 +14,9 @@ import UIKit
 class DemoActionHandler: KeyboardAction.StandardActionHandler {
 
     /// The shared Chinese input controller used to intercept
-    /// pinyin composition on alphabetic key presses.
-    let chinese: ChineseInputController
-
-    init(
-        controller: KeyboardInputViewController,
-        chinese: ChineseInputController
-    ) {
-        self.chinese = chinese
-        super.init(controller: controller)
-    }
+    /// pinyin composition on alphabetic key presses. Injected
+    /// after creation so the inherited initializer is used.
+    weak var chinese: ChineseInputController?
 
     /// Intercepts presses on character/backspace/space keys
     /// while pinyin composition is active, and keeps the
@@ -56,6 +49,7 @@ class DemoActionHandler: KeyboardAction.StandardActionHandler {
         controller: any KeyboardController
     ) -> Bool {
         guard let kvc = controller as? KeyboardInputViewController else { return false }
+        guard let chinese else { return false }
         switch action {
         case .character(let char):
             if let output = chinese.handleCharacter(char) {

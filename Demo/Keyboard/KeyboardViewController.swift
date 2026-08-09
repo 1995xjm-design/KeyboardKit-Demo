@@ -82,10 +82,9 @@ private extension KeyboardViewController {
     func setupDemoServices() {
 
         // 💡 Set up am action handler for our rocket button.
-        services.actionHandler = DemoActionHandler(
-            controller: self,
-            chinese: chineseInput
-        )
+        let handler = DemoActionHandler(controller: self)
+        handler.chinese = chineseInput
+        services.actionHandler = handler
     }
 
     /// Make demo-specific changes to your keyboard's state.
