@@ -106,7 +106,7 @@ private extension KeyboardViewController {
         // state.keyboardContext.settings.spacebarContextMenuLeading = .locale
 
         /// 💡 Disable autocorrection.
-        // state.autocompleteContext.isAutocorrectEnabled = false
+        // state.autocompleteContext.settings.isAutocorrectEnabled = false
 
         /// 💡 Setup demo-specific haptic & audio feedback.
         let feedback = state.feedbackContext
@@ -122,7 +122,7 @@ private extension KeyboardViewController {
         guard let defaults = UserDefaults(suiteName: AppConstants.appGroupId) else { return }
 
         if defaults.object(forKey: "kk.settings.isAutocorrectEnabled") != nil {
-            state.autocompleteContext.isAutocorrectEnabled =
+            state.autocompleteContext.settings.isAutocorrectEnabled =
                 defaults.bool(forKey: "kk.settings.isAutocorrectEnabled")
         }
         if defaults.object(forKey: "kk.settings.isPredictiveTextEnabled") != nil {
@@ -138,11 +138,11 @@ private extension KeyboardViewController {
                 defaults.bool(forKey: "kk.settings.isPeriodShortcutEnabled")
         }
         if defaults.object(forKey: "kk.settings.isAudioFeedbackEnabled") != nil {
-            state.feedbackContext.isAudioFeedbackEnabled =
+            state.feedbackContext.settings.isAudioFeedbackEnabled =
                 defaults.bool(forKey: "kk.settings.isAudioFeedbackEnabled")
         }
         if defaults.object(forKey: "kk.settings.isHapticFeedbackEnabled") != nil {
-            state.feedbackContext.isHapticFeedbackEnabled =
+            state.feedbackContext.settings.isHapticFeedbackEnabled =
                 defaults.bool(forKey: "kk.settings.isHapticFeedbackEnabled")
         }
         if let raw = defaults.string(forKey: "kk.settings.spacebarLongPressBehavior") {
