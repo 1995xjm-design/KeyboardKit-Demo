@@ -1721,6 +1721,8 @@ final class TalkModeManager: NSObject {
 
     /// Whether Doubao ASR should be used instead of on-device recognition.
     private var shouldUseDoubaoASR: Bool {
+        // Pure Doubao mode uses Doubao ASR; hybrid mode keeps iOS on-device
+        // speech recognition (free, low latency) with Doubao TTS.
         self.talkProviderSelection == .doubao && DoubaoConfig.isConfigured
     }
 
@@ -3207,7 +3209,8 @@ final class TalkModeManager: NSObject {
         let synthesizer: any TalkGatewaySpeechSynthesizing
         if let gatewaySpeechSynthesizerOverride {
             synthesizer = gatewaySpeechSynthesizerOverride
-        } else if self.talkProviderSelection == .doubao, let doubaoSynthesizer = DoubaoTTSGatewaySynthesizer() {
+        } else if (self.talkProviderSelection == .doubao || self.talkProviderSelection == .doubaoHybrid),
+                  let doubaoSynthesizer = DoubaoTTSGatewaySynthesizer() {
             synthesizer = doubaoSynthesizer
         } else if let gateway = gatewayOverride ?? gateway, let gatewayRoute {
             synthesizer = TalkGatewaySpeechClient(gateway: gateway, route: gatewayRoute)

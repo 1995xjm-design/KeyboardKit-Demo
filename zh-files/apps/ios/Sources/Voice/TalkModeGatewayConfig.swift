@@ -196,6 +196,7 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
     case nativeElevenLabs = "elevenlabs"
     case openAIRealtime = "openai-realtime"
     case doubao = "doubao"
+    case doubaoHybrid = "doubao-hybrid"
 
     static let storageKey = "talk.providerSelection"
 
@@ -213,6 +214,8 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
             "Realtime-2 (OpenAI)"
         case .doubao:
             "Doubao (Volcano)"
+        case .doubaoHybrid:
+            "Doubao TTS + iOS Speech"
         }
     }
 
@@ -279,7 +282,7 @@ enum TalkModeRoutingResolver {
         case .nativeElevenLabs:
             activeProvider = defaultProvider
             route = .localElevenLabs
-        case .doubao:
+        case .doubao, .doubaoHybrid:
             activeProvider = "doubao"
             route = .localDoubao
         case .openAIRealtime:
