@@ -39,13 +39,9 @@ struct HomeScreen: View {
                 app: app,
                 appIcon: Image(.icon),
                 header: {
-                    Text(
-"""
-OBS! This demo isn't code signed and therefore can't sync data with its keyboard. This means that dictation will not work.
-"""
-                    )
-                    .listRowBackground(Color.yellow)
-                    .multilineTextAlignment(.center)
+                    Text("Demo.NotCodeSignedWarning")
+                        .listRowBackground(Color.yellow)
+                        .multilineTextAlignment(.center)
                 },
                 footer: {
                     Section("Section.TextFields") {

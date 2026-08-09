@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A9CC00000000000000000200 /* ChineseFeatureStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000100 /* ChineseFeatureStrings.swift */; };
+		A9CC00000000000000000201 /* PinyinEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000101 /* PinyinEngine.swift */; };
+		A9CC00000000000000000202 /* ChineseInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000102 /* ChineseInputController.swift */; };
+		A9CC00000000000000000203 /* CandidateBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000103 /* CandidateBarView.swift */; };
+		A9CC00000000000000000204 /* SymbolKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000104 /* SymbolKeyboardView.swift */; };
+		A9CC00000000000000000205 /* HelpReplyPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000105 /* HelpReplyPanelView.swift */; };
+		A9CC00000000000000000206 /* SuperTalkPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000106 /* SuperTalkPanelView.swift */; };
 		A90FB5922EB88D1F00D95EDE /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = A90FB5912EB88D1F00D95EDE /* KeyboardKit */; };
 		A90FB59A2EB9194600D95EDE /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = A90FB5992EB9194600D95EDE /* KeyboardKit */; };
 		A921152625D58A94003510D9 /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A921152525D58A94003510D9 /* DemoApp.swift */; };
@@ -62,6 +69,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A9CC00000000000000000100 /* ChineseFeatureStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChineseFeatureStrings.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000101 /* PinyinEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinyinEngine.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000102 /* ChineseInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChineseInputController.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000103 /* CandidateBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CandidateBarView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000104 /* SymbolKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolKeyboardView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000105 /* HelpReplyPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpReplyPanelView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000106 /* SuperTalkPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperTalkPanelView.swift; sourceTree = "<group>"; };
 		A921152225D58A94003510D9 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A921152525D58A94003510D9 /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		A921152725D58A94003510D9 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
@@ -214,6 +228,13 @@
 				A99A1F042E640E130014973F /* Info.plist */,
 				A99A1F052E640E130014973F /* KeyboardKit+Demo.swift */,
 				A99A1F062E640E130014973F /* KeyboardViewController.swift */,
+				A9CC00000000000000000100 /* ChineseFeatureStrings.swift */,
+				A9CC00000000000000000101 /* PinyinEngine.swift */,
+				A9CC00000000000000000102 /* ChineseInputController.swift */,
+				A9CC00000000000000000103 /* CandidateBarView.swift */,
+				A9CC00000000000000000104 /* SymbolKeyboardView.swift */,
+				A9CC00000000000000000105 /* HelpReplyPanelView.swift */,
+				A9CC00000000000000000106 /* SuperTalkPanelView.swift */,
 			);
 			path = Keyboard;
 			sourceTree = "<group>";
@@ -374,6 +395,13 @@
 				A99A1F112E640E130014973F /* DemoToolbar.swift in Sources */,
 				A99A1F122E640E130014973F /* KeyboardKit+Demo.swift in Sources */,
 				A99A1F132E640E130014973F /* KeyboardViewController.swift in Sources */,
+				A9CC00000000000000000200 /* ChineseFeatureStrings.swift in Sources */,
+				A9CC00000000000000000201 /* PinyinEngine.swift in Sources */,
+				A9CC00000000000000000202 /* ChineseInputController.swift in Sources */,
+				A9CC00000000000000000203 /* CandidateBarView.swift in Sources */,
+				A9CC00000000000000000204 /* SymbolKeyboardView.swift in Sources */,
+				A9CC00000000000000000205 /* HelpReplyPanelView.swift in Sources */,
+				A9CC00000000000000000206 /* SuperTalkPanelView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

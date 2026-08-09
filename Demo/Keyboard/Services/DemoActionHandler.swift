@@ -13,6 +13,48 @@ import UIKit
 /// and makes demo-specific adjustments to it.
 class DemoActionHandler: KeyboardAction.StandardActionHandler {
 
+    /// The shared Chinese input controller used to intercept
+    /// pinyin composition on alphabetic key presses.
+    let chinese: ChineseInputController
+
+    init(
+        controller: KeyboardInputViewController,
+        chinese: ChineseInputController
+    ) {
+        self.chinese = chinese
+        super.init(controller: controller)
+    }
+
+    /// Intercepts character, backspace, space and return while
+    /// Chinese mode is active so pinyin composition works.
+    override func handle(
+        _ action: KeyboardAction,
+        on controller: KeyboardInputViewController
+    ) {
+        switch action {
+        case .character(let char):
+            if let output = chinese.handleCharacter(char) {
+                controller.textDocumentProxy.insertText(output)
+            }
+            return
+        case .backspace:
+            if chinese.handleDelete() { return }
+        case .space:
+            if let output = chinese.handleSpace() {
+                controller.textDocumentProxy.insertText(output)
+                return
+            }
+        case .return:
+            if let output = chinese.handleReturn() {
+                controller.textDocumentProxy.insertText(output)
+                return
+            }
+        default:
+            break
+        }
+        super.handle(action, on: controller)
+    }
+
     /// Trigger custom actions for `.image` keyboard actions.
     override func action(
         for gesture: Keyboard.Gesture,

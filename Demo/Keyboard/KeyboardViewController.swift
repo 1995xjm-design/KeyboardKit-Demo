@@ -19,6 +19,11 @@ import SwiftUI
 /// For app-specific features, check out the main app target.
 class KeyboardViewController: KeyboardInputViewController {
 
+    /// Chinese input state shared by the action handler and
+    /// the keyboard view (candidate bar, symbol keyboard,
+    /// help reply and super talk panels).
+    lazy var chineseInput = ChineseInputController()
+
     /// ‼️ If this doesn't log when the debugger is attached,
     /// there is a memory leak.
     deinit {
@@ -57,13 +62,14 @@ class KeyboardViewController: KeyboardInputViewController {
         // super.viewWillSetupKeyboardView()
 
         // Set up a custom, demo-specific keyboard view.
-        setupKeyboardView { /*[weak self]*/ controller in
+        setupKeyboardView { [weak self] controller in
 
             // 💡 This demo keyboard view will apply various
             // view modifiers based on this controller state.
             DemoKeyboardView(
                 services: controller.services,
-                state: controller.state
+                state: controller.state,
+                chinese: self?.chineseInput ?? ChineseInputController()
             )
         }
     }
@@ -76,16 +82,9 @@ private extension KeyboardViewController {
 
         // 💡 Set up am action handler for our rocket button.
         services.actionHandler = DemoActionHandler(
-            controller: self
+            controller: self,
+            chinese: chineseInput
         )
-
-        // 💡 A custom Chinese (zh-Hans) pinyin layout service is
-        // currently disabled: KeyboardKit 10.7.3's layout-service API
-        // differs from what we initially targeted. The zh-Hans locale
-        // therefore falls back to the standard QWERTY layout, which is
-        // exactly the pinyin layout, so typing pinyin works as-is.
-        // (Re-enable once the correct API is confirmed from the module
-        // interface — see ChineseKeyboardLayoutService.swift.)
     }
 
     /// Make demo-specific changes to your keyboard's state.
