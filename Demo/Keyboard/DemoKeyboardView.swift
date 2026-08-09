@@ -19,6 +19,7 @@ struct DemoKeyboardView: View {
 
     var services: Keyboard.Services
     var state: Keyboard.State
+    let controller: KeyboardInputViewController
     @ObservedObject var chinese: ChineseInputController
 
     @AppStorage("com.keyboardkit.demo.isToolbarToggled")
@@ -41,7 +42,7 @@ struct DemoKeyboardView: View {
                     pinyin: chinese.pinyinBuffer,
                     candidates: chinese.candidates
                 ) { candidate in
-                    insertText(chinese.select(candidate))
+                    controller.textDocumentProxy.insertText(chinese.select(candidate))
                 }
             }
 
@@ -187,7 +188,7 @@ private extension DemoKeyboardView {
             HelpReplyPanelView(
                 onClose: { chinese.closePanel() },
                 onPaste: {
-                    guard KeyboardInputViewController.shared.hasFullAccess else { return nil }
+                    guard controller.hasFullAccess else { return nil }
                     return UIPasteboard.general.string
                 },
                 onSelect: { text in
@@ -214,11 +215,11 @@ private extension DemoKeyboardView {
 
     // 💡 Text output helpers.
     func insertText(_ text: String) {
-        KeyboardInputViewController.shared.textDocumentProxy.insertText(text)
+        controller.textDocumentProxy.insertText(text)
     }
 
     func deleteBackward() {
-        KeyboardInputViewController.shared.textDocumentProxy.deleteBackward()
+        controller.textDocumentProxy.deleteBackward()
     }
 
     // 💡 Setup a custom keyboard layout

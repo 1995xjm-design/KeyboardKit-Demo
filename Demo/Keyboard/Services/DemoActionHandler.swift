@@ -25,34 +25,49 @@ class DemoActionHandler: KeyboardAction.StandardActionHandler {
         super.init(controller: controller)
     }
 
-    /// Intercepts character, backspace, space and return while
-    /// Chinese mode is active so pinyin composition works.
-    override func handle(
+    /// Intercepts taps on character, backspace, space and
+    /// newline keys while pinyin composition is active.
+    override func action(
+        for gesture: Keyboard.Gesture,
+        on action: KeyboardAction
+    ) -> KeyboardAction.GestureAction? {
+        let standard = super.action(for: gesture, on: action)
+        guard gesture == .tap else { return standard }
+        return { [weak self] controller in
+            guard let self, !self.intercept(action, controller: controller) else { return }
+            standard?(controller)
+        }
+    }
+
+    /// Returns `true` when the action was consumed by the
+    /// Chinese input controller (pinyin buffer / candidates).
+    private func intercept(
         _ action: KeyboardAction,
-        on controller: KeyboardInputViewController
-    ) {
+        controller: KeyboardInputViewController
+    ) -> Bool {
         switch action {
         case .character(let char):
             if let output = chinese.handleCharacter(char) {
                 controller.textDocumentProxy.insertText(output)
             }
-            return
+            return true
         case .backspace:
-            if chinese.handleDelete() { return }
+            return chinese.handleDelete()
         case .space:
             if let output = chinese.handleSpace() {
                 controller.textDocumentProxy.insertText(output)
-                return
+                return true
             }
-        case .return:
+            return false
+        case .newLine:
             if let output = chinese.handleReturn() {
                 controller.textDocumentProxy.insertText(output)
-                return
+                return true
             }
+            return false
         default:
-            break
+            return false
         }
-        super.handle(action, on: controller)
     }
 
     /// Trigger custom actions for `.image` keyboard actions.

@@ -109,6 +109,7 @@ jobs:
           git config user.email "actions@github.com"
           git add dist/OpenClaw.ipa
           git commit -m "build: OpenClaw official zh IPA [skip ci]" || echo "no changes"
+          git pull --rebase origin main || true
           git push
 
       - name: Upload artifact (fallback)

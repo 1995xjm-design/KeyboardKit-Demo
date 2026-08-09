@@ -69,6 +69,7 @@ class KeyboardViewController: KeyboardInputViewController {
             DemoKeyboardView(
                 services: controller.services,
                 state: controller.state,
+                controller: controller,
                 chinese: self?.chineseInput ?? ChineseInputController()
             )
         }
