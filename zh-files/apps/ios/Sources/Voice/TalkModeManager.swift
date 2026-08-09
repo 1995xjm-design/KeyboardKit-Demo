@@ -1779,9 +1779,14 @@ final class TalkModeManager: NSObject {
                 }
             }
             self.audioTapDiagnostics = diagnostics
+            // Tap buffers are reused by AVAudioEngine: resample synchronously
+            // on the audio thread and hand a Data copy to the recognizer.
+            var doubaoConverter: AVAudioConverter?
             input.installTap(onBus: 0, bufferSize: 2048, format: format) { [weak self] buffer, _ in
-                Task { @MainActor in
-                    self?.doubaoASR?.append(buffer)
+                if let pcm = DoubaoASRClient.resample(buffer, converter: &doubaoConverter) {
+                    Task { @MainActor in
+                        self?.doubaoASR?.appendPCM(pcm)
+                    }
                 }
                 diagnostics.onBuffer(buffer)
             }
