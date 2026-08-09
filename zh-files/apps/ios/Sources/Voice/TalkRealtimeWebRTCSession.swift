@@ -1072,13 +1072,54 @@ extension TalkRealtimeWebRTCSession {
     {
         self.trace("gateway talk.client.create start")
         let startedAt = ProcessInfo.processInfo.systemUptime
+        // Full capability declaration first (real-time transcripts). Older
+        // gateways forward the unknown field to the provider and fail, so we
+        // retry once without it (graceful degradation).
+        do {
+            return try await self.createClientSession(
+                sessionKey: self.sessionKey,
+                voiceSessionId: self.adoptedVoiceSessionId,
+                provider: provider,
+                model: model,
+                voice: voice,
+                capabilities: ["voice-transcript"])
+        } catch {
+            if Self.isCapabilitiesRejection(error) {
+                self.trace("talk.client.create capabilities rejected; retrying without capabilities")
+                return try await self.createClientSession(
+                    sessionKey: self.sessionKey,
+                    voiceSessionId: self.adoptedVoiceSessionId,
+                    provider: provider,
+                    model: model,
+                    voice: voice,
+                    capabilities: nil)
+            }
+            throw error
+        }
+    }
+
+    /// Whether an error indicates the provider rejected the `capabilities`
+    /// property (legacy gateway passthrough) and a retry without it may help.
+    private static func isCapabilitiesRejection(_ error: Error) -> Bool {
+        let text = String(describing: error)
+        return text.contains("capabilities") && text.contains("unexpected property")
+    }
+
+    private func createClientSession(
+        sessionKey: String,
+        voiceSessionId: String?,
+        provider: String?,
+        model: String?,
+        voice: String?,
+        capabilities: [String]?) async throws -> TalkRealtimeClientSession
+    {
         let params = TalkRealtimeClientCreateParams(
-            sessionKey: self.sessionKey,
-            voiceSessionId: self.adoptedVoiceSessionId,
+            sessionKey: sessionKey,
+            voiceSessionId: voiceSessionId,
             provider: provider,
             model: model,
             voice: voice,
-            capabilities: nil)
+            capabilities: capabilities)
         let data = try JSONEncoder().encode(params)
         let json = String(data: data, encoding: .utf8)
         let res = try await gateway.request(method: "talk.client.create", paramsJSON: json, timeoutSeconds: 12)

@@ -1545,6 +1545,12 @@ final class TalkModeManager: NSObject {
         GatewayDiagnostics.log(
             "talk speech: recognition started mode=\(String(describing: self.captureMode)) "
                 + "engineRunning=\(self.audioEngine.isRunning)")
+        if self.shouldUseDoubaoASR {
+            self.startDoubaoRecognition(
+                pttCaptureId: pttCaptureId,
+                recognitionGeneration: recognitionGeneration)
+            return
+        }
         self.recognitionTask = recognizer.recognitionTask(with: request) { [weak self] result, error in
             guard let self else { return }
             self.handleRecognitionUpdate(
@@ -1713,10 +1719,103 @@ final class TalkModeManager: NSObject {
         self.speechErrorStatusRevisionPendingRestart = nil
     }
 
+    /// Whether Doubao ASR should be used instead of on-device recognition.
+    private var shouldUseDoubaoASR: Bool {
+        self.talkProviderSelection == .doubao && DoubaoConfig.isConfigured
+    }
+
+    /// Doubao streaming recognizer while a Doubao ASR capture is active.
+    private var doubaoASR: DoubaoASRClient?
+
+    /// Starts Doubao big-model streaming ASR. The audio tap feeds
+    /// resampled 16k PCM to the WebSocket recognizer.
+    private func startDoubaoRecognition(
+        pttCaptureId: String?,
+        recognitionGeneration: UInt64)
+    {
+        guard let doubao = DoubaoASRClient() else { return }
+        self.doubaoASR = doubao
+        doubao.onPartial = { [weak self] text in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.handleTranscript(
+                    transcript: text,
+                    isFinal: false,
+                    pttCaptureId: pttCaptureId,
+                    recognitionGeneration: recognitionGeneration)
+            }
+        }
+        doubao.onFinal = { [weak self] text in
+            guard let self else { return }
+            Task { @MainActor in
+                await self.handleTranscript(
+                    transcript: text,
+                    isFinal: true,
+                    pttCaptureId: pttCaptureId,
+                    recognitionGeneration: recognitionGeneration)
+            }
+        }
+        doubao.onError = { [weak self] error in
+            guard let self else { return }
+            Task { @MainActor in
+                self.handleDoubaoASRError(
+                    error,
+                    pttCaptureId: pttCaptureId,
+                    recognitionGeneration: recognitionGeneration)
+            }
+        }
+        do {
+            try doubao.start()
+            // Swap the tap to feed Doubao instead of the local recognizer.
+            let input = self.audioEngine.inputNode
+            let format = input.inputFormat(forBus: 0)
+            input.removeTap(onBus: 0)
+            let diagnostics = AudioTapDiagnostics(label: "talk-doubao") { [weak self] level in
+                Task { @MainActor in
+                    self?.updateMicLevel(level, recognitionGeneration: recognitionGeneration)
+                }
+            }
+            self.audioTapDiagnostics = diagnostics
+            input.installTap(onBus: 0, bufferSize: 2048, format: format) { [weak self] buffer, _ in
+                Task { @MainActor in
+                    self?.doubaoASR?.append(buffer)
+                }
+                diagnostics.onBuffer(buffer)
+            }
+            self.inputTapInstalled = true
+            self.loggedPartialThisCycle = false
+            GatewayDiagnostics.log("talk speech: doubao ASR started")
+        } catch {
+            doubao.close()
+            self.doubaoASR = nil
+            self.handleDoubaoASRError(
+                error,
+                pttCaptureId: pttCaptureId,
+                recognitionGeneration: recognitionGeneration)
+        }
+    }
+
+    /// Reports a Doubao ASR failure through the normal talk issue path.
+    private func handleDoubaoASRError(
+        _ error: Error,
+        pttCaptureId: String?,
+        recognitionGeneration: UInt64)
+    {
+        guard self.recognitionGeneration == recognitionGeneration else { return }
+        self.pendingRealtimeIssue = TalkRuntimeIssue(
+            code: "doubao_asr_unavailable",
+            message: error.localizedDescription)
+        self.doubaoASR?.close()
+        self.doubaoASR = nil
+    }
+
     private func stopRecognition() {
         // Speech may deliver buffered callbacks after cancellation. Advancing the
         // owner before teardown makes every old callback and audio-level task inert.
         self.recognitionGeneration &+= 1
+        self.doubaoASR?.finish()
+        self.doubaoASR?.close()
+        self.doubaoASR = nil
         self.recognitionTask?.cancel()
         self.recognitionTask = nil
         self.recognitionRequest?.endAudio()
@@ -2506,13 +2605,52 @@ final class TalkModeManager: NSObject {
         model: String?,
         voice: String?) async throws -> TalkRealtimeClientSession
     {
+        // Full capability declaration first; retry without capabilities when a
+        // legacy gateway rejects the field (graceful degradation).
+        do {
+            return try await self.createClientSession(
+                sessionKey: sessionKey,
+                voiceSessionId: voiceSessionId,
+                provider: provider,
+                model: model,
+                voice: voice,
+                capabilities: ["voice-transcript"],
+                gateway: gateway,
+                route: route)
+        } catch {
+            let text = String(describing: error)
+            if text.contains("capabilities") && text.contains("unexpected property") {
+                return try await self.createClientSession(
+                    sessionKey: sessionKey,
+                    voiceSessionId: voiceSessionId,
+                    provider: provider,
+                    model: model,
+                    voice: voice,
+                    capabilities: nil,
+                    gateway: gateway,
+                    route: route)
+            }
+            throw error
+        }
+    }
+
+    private func createClientSession(
+        sessionKey: String,
+        voiceSessionId: String?,
+        provider: String?,
+        model: String?,
+        voice: String?,
+        capabilities: [String]?,
+        gateway: GatewayNodeSession,
+        route: GatewayNodeSessionRoute) async throws -> TalkRealtimeClientSession
+    {
         let params = TalkRealtimeClientCreateParams(
             sessionKey: sessionKey,
             voiceSessionId: voiceSessionId,
             provider: provider,
             model: model,
             voice: voice,
-            capabilities: nil)
+            capabilities: capabilities)
         let data = try JSONEncoder().encode(params)
         let json = String(data: data, encoding: .utf8)
         let res = try await gateway.request(
@@ -3061,6 +3199,8 @@ final class TalkModeManager: NSObject {
         let synthesizer: any TalkGatewaySpeechSynthesizing
         if let gatewaySpeechSynthesizerOverride {
             synthesizer = gatewaySpeechSynthesizerOverride
+        } else if self.talkProviderSelection == .doubao, let doubaoSynthesizer = DoubaoTTSGatewaySynthesizer() {
+            synthesizer = doubaoSynthesizer
         } else if let gateway = gatewayOverride ?? gateway, let gatewayRoute {
             synthesizer = TalkGatewaySpeechClient(gateway: gateway, route: gatewayRoute)
         } else {
@@ -4030,6 +4170,8 @@ extension TalkModeManager {
         switch provider.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
         case "elevenlabs":
             "ElevenLabs"
+        case "doubao":
+            "Doubao"
         case "openai":
             "OpenAI"
         case "google":
