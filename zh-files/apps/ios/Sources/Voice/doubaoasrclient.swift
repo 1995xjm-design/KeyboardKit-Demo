@@ -7,21 +7,26 @@
 //  (usually 48k) is resampled with AVAudioConverter before
 //  transmission.
 //
+//  Thread safety: this class is intentionally NOT @MainActor so the
+//  AVAudioEngine tap thread can call `appendPCM` directly. All mutable
+//  state is guarded by a lock; callbacks are re-dispatched to the main
+//  actor.
+//
 
 import AVFoundation
 import Foundation
 
-@MainActor
 final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
 
-    // MARK: - Callbacks
+    // MARK: - Callbacks (main-actor hops)
 
     var onPartial: ((String) -> Void)?
     var onFinal: ((String) -> Void)?
     var onError: ((Error) -> Void)?
 
-    // MARK: - State
+    // MARK: - Locked state
 
+    private let lock = NSLock()
     private var task: URLSessionWebSocketTask?
     private var session: URLSession?
     private var converter: AVAudioConverter?
@@ -53,7 +58,9 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
     /// Opens the WebSocket and sends the start frame.
     func start() throws {
         let session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+        lock.lock()
         self.session = session
+        lock.unlock()
 
         let url: URL
         if usesArkKey {
@@ -76,7 +83,9 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         }
 
         let task = session.webSocketTask(with: url)
+        lock.lock()
         self.task = task
+        lock.unlock()
 
         let authToken = usesArkKey ? apiKey : token
         let startPayload: [String: Any] = [
@@ -101,43 +110,45 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         let startString = String(data: startData, encoding: .utf8) ?? "{}"
 
         task.resume()
+        lock.lock()
         isStarted = true
+        lock.unlock()
         task.send(.string(startString)) { [weak self] error in
             if let error {
-                Task { @MainActor in
-                    self?.onError?(error)
-                }
+                self?.emitError(error)
             }
         }
-        for data in pendingStart {
+        lock.lock()
+        let queued = pendingStart
+        pendingStart.removeAll()
+        lock.unlock()
+        for data in queued {
             sendAudio(data)
         }
-        pendingStart.removeAll()
         receive()
     }
 
-    /// Appends an audio buffer. The client resamples to 16k mono PCM
-    /// and streams it to the recognizer.
-    ///
-    /// NOTE: tap buffers are reused by AVAudioEngine, so callers on the
-    /// audio thread must hand over a `Data` copy (see `resample`), never
-    /// the buffer itself across a thread boundary.
-    func append(_ buffer: AVAudioPCMBuffer) {
-        guard isStarted, let task else { return }
-        var converter: AVAudioConverter?
-        guard let pcm = Self.resample(buffer, converter: &converter) else { return }
-        sendAudio(pcm)
-    }
-
-    /// Appends raw 16k mono PCM data directly.
+    /// Thread-safe: callable from the audio tap thread.
     func appendPCM(_ data: Data) {
-        guard isStarted, let task else { return }
-        sendAudio(data)
+        lock.lock()
+        let started = isStarted
+        let task = self.task
+        lock.unlock()
+        guard started, let task else { return }
+        task.send(.data(data)) { [weak self] error in
+            if let error {
+                self?.emitError(error)
+            }
+        }
     }
 
     /// Sends the end frame and waits for the final result.
     func finish() {
-        guard isStarted, let task else { return }
+        lock.lock()
+        let started = isStarted
+        let task = self.task
+        lock.unlock()
+        guard started, let task else { return }
         let endPayload: [String: Any] = [
             "header": [
                 "event": "end",
@@ -149,19 +160,20 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         else { return }
         task.send(.string(endString)) { [weak self] error in
             if let error {
-                Task { @MainActor in
-                    self?.onError?(error)
-                }
+                self?.emitError(error)
             }
         }
     }
 
     func close() {
+        lock.lock()
+        let task = self.task
+        self.task = nil
+        self.session = nil
+        self.converter = nil
+        self.isStarted = false
+        lock.unlock()
         task?.cancel(with: .goingAway, reason: nil)
-        task = nil
-        session = nil
-        converter = nil
-        isStarted = false
     }
 
     // MARK: - WebSocket delegate
@@ -179,38 +191,41 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         didCloseWith closeCode: URLSessionWebSocketTask.CloseCode,
         reason: Data?)
     {
-        Task { @MainActor in
-            if self.isStarted {
-                self.onError?(DoubaoASRClientError.closed(closeCode.rawValue))
-            }
+        lock.lock()
+        let started = isStarted
+        lock.unlock()
+        if started {
+            emitError(DoubaoASRClientError.closed(closeCode.rawValue))
         }
     }
 
     // MARK: - Private
 
     private func sendAudio(_ data: Data) {
+        lock.lock()
+        let task = self.task
+        lock.unlock()
         guard let task else { return }
         task.send(.data(data)) { [weak self] error in
             if let error {
-                Task { @MainActor in
-                    self?.onError?(error)
-                }
+                self?.emitError(error)
             }
         }
     }
 
     private func receive() {
+        lock.lock()
+        let task = self.task
+        lock.unlock()
         guard let task else { return }
         task.receive { [weak self] result in
-            Task { @MainActor in
-                guard let self else { return }
-                switch result {
-                case .success(let message):
-                    self.handle(message)
-                    self.receive()
-                case .failure(let error):
-                    self.onError?(error)
-                }
+            guard let self else { return }
+            switch result {
+            case .success(let message):
+                self.handle(message)
+                self.receive()
+            case .failure(let error):
+                self.emitError(error)
             }
         }
     }
@@ -228,7 +243,7 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         if event == "error" {
             let code = (obj["code"] as? Int) ?? -1
             let message = obj["message"] as? String ?? "unknown"
-            onError?(DoubaoASRClientError.api(code, message))
+            emitError(DoubaoASRClientError.api(code, message))
             return
         }
 
@@ -240,9 +255,38 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
 
         let isDefinite = (payload["definite"] as? Bool) ?? false
         if isDefinite {
-            onFinal?(text)
+            emitFinal(text)
         } else {
-            onPartial?(text)
+            emitPartial(text)
+        }
+    }
+
+    // MARK: - Callback dispatch (main actor)
+
+    private func emitPartial(_ text: String) {
+        lock.lock()
+        let callback = onPartial
+        lock.unlock()
+        Task { @MainActor in
+            callback?(text)
+        }
+    }
+
+    private func emitFinal(_ text: String) {
+        lock.lock()
+        let callback = onFinal
+        lock.unlock()
+        Task { @MainActor in
+            callback?(text)
+        }
+    }
+
+    private func emitError(_ error: Error) {
+        lock.lock()
+        let callback = onError
+        lock.unlock()
+        Task { @MainActor in
+            callback?(error)
         }
     }
 

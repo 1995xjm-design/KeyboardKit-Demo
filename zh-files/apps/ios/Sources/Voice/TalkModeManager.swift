@@ -1784,12 +1784,14 @@ final class TalkModeManager: NSObject {
             self.audioTapDiagnostics = diagnostics
             // Tap buffers are reused by AVAudioEngine: resample synchronously
             // on the audio thread and hand a Data copy to the recognizer.
+            // DoubaoASRClient is thread-safe (not MainActor), so the tap can
+            // call appendPCM directly without a MainActor hop — hopping from
+            // the audio thread trips Swift 6 executor assertions (SIGTRAP).
             var doubaoConverter: AVAudioConverter?
-            input.installTap(onBus: 0, bufferSize: 2048, format: format) { [weak self] buffer, _ in
+            let doubaoTapClient = doubao
+            input.installTap(onBus: 0, bufferSize: 2048, format: format) { buffer, _ in
                 if let pcm = DoubaoASRClient.resample(buffer, converter: &doubaoConverter) {
-                    Task { @MainActor in
-                        self?.doubaoASR?.appendPCM(pcm)
-                    }
+                    doubaoTapClient?.appendPCM(pcm)
                 }
                 diagnostics.onBuffer(buffer)
             }
