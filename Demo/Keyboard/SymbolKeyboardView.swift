@@ -166,19 +166,19 @@ private extension T9KeyboardView {
             GridRow {
                 Grid(horizontalSpacing: 4, verticalSpacing: 4) {
                     GridRow {
-                        punctButton("\uFF0C")
+                        punctButton("\u{FF0C}")
                         symbol1Button
                         letterKey("2", letters: "ABC")
                         letterKey("3", letters: "DEF")
                     }
                     GridRow {
-                        punctButton("\u3002")
+                        punctButton("\u{3002}")
                         letterKey("4", letters: "GHI")
                         letterKey("5", letters: "JKL")
                         letterKey("6", letters: "MNO")
                     }
                     GridRow {
-                        punctButton("\uFF1F")
+                        punctButton("\u{FF1F}")
                         letterKey("7", letters: "PQRS")
                         letterKey("8", letters: "TUV")
                         letterKey("9", letters: "WXYZ")
@@ -208,7 +208,7 @@ private extension T9KeyboardView {
     var bottomBar: some View {
         HStack(spacing: 4) {
             Button(action: onLocaleSwitch) {
-                Label(LKString("\u4E2D/EN", "EN"), systemImage: "globe")
+                Label(LKString("\u{4E2D}/EN", "EN"), systemImage: "globe")
                     .font(.subheadline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 30)
@@ -218,7 +218,7 @@ private extension T9KeyboardView {
             .buttonStyle(.plain)
 
             Button(action: onDictation) {
-                Label(LKString("\u8BED\u97F3", "Dictation"), systemImage: "mic.fill")
+                Label(LKString("\u{8BED}\u{97F3}", "Dictation"), systemImage: "mic.fill")
                     .font(.subheadline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 30)
@@ -280,7 +280,7 @@ private extension T9KeyboardView {
     // Symbols key: opens the symbol keyboard.
     var symbolsButton: some View {
         Button(action: onSymbols) {
-            Text(LKString("\u7B26\u53F7", "Sym"))
+            Text(LKString("\u{7B26}\u{53F7}", "Sym"))
                 .font(.body)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
@@ -309,7 +309,7 @@ private extension T9KeyboardView {
             VStack(spacing: 2) {
                 Image(systemName: "magnifyingglass")
                     .font(.body)
-                Text(LKString("\u786E\u8BA4", "OK"))
+                Text(LKString("\u{786E}\u{8BA4}", "OK"))
                     .font(.caption2)
             }
             .frame(maxWidth: .infinity)
@@ -322,7 +322,7 @@ private extension T9KeyboardView {
 
     var deleteButton: some View {
         Button(action: onDelete) {
-            Text(verbatim: "\u232B")
+            Text(verbatim: "\u{232B}")
                 .font(.title2)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
@@ -334,7 +334,7 @@ private extension T9KeyboardView {
 
     var returnButton: some View {
         Button(action: onReturn) {
-            Text(LKString("\u6362\u884C", "Return"))
+            Text(LKString("\u{6362}\u{884C}", "Return"))
                 .font(.body)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
@@ -346,7 +346,7 @@ private extension T9KeyboardView {
 
     var modeButton: some View {
         Button(action: onToggleMode) {
-            Text(isChineseMode ? LKString("\u4E2D/\u82F1", "CN") : "EN")
+            Text(isChineseMode ? LKString("\u{4E2D}/\u{82F1}", "CN") : "EN")
                 .font(.body)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
@@ -358,7 +358,7 @@ private extension T9KeyboardView {
 
     // Space key spans two columns; long-press drag moves the cursor.
     var spaceButton: some View {
-        Text(LKString("\u7A7A\u683C", "Space"))
+        Text(LKString("\u{7A7A}\u{683C}", "Space"))
             .font(.body)
             .frame(maxWidth: .infinity)
             .frame(height: 46)
