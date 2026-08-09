@@ -3,14 +3,14 @@
 //  Keyboard
 //
 //  "Super Talk" love-message panel, ported from LoveKeyboard.
-//  Includes its own mini keyboard with pinyin candidates and
-//  preset love-message templates.
+//  Includes its own mini keyboard with pinyin candidates,
+//  preset love-message templates and DeepSeek polishing.
 //
 
 import SwiftUI
 
-/// Love-message composer with a mini keyboard, pinyin input
-/// and preset templates. Ported from LoveKeyboard.
+/// Love-message composer with a mini keyboard, pinyin input,
+/// preset templates and DeepSeek-generated polish results.
 struct SuperTalkPanelView: View {
 
     let onClose: () -> Void
@@ -28,6 +28,9 @@ struct SuperTalkPanelView: View {
         "今天辛苦了，好好休息"
     ]
 
+    /// Identity options for DeepSeek polishing.
+    private let identities = IdentityType.allCases
+
     /// Mini keyboard rows (from LoveKeyboard).
     private let keyboardRows: [[String]] = [
         ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
@@ -39,6 +42,11 @@ struct SuperTalkPanelView: View {
     @State private var content = ""
     @State private var cursor = 0
 
+    @State private var selectedIdentity = IdentityType.general
+    @State private var polishResults: [PolishResult] = []
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+
     /// Renders the input area with a cursor marker.
     private var displayText: String {
         guard cursor >= 0, cursor <= content.count else { return content }
@@ -48,27 +56,7 @@ struct SuperTalkPanelView: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            // Header
-            HStack {
-                Button {
-                    onClose()
-                } label: {
-                    Text(verbatim: "×")
-                        .font(.title)
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(.plain)
-
-                Spacer()
-
-                Text(LKString("超会说", "Super Talk"))
-                    .font(.headline)
-
-                Spacer()
-
-                Color.clear.frame(width: 40, height: 40)
-            }
-            .padding(.horizontal, 8)
+            header
 
             // Input area with cursor controls
             HStack(spacing: 4) {
@@ -121,7 +109,7 @@ struct SuperTalkPanelView: View {
                                     Text(verbatim: "⌫")
                                         .font(.title2)
                                         .frame(maxWidth: .infinity)
-                                        .frame(height: 34)
+                                        .frame(height: 32)
                                         .background(Color(.tertiarySystemBackground))
                                         .clipShape(RoundedRectangle(cornerRadius: 5))
                                 }
@@ -133,7 +121,7 @@ struct SuperTalkPanelView: View {
                                     Text(verbatim: key)
                                         .font(.body)
                                         .frame(maxWidth: .infinity)
-                                        .frame(height: 34)
+                                        .frame(height: 32)
                                         .background(Color(.secondarySystemBackground))
                                         .clipShape(RoundedRectangle(cornerRadius: 5))
                                 }
@@ -149,7 +137,7 @@ struct SuperTalkPanelView: View {
                     Text(LKString("空格", "Space"))
                         .font(.body)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 34)
+                        .frame(height: 32)
                         .background(Color(.secondarySystemBackground))
                         .clipShape(RoundedRectangle(cornerRadius: 5))
                 }
@@ -157,31 +145,120 @@ struct SuperTalkPanelView: View {
             }
             .padding(.horizontal, 4)
 
-            // Love templates
-            VStack(spacing: 4) {
-                ForEach(0..<4, id: \.self) { row in
-                    HStack(spacing: 8) {
-                        ForEach(0..<2, id: \.self) { column in
-                            let index = row * 2 + column
-                            if index < loveTemplates.count {
-                                Button {
-                                    onSelectResult(loveTemplates[index])
-                                } label: {
-                                    Text(loveTemplates[index])
+            // AI polish: identity selector + button
+            HStack(spacing: 6) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(identities, id: \.self) { identity in
+                            Button {
+                                selectedIdentity = identity
+                            } label: {
+                                Text(identity.displayName)
+                                    .font(.caption)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        selectedIdentity == identity
+                                            ? Color.accentColor.opacity(0.2)
+                                            : Color(.tertiarySystemBackground)
+                                    )
+                                    .clipShape(Capsule())
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 2)
+                }
+
+                Button {
+                    polish()
+                } label: {
+                    Group {
+                        if isLoading {
+                            ProgressView()
+                        } else {
+                            Text(LKString("AI 润色", "Polish"))
+                                .font(.caption.bold())
+                        }
+                    }
+                    .frame(width: 64, height: 28)
+                    .background(
+                        (content.isEmpty || isLoading)
+                            ? Color(.tertiarySystemBackground)
+                            : Color.accentColor.opacity(0.85)
+                    )
+                    .foregroundStyle((content.isEmpty || isLoading) ? .secondary : .white)
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .disabled(content.isEmpty || isLoading)
+            }
+            .padding(.horizontal, 8)
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .font(.caption2)
+                    .foregroundStyle(.red)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 8)
+            }
+
+            // Polish results replace templates while available
+            if !polishResults.isEmpty {
+                ScrollView {
+                    VStack(spacing: 4) {
+                        ForEach(polishResults) { result in
+                            Button {
+                                onSelectResult(result.text)
+                                onClose()
+                            } label: {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(result.styleName)
+                                        .font(.caption2.bold())
+                                        .foregroundStyle(Color.accentColor)
+                                    Text(result.text)
                                         .font(.caption)
-                                        .lineLimit(1)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 8)
-                                        .background(Color(.secondarySystemBackground))
-                                        .clipShape(RoundedRectangle(cornerRadius: 5))
+                                        .lineLimit(2)
                                 }
-                                .buttonStyle(.plain)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 6)
+                                .background(Color(.secondarySystemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                }
+            } else if !isLoading {
+                // Love templates
+                VStack(spacing: 4) {
+                    ForEach(0..<4, id: \.self) { row in
+                        HStack(spacing: 8) {
+                            ForEach(0..<2, id: \.self) { column in
+                                let index = row * 2 + column
+                                if index < loveTemplates.count {
+                                    Button {
+                                        onSelectResult(loveTemplates[index])
+                                        onClose()
+                                    } label: {
+                                        Text(loveTemplates[index])
+                                            .font(.caption)
+                                            .lineLimit(1)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 8)
+                                            .background(Color(.secondarySystemBackground))
+                                            .clipShape(RoundedRectangle(cornerRadius: 5))
+                                    }
+                                    .buttonStyle(.plain)
+                                }
                             }
                         }
                     }
                 }
+                .padding(.horizontal, 8)
             }
-            .padding(.horizontal, 8)
 
             Spacer(minLength: 0)
         }
@@ -222,5 +299,31 @@ struct SuperTalkPanelView: View {
         let target = cursor + delta
         guard target >= 0, target <= content.count else { return }
         cursor = target
+    }
+
+    // MARK: - DeepSeek polishing
+
+    private func polish() {
+        guard !content.isEmpty else { return }
+        isLoading = true
+        errorMessage = nil
+        Task {
+            do {
+                let results = try await APIService.shared.generateSuperTalk(
+                    content: content,
+                    identity: selectedIdentity,
+                    count: 4
+                )
+                await MainActor.run {
+                    polishResults = results
+                    isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = (error as? APIError)?.errorDescription ?? error.localizedDescription
+                    isLoading = false
+                }
+            }
+        }
     }
 }

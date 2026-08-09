@@ -34,6 +34,7 @@ final class ChineseInputController: ObservableObject {
     enum Panel: String, Identifiable {
         case helpReply
         case superTalk
+        case more
 
         var id: String { rawValue }
     }
@@ -129,6 +130,10 @@ final class ChineseInputController: ObservableObject {
 
     func showSuperTalk() {
         activePanel = .superTalk
+    }
+
+    func showMore() {
+        activePanel = .more
     }
 
     func closePanel() {

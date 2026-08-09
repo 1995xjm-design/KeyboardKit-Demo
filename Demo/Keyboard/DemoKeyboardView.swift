@@ -115,9 +115,9 @@ private extension DemoKeyboardView {
             }
 
             Button {
-                chinese.showSuperTalk()
+                chinese.showMore()
             } label: {
-                Text(LKString("超会说", "Super Talk"))
+                Text(LKString("更多", "More"))
                     .font(.subheadline)
             }
 
@@ -201,6 +201,21 @@ private extension DemoKeyboardView {
                 onClose: { chinese.closePanel() },
                 onSelectResult: { text in
                     insertText(text)
+                    chinese.closePanel()
+                }
+            )
+        case .more:
+            MoreOptionsPanelView(
+                onClose: { chinese.closePanel() },
+                onToggleSymbolKeyboard: {
+                    chinese.toggleSymbolKeyboard()
+                    chinese.closePanel()
+                },
+                onPasteFromClipboard: {
+                    guard controller.hasFullAccess else { return }
+                    if let pasted = UIPasteboard.general.string {
+                        insertText(pasted)
+                    }
                     chinese.closePanel()
                 }
             )

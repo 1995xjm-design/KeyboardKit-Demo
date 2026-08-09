@@ -14,6 +14,14 @@
 		A9CC00000000000000000204 /* SymbolKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000104 /* SymbolKeyboardView.swift */; };
 		A9CC00000000000000000205 /* HelpReplyPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000105 /* HelpReplyPanelView.swift */; };
 		A9CC00000000000000000206 /* SuperTalkPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000106 /* SuperTalkPanelView.swift */; };
+		A9CC0000000000000000020E /* MoreOptionsPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000110 /* MoreOptionsPanelView.swift */; };
+		A9CC00000000000000000207 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000107 /* Constants.swift */; };
+		A9CC00000000000000000208 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000107 /* Constants.swift */; };
+		A9CC00000000000000000209 /* ChatRole.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000108 /* ChatRole.swift */; };
+		A9CC0000000000000000020A /* ReplyStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000109 /* ReplyStyle.swift */; };
+		A9CC0000000000000000020B /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC0000000000000000010A /* UserPreferences.swift */; };
+		A9CC0000000000000000020C /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC0000000000000000010B /* StorageService.swift */; };
+		A9CC0000000000000000020D /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC0000000000000000010C /* APIService.swift */; };
 		A90FB5922EB88D1F00D95EDE /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = A90FB5912EB88D1F00D95EDE /* KeyboardKit */; };
 		A90FB59A2EB9194600D95EDE /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = A90FB5992EB9194600D95EDE /* KeyboardKit */; };
 		A921152625D58A94003510D9 /* DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A921152525D58A94003510D9 /* DemoApp.swift */; };
@@ -76,6 +84,13 @@
 		A9CC00000000000000000104 /* SymbolKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolKeyboardView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000105 /* HelpReplyPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpReplyPanelView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000106 /* SuperTalkPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperTalkPanelView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000110 /* MoreOptionsPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptionsPanelView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000107 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000108 /* ChatRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ChatRole.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000109 /* ReplyStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ReplyStyle.swift; sourceTree = "<group>"; };
+		A9CC0000000000000000010A /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/UserPreferences.swift; sourceTree = "<group>"; };
+		A9CC0000000000000000010B /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/StorageService.swift; sourceTree = "<group>"; };
+		A9CC0000000000000000010C /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/APIService.swift; sourceTree = "<group>"; };
 		A921152225D58A94003510D9 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A921152525D58A94003510D9 /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		A921152725D58A94003510D9 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
@@ -154,6 +169,7 @@
 				A95A567C2D7081430036FAAD /* License */,
 				A9DBBFDA2CF3C519007B48F4 /* Localization */,
 				A921155925D58E39003510D9 /* Supporting Files */,
+				A9CC0000000000000000010D /* Shared */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -235,6 +251,7 @@
 				A9CC00000000000000000104 /* SymbolKeyboardView.swift */,
 				A9CC00000000000000000105 /* HelpReplyPanelView.swift */,
 				A9CC00000000000000000106 /* SuperTalkPanelView.swift */,
+				A9CC00000000000000000110 /* MoreOptionsPanelView.swift */,
 			);
 			path = Keyboard;
 			sourceTree = "<group>";
@@ -254,6 +271,35 @@
 			);
 			path = Localization;
 			sourceTree = "<group>";
+		};
+	 /* Shared */ = {
+		 = PBXGroup;
+		 = (
+			 /* Constants.swift */,
+			 /* Models */,
+			 /* Services */,
+			);
+		 = Shared;
+		 = "<group>";
+		};
+	 /* Models */ = {
+		 = PBXGroup;
+		 = (
+			 /* ChatRole.swift */,
+			 /* ReplyStyle.swift */,
+			 /* UserPreferences.swift */,
+			);
+		 = Models;
+		 = "<group>";
+		};
+	 /* Services */ = {
+		 = PBXGroup;
+		 = (
+			 /* StorageService.swift */,
+			 /* APIService.swift */,
+			);
+		 = Services;
+		 = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -377,6 +423,7 @@
 				A921152825D58A94003510D9 /* HomeScreen.swift in Sources */,
 				A921152625D58A94003510D9 /* DemoApp.swift in Sources */,
 				A96F413B2C73F2FE007344D2 /* KeyboardApp+Demo.swift in Sources */,
+				A9CC00000000000000000208 /* Constants.swift in Sources */,
 				A9A58B812CF4C0EF004DC7BE /* StandardSpeechRecognizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -402,6 +449,13 @@
 				A9CC00000000000000000204 /* SymbolKeyboardView.swift in Sources */,
 				A9CC00000000000000000205 /* HelpReplyPanelView.swift in Sources */,
 				A9CC00000000000000000206 /* SuperTalkPanelView.swift in Sources */,
+				A9CC00000000000000000207 /* Constants.swift in Sources */,
+				A9CC00000000000000000209 /* ChatRole.swift in Sources */,
+				A9CC0000000000000000020A /* ReplyStyle.swift in Sources */,
+				A9CC0000000000000000020B /* UserPreferences.swift in Sources */,
+				A9CC0000000000000000020C /* StorageService.swift in Sources */,
+				A9CC0000000000000000020D /* APIService.swift in Sources */,
+				A9CC0000000000000000020E /* MoreOptionsPanelView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
