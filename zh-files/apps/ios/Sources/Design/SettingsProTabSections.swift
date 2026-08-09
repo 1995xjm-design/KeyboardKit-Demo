@@ -570,8 +570,8 @@ extension SettingsProTab {
             }
 
             Section("Direct node features") {
-                SettingsDetailRow("Device", value: String(localized: "Info and status"))
-                SettingsDetailRow("Notifications", value: String(localized: "While app is active"))
+                SettingsDetailRow("Device", value: "Info and status")
+                SettingsDetailRow("Notifications", value: "While app is active")
             }
         }
     }

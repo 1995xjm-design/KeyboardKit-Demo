@@ -1296,7 +1296,7 @@ extension SettingsProTab {
                 title: pendingApproval.allowsAllowAlways
                     ? .localized("Permission can be saved")
                     : .localized("One-time approval"),
-                detail: String(localized: "Gateway request"),
+                detail: "Gateway request",
                 priority: pendingApproval.allowsAllowAlways
                     ? .localized("Medium")
                     : .localized("Review"),

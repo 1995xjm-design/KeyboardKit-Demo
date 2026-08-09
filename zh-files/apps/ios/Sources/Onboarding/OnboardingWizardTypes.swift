@@ -26,7 +26,7 @@ enum OnboardingStep: Int, CaseIterable {
         case .welcome: "Connect Gateway"
         case .mode: "Gateway Setup"
         case .connect: "Gateway Details"
-        case .auth: String(localized: "Gateway Status")
+        case .auth: "Gateway Status"
         case .success: "Connected"
         }
     }

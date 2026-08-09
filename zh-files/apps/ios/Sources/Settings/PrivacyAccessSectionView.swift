@@ -66,7 +66,7 @@ struct PrivacyAccessSectionView: View {
             detail: LocalizedStringResource("Search and add contacts from the assistant."),
             grant: grant,
             statusLabel: grant == .limited ? LocalizedStringResource("Limited") : nil,
-            actionTitle: self.standardActionTitle(for: grant, limitedTitle: String(localized: "Manage Access")),
+            actionTitle: self.standardActionTitle(for: grant, limitedTitle: LocalizedStringResource("Manage Access")),
             action: self.standardAction(identifier: "contacts", for: grant) {
                 await self.requestContacts()
             })
@@ -82,7 +82,7 @@ struct PrivacyAccessSectionView: View {
                 : LocalizedStringResource("Read recent photos for the assistant."),
             grant: grant,
             statusLabel: grant == .limited ? LocalizedStringResource("Limited") : nil,
-            actionTitle: self.standardActionTitle(for: grant, limitedTitle: String(localized: "Manage Access")),
+            actionTitle: self.standardActionTitle(for: grant, limitedTitle: LocalizedStringResource("Manage Access")),
             action: self.standardAction(identifier: "photos", for: grant) {
                 await self.updatePhotosStatus(PhotoLibraryAccess.requestReadWrite())
             })
