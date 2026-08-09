@@ -1,11 +1,11 @@
-name: Build unsigned OpenClaw iOS IPA (zh-Hans)
+name: Build unsigned OpenClaw iOS IPA (official + zh lang picker)
 
 on:
   push:
     branches: [main]
     paths:
       - '.github/workflows/build-deepclaw-ipa.yml'
-      - 'deepclaw-zh.patch'
+      - 'zh-files/**'
   workflow_dispatch:
 
 jobs:
@@ -17,12 +17,33 @@ jobs:
       - name: Checkout CI repo
         uses: actions/checkout@v4
 
-      - name: Clone DeepClaw source
-        run: git clone --depth 1 https://github.com/deepgram/dglabs-deepclaw.git DeepClaw
+      - name: Clone official OpenClaw source
+        run: git clone --depth 1 https://github.com/openclaw/openclaw.git OpenClaw
 
-      - name: Apply zh-Hans localization patch
-        working-directory: DeepClaw
-        run: git apply --verbose ../deepclaw-zh.patch
+      - name: Generate Version.xcconfig
+        working-directory: OpenClaw/apps/ios
+        run: |
+          mkdir -p build
+          cat > build/Version.xcconfig <<'EOF'
+          OPENCLAW_MARKETING_VERSION = 2026.8.0
+          OPENCLAW_BUILD_VERSION = 1
+          OPENCLAW_IOS_VERSION = 2026.8.0
+          OPENCLAW_GIT_COMMIT = ci-build
+          OPENCLAW_BUILD_TIMESTAMP = 2026-08-09T00:00:00Z
+          EOF
+
+      - name: Generate Swift sources filelist
+        working-directory: OpenClaw/apps/ios
+        run: find Sources ShareExtension ActivityWidget WatchApp -name '*.swift' -print | sort > SwiftSources.input.xcfilelist
+
+      - name: Apply language-picker files
+        working-directory: OpenClaw
+        run: |
+          cp -R ../zh-files/apps/ios/* apps/ios/
+          test -f apps/ios/Sources/Design/AppLanguagePreference.swift
+          grep -q "Restart the app to apply the language change" apps/ios/Sources/Design/SettingsProTabSections.swift
+          grep -q "AppLanguagePreference.applySavedPreference" apps/ios/Sources/OpenClawApp.swift
+          grep -c "zh-CN" apps/ios/Resources/Localizable.xcstrings
 
       - name: Show toolchain
         run: |
@@ -30,15 +51,15 @@ jobs:
           xcodebuild -version
           swift --version
 
-      - name: Install XcodeGen / SwiftLint / SwiftFormat
-        run: brew install xcodegen swiftlint swiftformat
+      - name: Install XcodeGen
+        run: brew install xcodegen
 
       - name: Generate iOS project
-        working-directory: DeepClaw/apps/ios
+        working-directory: OpenClaw/apps/ios
         run: xcodegen generate
 
       - name: Build archive (unsigned, Release)
-        working-directory: DeepClaw/apps/ios
+        working-directory: OpenClaw/apps/ios
         run: |
           xcodebuild archive \
             -project OpenClaw.xcodeproj \
@@ -51,7 +72,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Package IPA
-        working-directory: DeepClaw/apps/ios
+        working-directory: OpenClaw/apps/ios
         run: |
           mkdir -p build/ipa
           cd build/OpenClaw.xcarchive/Products/Applications
@@ -63,11 +84,11 @@ jobs:
       - name: Commit IPA back to CI repo
         run: |
           mkdir -p dist
-          cp DeepClaw/apps/ios/build/ipa/OpenClaw.ipa dist/
+          cp OpenClaw/apps/ios/build/ipa/OpenClaw.ipa dist/
           git config user.name "CI Bot"
           git config user.email "actions@github.com"
           git add dist/OpenClaw.ipa
-          git commit -m "build: OpenClaw zh-Hans IPA [skip ci]" || echo "no changes"
+          git commit -m "build: OpenClaw official zh IPA [skip ci]" || echo "no changes"
           git push
 
       - name: Upload artifact (fallback)
@@ -75,5 +96,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OpenClaw-iOS-zh-unsigned
-          path: DeepClaw/apps/ios/build/ipa/OpenClaw.ipa
+          path: OpenClaw/apps/ios/build/ipa/OpenClaw.ipa
           retention-days: 7
