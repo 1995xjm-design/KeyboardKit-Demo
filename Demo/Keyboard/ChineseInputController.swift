@@ -51,6 +51,9 @@ final class ChineseInputController: ObservableObject {
 
     var hasActiveInput: Bool { !pinyinBuffer.isEmpty }
 
+    /// Whether T9 digit composition is active.
+    var t9HasActiveInput: Bool { !t9Buffer.isEmpty }
+
     var isKeyboardReplaced: Bool { activePanel != nil }
 
     // MARK: - Character handling
@@ -170,7 +173,7 @@ final class ChineseInputController: ObservableObject {
     /// (the first candidate when available, otherwise a space).
     func handleT9Space() -> String? {
         if !t9Buffer.isEmpty, let first = candidates.first {
-            return select(first)
+            return selectT9(first)
         }
         return " "
     }
@@ -179,6 +182,34 @@ final class ChineseInputController: ObservableObject {
     func clearT9() {
         t9Buffer = ""
         candidates = []
+    }
+
+    /// Selects a T9 candidate, clearing the digit buffer.
+    @discardableResult
+    func selectT9(_ candidate: String) -> String {
+        t9Buffer = ""
+        candidates = []
+        return candidate
+    }
+
+    /// Handles a punctuation key in T9 mode. Commits the
+    /// current candidate first (like iOS nine-grid), then
+    /// returns the punctuation for insertion.
+    func handleT9Punctuation(_ punctuation: String) -> String {
+        if !t9Buffer.isEmpty, let first = candidates.first {
+            return selectT9(first) + punctuation
+        }
+        return punctuation
+    }
+
+    /// Handles the confirm (search) key in T9 mode. Returns
+    /// the committed text, or `nil` when nothing to commit.
+    func handleT9Confirm() -> String? {
+        guard !t9Buffer.isEmpty else { return nil }
+        let output = candidates.first ?? t9Buffer
+        t9Buffer = ""
+        candidates = []
+        return output
     }
 
     private func refreshT9Candidates() {

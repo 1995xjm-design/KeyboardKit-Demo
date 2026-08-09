@@ -80,12 +80,16 @@ private extension DemoKeyboardView {
     // Native-style top bar: candidates + mode switches + AI entry.
     var topFunctionalBar: some View {
         HStack(spacing: 6) {
-            if chinese.hasActiveInput {
+            if chinese.hasActiveInput || chinese.t9HasActiveInput {
                 CandidateBarView(
-                    pinyin: chinese.pinyinBuffer,
+                    pinyin: chinese.isT9Mode ? chinese.t9Buffer : chinese.pinyinBuffer,
                     candidates: chinese.candidates
                 ) { candidate in
-                    controller.textDocumentProxy.insertText(chinese.select(candidate))
+                    if chinese.isT9Mode {
+                        controller.textDocumentProxy.insertText(chinese.selectT9(candidate))
+                    } else {
+                        controller.textDocumentProxy.insertText(chinese.select(candidate))
+                    }
                 }
             } else if !chinese.aiCandidates.isEmpty {
                 AICandidateBarView(candidates: chinese.aiCandidates) { text in
@@ -171,8 +175,17 @@ private extension DemoKeyboardView {
                         insertText(output)
                     }
                 },
+                onPunctuation: { punctuation in
+                    insertText(chinese.handleT9Punctuation(punctuation))
+                },
+                onSymbol1: { insertText("@") },
                 onSymbols: { chinese.toggleSymbolKeyboard() },
-                onSwitchToQwerty: { chinese.toggleT9Mode() },
+                onNumeric: { chinese.toggleSymbolKeyboard() },
+                onConfirm: {
+                    if let output = chinese.handleT9Confirm() {
+                        insertText(output)
+                    }
+                },
                 onToggleMode: { toggleInputMode() },
                 onSpace: {
                     if let output = chinese.handleT9Space() {
@@ -187,7 +200,9 @@ private extension DemoKeyboardView {
                         deleteBackward()
                     }
                 },
-                onReturn: { insertText("\n") }
+                onReturn: { insertText("\n") },
+                onDictation: { services.actionHandler.handle(.dictation) },
+                onLocaleSwitch: { toggleInputMode() }
             )
         } else {
             mainKeyboard
