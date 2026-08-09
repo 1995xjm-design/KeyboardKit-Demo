@@ -1500,25 +1500,6 @@ extension SettingsProTab {
                     }
                     .font(OpenClawType.body)
                 }
-                if self.talkProviderSelectionRaw == TalkModeProviderSelection.doubao.rawValue {
-                    Section("Doubao Credentials") {
-                        TextField("App ID", text: self.doubaoAppIDBinding)
-                            .font(OpenClawType.body)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                        SecureField("Access Token", text: self.doubaoTokenBinding)
-                            .font(OpenClawType.body)
-                        TextField("Voice Type", text: self.doubaoVoiceTypeBinding)
-                            .font(OpenClawType.body)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                        if !DoubaoConfig.isConfigured {
-                            Text("Enter your Volcano Engine speech App ID and Access Token to use Doubao TTS and ASR.")
-                                .font(OpenClawType.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
                 SettingsDetailRow(
                     "Voice Mode",
                     value: .localized(self.appModel.talkMode.gatewayTalkVoiceModeTitle))
@@ -1532,6 +1513,25 @@ extension SettingsProTab {
                     "Transport",
                     value: .localized(self.appModel.talkMode.gatewayTalkTransportLabel))
                 SettingsDetailRow("API Key", value: .verbatim(self.talkApiKeyStatus))
+            }
+            if self.talkProviderSelectionRaw == TalkModeProviderSelection.doubao.rawValue {
+                Section("Doubao Credentials") {
+                    TextField("App ID", text: self.doubaoAppIDBinding)
+                        .font(OpenClawType.body)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    SecureField("Access Token", text: self.doubaoTokenBinding)
+                        .font(OpenClawType.body)
+                    TextField("Voice Type", text: self.doubaoVoiceTypeBinding)
+                        .font(OpenClawType.body)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    if !DoubaoConfig.isConfigured {
+                        Text("Enter your Volcano Engine speech App ID and Access Token to use Doubao TTS and ASR.")
+                            .font(OpenClawType.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
             }
         }
     }
