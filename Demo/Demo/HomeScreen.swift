@@ -3,19 +3,20 @@
 //  KeyboardKit
 //
 //  Created by Daniel Saidi on 2021-02-11.
-//  Copyright ? 2021-2025 Daniel Saidi. All rights reserved.
+//  Copyright © 2021-2025 Daniel Saidi. All rights reserved.
 //
 
 import KeyboardKit
 import SwiftUI
 
-/// The main demo app screen, restyled with the LoveKeyboard
-/// Chinese look: an app header, a setup guide and text fields
-/// that let you test the keyboard.
+/// This is the main demo app screen.
 ///
-/// All user-visible texts use catalog keys (see
-/// `Localizable.xcstrings`) so the string-catalog build step
-/// can resolve them at runtime.
+/// This view uses a KeyboardKit Pro `HomeScreen` to present
+/// keyboard status and settings links with some adjustments.
+///
+/// See ``DemoApp`` for important, demo-specific information
+/// on why the in-app keyboard settings aren't synced to the
+/// keyboards by default, and how you can enable this.
 struct HomeScreen: View {
 
     let app = KeyboardApp.keyboardKitDemo
@@ -25,106 +26,74 @@ struct HomeScreen: View {
     @State var textMultiline = ""
     @State var textNumberPad = ""
     @State var textURL = ""
+    @State var textWebSearch = ""
+
+    @Environment(\.openURL) var openURL
+
+    @EnvironmentObject var dictationContext: DictationContext
+    @EnvironmentObject var keyboardContext: KeyboardContext
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    headerSection
-                    setupGuideSection
-                    textFieldSection
+            KeyboardApp.HomeScreen(
+                app: app,
+                appIcon: Image(.icon),
+                header: {
+                    Text("Demo.NotCodeSignedWarning")
+                        .listRowBackground(Color.yellow)
+                        .multilineTextAlignment(.center)
+                },
+                footer: {
+                    Section("Section.TextFields") {
+                        TextField("TextField.Plain", text: $text)
+                            .keyboardType(.default)
+                        TextField("TextField.Email", text: $textEmail)
+                            .keyboardType(.emailAddress)
+                        TextField("TextField.NumberPad", text: $textNumberPad)
+                            .keyboardType(.numberPad)
+                        TextField("TextField.URL", text: $textURL)
+                            .keyboardType(.URL)
+                        TextField("TextField.WebSearch", text: $textWebSearch)
+                            .keyboardType(.webSearch)
+                        TextField("TextField.Multiline", text: $textMultiline, axis: .vertical)
+                            .lineLimit(4, reservesSpace: true)
+                            .keyboardType(.default)
+                    }
                 }
-                .padding()
-            }
-            .navigationTitle("Home.AppName")
+            )
+            .navigationTitle(app.name)
         }
+        .keyboardAppHomeScreenStyle(.init(
+            appIconSize: 120,
+            appIconCornerRadius: 27
+        ))
+//        .keyboardAppHomeScreenVisibility(.init(
+//            settingsSectionFonts: true,
+//            settingsSectionThemes: true,
+//            settingsSectionExperiments: true,
+//        ))
+        .keyboardDictation(
+            speechRecognizer: .standard
+        )
         .navigationViewStyle(.stack)
     }
 }
 
-private extension HomeScreen {
-
-    /// App header in LoveKeyboard style.
-    var headerSection: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "keyboard")
-                .font(.system(size: 60))
-                .foregroundColor(.pink)
-            Text("Home.AppName")
-                .font(.title)
-                .fontWeight(.bold)
-            Text("Home.Slogan")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-        }
-        .padding(.top, 30)
-    }
-
-    /// Step-by-step setup guide.
-    var setupGuideSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Home.SetupGuideTitle")
-                .font(.headline)
-
-            SetupStepView(step: "1", title: "Home.Step1")
-            SetupStepView(step: "2", title: "Home.Step2")
-            SetupStepView(step: "3", title: "Home.Step3")
-            SetupStepView(step: "4", title: "Home.Step4")
-
-            Text("Home.Tip")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(12)
-    }
-
-    /// Text fields to test the keyboard.
-    var textFieldSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Home.TestFieldsTitle")
-                .font(.headline)
-
-            TextField("Home.FieldPlain", text: $text)
-                .keyboardType(.default)
-            TextField("Home.FieldEmail", text: $textEmail)
-                .keyboardType(.emailAddress)
-            TextField("Home.FieldNumber", text: $textNumberPad)
-                .keyboardType(.numberPad)
-            TextField("Home.FieldURL", text: $textURL)
-                .keyboardType(.URL)
-            TextField("Home.FieldMultiline", text: $textMultiline, axis: .vertical)
-                .lineLimit(3, reservesSpace: true)
-                .keyboardType(.default)
-        }
-        .textFieldStyle(.roundedBorder)
-    }
-}
-
-/// A single setup-guide step row.
-struct SetupStepView: View {
-
-    let step: String
-    let title: LocalizedStringKey
-
-    var body: some View {
-        HStack(spacing: 12) {
-            Text(step)
-                .font(.caption)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-                .frame(width: 24, height: 24)
-                .background(Color.pink)
-                .clipShape(Circle())
-            Text(title)
-                .font(.subheadline)
-        }
+extension HomeScreen {
+    
+    func dictationScreen() -> some View {
+        Dictation.Screen(
+            titleView: { EmptyView() },
+            visualizer: { Dictation.BarVisualizer(isAnimating: $0) },
+            doneButton: { action in
+                Button("Button.Done", action: action)
+                    .buttonStyle(.borderedProminent)
+            }
+        )
     }
 }
 
 #Preview {
-
+    
     HomeScreen()
 }

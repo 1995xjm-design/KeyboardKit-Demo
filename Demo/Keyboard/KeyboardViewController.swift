@@ -96,8 +96,6 @@ private extension KeyboardViewController {
         /// 💡 Set up which locale to use to present locales.
         state.keyboardContext.localePresentationLocale = .current
 
-        /// The keyboard starts in Chinese (pinyin) input mode.
-        state.keyboardContext.locale = Locale(identifier: "zh-Hans")
 
         /// 💡 Configure the space key's behavior and action.
         state.keyboardContext.settings.spacebarLongPressBehavior = .moveInputCursor

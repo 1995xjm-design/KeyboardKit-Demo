@@ -33,7 +33,7 @@ extension KeyboardApp {
             name: "KeyboardKit Demo",
             // licenseKey: "299B33C6-061C-4285-8189-90525BCAF098",  // Sets up KeyboardKit Pro!
             appGroupId: "group.com.keyboardkit.demo",               // Sets up App Group data sync
-            locales: [.english],                                      // Only English (Chinese uses the custom pinyin mode)
+            locales: .keyboardKitSupported,                         // Sets up the enabled locales
             autocomplete: .init(                                    // Sets up custom autocomplete
                 // nextWordPredictionRequest: .claude(apiKey: "")   // Sets up AI-based prediction (add your own key)
             ),
