@@ -88,19 +88,6 @@ struct HomeScreen: View {
             appIconSize: 120,
             appIconCornerRadius: 27
         ))
-        .keyboardAppHomeScreenVisibility(.init(
-            settingsSectionKeyboard: false,
-            settingsSectionLanguages: false,
-            settingsSectionAutocomplete: false,
-            settingsSectionClipboard: false,
-            settingsSectionDictation: false,
-            settingsSectionFeedback: false,
-            settingsSectionFonts: false,
-            settingsSectionThemes: false,
-            settingsSectionExperiments: false,
-            accessibilitySection: false,
-            keyboardStatusSection: false
-        ))
 //        .keyboardAppHomeScreenVisibility(.init(
 //            settingsSectionFonts: true,
 //            settingsSectionThemes: true,

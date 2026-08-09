@@ -37,7 +37,8 @@ class APIService {
         let reply = try await chat(
             [.system("You are a connectivity test. Reply with exactly: OK"), .user("ping")],
             temperature: 0,
-            maxTokens: 8
+            maxTokens: 8,
+            useJSONMode: false
         )
         return reply
     }
@@ -92,16 +93,26 @@ class APIService {
         return Self.parsePolishResults(raw, count: count)
     }
 
+    /// Builds the chat completions endpoint from the configured
+    /// base URL, tolerating trailing slashes and full endpoints.
+    private static var chatEndpointURL: URL? {
+        var base = DeepSeekConfig.baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        while base.hasSuffix("/") { base.removeLast() }
+        let path = base.hasSuffix("/chat/completions") ? base : base + "/chat/completions"
+        return URL(string: path)
+    }
+
     // MARK: - DeepSeek 聊天接口
     private func chat(
         _ messages: [ChatMessage],
         temperature: Double = 1.0,
-        maxTokens: Int = 1024
+        maxTokens: Int = 1024,
+        useJSONMode: Bool = true
     ) async throws -> String {
         let key = DeepSeekConfig.apiKey
         guard !key.isEmpty else { throw APIError.missingAPIKey }
 
-        guard let url = URL(string: DeepSeekConfig.baseURL + "/chat/completions") else {
+        guard let url = Self.chatEndpointURL else {
             throw APIError.invalidURL
         }
 
@@ -111,13 +122,15 @@ class APIService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
 
-        let body: [String: Any] = [
+        var body: [String: Any] = [
             "model": DeepSeekConfig.model,
             "messages": messages.map { ["role": $0.role, "content": $0.content] },
             "temperature": temperature,
-            "max_tokens": maxTokens,
-            "response_format": ["type": "json_object"]
+            "max_tokens": maxTokens
         ]
+        if useJSONMode {
+            body["response_format"] = ["type": "json_object"]
+        }
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)

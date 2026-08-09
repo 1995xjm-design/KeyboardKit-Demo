@@ -73,7 +73,8 @@ class APIKeyStore {
         guard apiKey.isEmpty,
               let raw = UIPasteboard.general.string,
               let data = raw.data(using: .utf8),
-              let payload = try? JSONSerialization.jsonObject(with: data) as? [String: String]
+              let payload = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+              payload["kkApiConfig"] == "true"
         else { return }
         if let value = payload["baseURL"], !value.isEmpty { baseURL = value }
         if let value = payload["apiKey"], !value.isEmpty { apiKey = value }
@@ -85,6 +86,7 @@ class APIKeyStore {
     func writePasteboardFallback() {
         #if canImport(UIKit)
         let payload: [String: String] = [
+            "kkApiConfig": "true",
             "baseURL": baseURL,
             "apiKey": apiKey,
             "model": model

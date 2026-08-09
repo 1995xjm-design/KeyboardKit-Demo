@@ -20,6 +20,7 @@ enum DemoSheet: String, Identifiable {
     case fullDocumentReader
     case apiSettings
     case keyboardSettings
+    case localeSettings
     case themeSettings
 
     var id: String { rawValue }

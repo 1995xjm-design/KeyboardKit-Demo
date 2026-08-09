@@ -36,7 +36,7 @@ struct APISettingsView: View {
             } header: {
                 Text("接口配置")
             } footer: {
-                Text("App 与键盘共用一套接口，默认支持 DeepSeek：https://api.deepseek.com / deepseek-chat")
+                Text("App 与键盘共用一套接口。接口地址只填域名（默认 https://api.deepseek.com），模型默认 deepseek-chat。")
             }
 
             Section {
@@ -106,7 +106,8 @@ struct APISettingsView: View {
             statusMessage = "连接成功：" + reply
         } catch {
             statusIsError = true
-            statusMessage = "连接失败：" + error.localizedDescription
+            let detail = (error as? APIError)?.errorDescription ?? error.localizedDescription
+            statusMessage = "连接失败：" + detail
         }
     }
 }
