@@ -61,7 +61,7 @@ jobs:
       - name: Build archive (unsigned, Release)
         working-directory: OpenClaw/apps/ios
         run: |
-          set -o pipefail
+          set +e
           xcodebuild archive \
             -project OpenClaw.xcodeproj \
             -scheme OpenClaw \
@@ -70,8 +70,22 @@ jobs:
             -archivePath build/OpenClaw.xcarchive \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build/xcodebuild.log
-          exit ${PIPESTATUS[0]}
+            CODE_SIGNING_ALLOWED=NO > build/xcodebuild.log 2>&1
+          status=$?
+          if [ $status -ne 0 ]; then
+            echo "=== ERROR LINES ==="
+            grep -E "error:|The following build commands failed|fatal error|Command .* failed" build/xcodebuild.log | head -n 40
+            echo "=== TAIL ==="
+            tail -n 50 build/xcodebuild.log
+            {
+              grep -E "error:|The following build commands failed|fatal error|Command .* failed" build/xcodebuild.log | head -n 40
+              echo "--- tail ---"
+              tail -n 50 build/xcodebuild.log
+            } | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g; s/:/%3A/g; s/,/%2C/g' | while IFS= read -r line; do
+              echo "::error::$line"
+            done
+            exit $status
+          fi
 
       - name: Package IPA
         working-directory: OpenClaw/apps/ios
