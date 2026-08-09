@@ -86,11 +86,11 @@
 		A9CC00000000000000000106 /* SuperTalkPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperTalkPanelView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000110 /* MoreOptionsPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptionsPanelView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000107 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
-		A9CC00000000000000000108 /* ChatRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ChatRole.swift; sourceTree = "<group>"; };
-		A9CC00000000000000000109 /* ReplyStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ReplyStyle.swift; sourceTree = "<group>"; };
-		A9CC0000000000000000010A /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/UserPreferences.swift; sourceTree = "<group>"; };
-		A9CC0000000000000000010B /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/StorageService.swift; sourceTree = "<group>"; };
-		A9CC0000000000000000010C /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/APIService.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000108 /* ChatRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRole.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000109 /* ReplyStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyStyle.swift; sourceTree = "<group>"; };
+		A9CC0000000000000000010A /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
+		A9CC0000000000000000010B /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
+		A9CC0000000000000000010C /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		A921152225D58A94003510D9 /* Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A921152525D58A94003510D9 /* DemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApp.swift; sourceTree = "<group>"; };
 		A921152725D58A94003510D9 /* HomeScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreen.swift; sourceTree = "<group>"; };
@@ -272,34 +272,34 @@
 			path = Localization;
 			sourceTree = "<group>";
 		};
-	 /* Shared */ = {
-		 = PBXGroup;
-		 = (
-			 /* Constants.swift */,
-			 /* Models */,
-			 /* Services */,
+				A9CC0000000000000000010D /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A9CC00000000000000000107 /* Constants.swift */,
+				A9CC0000000000000000010E /* Models */,
+				A9CC0000000000000000010F /* Services */,
 			);
-		 = Shared;
-		 = "<group>";
+			path = Shared;
+			sourceTree = "<group>";
 		};
-	 /* Models */ = {
-		 = PBXGroup;
-		 = (
-			 /* ChatRole.swift */,
-			 /* ReplyStyle.swift */,
-			 /* UserPreferences.swift */,
+		A9CC0000000000000000010E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A9CC00000000000000000108 /* ChatRole.swift */,
+				A9CC00000000000000000109 /* ReplyStyle.swift */,
+				A9CC0000000000000000010A /* UserPreferences.swift */,
 			);
-		 = Models;
-		 = "<group>";
+			path = Models;
+			sourceTree = "<group>";
 		};
-	 /* Services */ = {
-		 = PBXGroup;
-		 = (
-			 /* StorageService.swift */,
-			 /* APIService.swift */,
+		A9CC0000000000000000010F /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A9CC0000000000000000010B /* StorageService.swift */,
+				A9CC0000000000000000010C /* APIService.swift */,
 			);
-		 = Services;
-		 = "<group>";
+			path = Services;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
