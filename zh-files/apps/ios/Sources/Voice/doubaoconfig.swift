@@ -16,6 +16,7 @@ import Foundation
 enum DoubaoConfig {
     static let appIDKey = "talk.doubao.appid"
     static let tokenKey = "talk.doubao.token"
+    static let apiKeyKey = "talk.doubao.apiKey"
     static let voiceTypeKey = "talk.doubao.voiceType"
     static let asrLanguageKey = "talk.doubao.asrLanguage"
 
@@ -61,6 +62,12 @@ enum DoubaoConfig {
         set { UserDefaults.standard.set(newValue, forKey: tokenKey) }
     }
 
+    /// Volcano Ark API Key (single-key mode, X-Api-App-Key auth).
+    static var apiKey: String {
+        get { UserDefaults.standard.string(forKey: apiKeyKey) ?? "" }
+        set { UserDefaults.standard.set(newValue, forKey: apiKeyKey) }
+    }
+
     static var voiceType: String {
         get {
             let v = UserDefaults.standard.string(forKey: voiceTypeKey) ?? ""
@@ -77,8 +84,9 @@ enum DoubaoConfig {
         set { UserDefaults.standard.set(newValue, forKey: asrLanguageKey) }
     }
 
-    /// Whether both credentials are present.
+    /// Whether any credential mode is configured: Ark API Key alone,
+    /// or the legacy App ID + Access Token pair.
     static var isConfigured: Bool {
-        !appID.isEmpty && !token.isEmpty
+        !apiKey.isEmpty || (!appID.isEmpty && !token.isEmpty)
     }
 }

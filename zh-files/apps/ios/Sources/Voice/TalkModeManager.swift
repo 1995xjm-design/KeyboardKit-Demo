@@ -1738,7 +1738,8 @@ final class TalkModeManager: NSObject {
         guard DoubaoConfig.isConfigured else { return }
         let doubao = DoubaoASRClient(
             appID: DoubaoConfig.appID,
-            token: DoubaoConfig.token)
+            token: DoubaoConfig.token,
+            apiKey: DoubaoConfig.apiKey)
         self.doubaoASR = doubao
         doubao.onPartial = { [weak self] text in
             guard let self else { return }
