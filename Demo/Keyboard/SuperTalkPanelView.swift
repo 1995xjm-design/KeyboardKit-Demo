@@ -54,6 +54,29 @@ struct SuperTalkPanelView: View {
         return String(content[..<index]) + "|" + String(content[index...])
     }
 
+    private var header: some View {
+        HStack {
+            Button {
+                onClose()
+            } label: {
+                Text(verbatim: "×")
+                    .font(.title)
+                    .frame(width: 40, height: 40)
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            Text(LKString("超会说", "Super Talk"))
+                .font(.headline)
+
+            Spacer()
+
+            Color.clear.frame(width: 40, height: 40)
+        }
+        .padding(.horizontal, 8)
+    }
+
     var body: some View {
         VStack(spacing: 6) {
             header

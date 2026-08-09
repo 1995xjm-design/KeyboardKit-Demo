@@ -103,7 +103,7 @@ struct HelpReplyPanelView: View {
                         ? Color(.tertiarySystemBackground)
                         : Color.accentColor.opacity(0.85)
                 )
-                .foregroundStyle((inputText.isEmpty || isLoading) ? .secondary : .white)
+                .foregroundStyle((inputText.isEmpty || isLoading) ? .secondary : Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             .buttonStyle(.plain)

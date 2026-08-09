@@ -21,7 +21,7 @@ struct AppConstants {
 }
 
 // MARK: - 键盘布局常量
-struct KeyboardLayout {
+struct LKKeyboardLayout {
     static let keyHeight: CGFloat = 42
     static let keySpacing: CGFloat = 6
     static let rowSpacing: CGFloat = 10
