@@ -210,7 +210,7 @@ struct SuperTalkPanelView: View {
                             ? Color(.tertiarySystemBackground)
                             : Color.accentColor.opacity(0.85)
                     )
-                    .foregroundStyle((content.isEmpty || isLoading) ? .secondary : .white)
+                    .foregroundStyle((content.isEmpty || isLoading) ? .secondary : Color.white)
                     .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
