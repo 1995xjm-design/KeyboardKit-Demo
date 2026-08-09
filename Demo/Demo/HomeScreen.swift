@@ -12,6 +12,10 @@ import SwiftUI
 /// The main demo app screen, restyled with the LoveKeyboard
 /// Chinese look: an app header, a setup guide and text fields
 /// that let you test the keyboard.
+///
+/// NOTE: All Chinese texts use `Text(verbatim:)` / `String`
+/// values on purpose, so the string-catalog build step cannot
+/// strip them from the binary.
 struct HomeScreen: View {
 
     let app = KeyboardApp.keyboardKitDemo
@@ -32,7 +36,7 @@ struct HomeScreen: View {
                 }
                 .padding()
             }
-            .navigationTitle("中文键盘")
+            .navigationTitle(Text(verbatim: "中文键盘"))
         }
         .navigationViewStyle(.stack)
     }
@@ -46,10 +50,10 @@ private extension HomeScreen {
             Image(systemName: "keyboard")
                 .font(.system(size: 60))
                 .foregroundColor(.pink)
-            Text("中文键盘")
+            Text(verbatim: "中文键盘")
                 .font(.title)
                 .fontWeight(.bold)
-            Text("中英输入 · AI 帮你回 · 超会说")
+            Text(verbatim: "中英输入 · AI 帮你回 · 超会说")
                 .font(.subheadline)
                 .foregroundColor(.gray)
         }
@@ -59,7 +63,7 @@ private extension HomeScreen {
     /// Step-by-step setup guide.
     var setupGuideSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("设置指南")
+            Text(verbatim: "设置指南")
                 .font(.headline)
 
             SetupStepView(step: "1", title: "打开「设置」")
@@ -67,7 +71,7 @@ private extension HomeScreen {
             SetupStepView(step: "3", title: "添加新键盘，选择 KeyboardKit")
             SetupStepView(step: "4", title: "打开「允许完全访问」")
 
-            Text("提示：键盘默认中文输入，点「中/EN」切换英文。")
+            Text(verbatim: "提示：键盘默认中文输入，点「中/EN」切换英文。")
                 .font(.footnote)
                 .foregroundColor(.secondary)
         }
@@ -80,18 +84,18 @@ private extension HomeScreen {
     /// Text fields to test the keyboard.
     var textFieldSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("输入测试")
+            Text(verbatim: "输入测试")
                 .font(.headline)
 
-            TextField("普通输入", text: $text)
+            TextField(String("普通输入"), text: $text)
                 .keyboardType(.default)
-            TextField("邮箱", text: $textEmail)
+            TextField(String("邮箱"), text: $textEmail)
                 .keyboardType(.emailAddress)
-            TextField("数字键盘", text: $textNumberPad)
+            TextField(String("数字键盘"), text: $textNumberPad)
                 .keyboardType(.numberPad)
-            TextField("网址", text: $textURL)
+            TextField(String("网址"), text: $textURL)
                 .keyboardType(.URL)
-            TextField("多行输入", text: $textMultiline, axis: .vertical)
+            TextField(String("多行输入"), text: $textMultiline, axis: .vertical)
                 .lineLimit(3, reservesSpace: true)
                 .keyboardType(.default)
         }
@@ -114,7 +118,7 @@ struct SetupStepView: View {
                 .frame(width: 24, height: 24)
                 .background(Color.pink)
                 .clipShape(Circle())
-            Text(title)
+            Text(verbatim: title)
                 .font(.subheadline)
         }
     }
