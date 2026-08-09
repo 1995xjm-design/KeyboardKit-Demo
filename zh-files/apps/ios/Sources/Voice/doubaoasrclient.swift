@@ -39,11 +39,6 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         super.init()
     }
 
-    convenience init?() {
-        guard DoubaoConfig.isConfigured else { return nil }
-        self.init(appID: DoubaoConfig.appID, token: DoubaoConfig.token)
-    }
-
     // MARK: - Lifecycle
 
     /// Opens the WebSocket and sends the start frame.

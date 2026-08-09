@@ -1071,7 +1071,6 @@ extension TalkRealtimeWebRTCSession {
         voice: String?) async throws -> TalkRealtimeClientSession
     {
         self.trace("gateway talk.client.create start")
-        let startedAt = ProcessInfo.processInfo.systemUptime
         // Full capability declaration first (real-time transcripts). Older
         // gateways forward the unknown field to the provider and fail, so we
         // retry once without it (graceful degradation).
@@ -1113,6 +1112,7 @@ extension TalkRealtimeWebRTCSession {
         voice: String?,
         capabilities: [String]?) async throws -> TalkRealtimeClientSession
     {
+        let startedAt = ProcessInfo.processInfo.systemUptime
         let params = TalkRealtimeClientCreateParams(
             sessionKey: sessionKey,
             voiceSessionId: voiceSessionId,

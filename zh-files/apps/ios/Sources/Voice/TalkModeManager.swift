@@ -1733,7 +1733,10 @@ final class TalkModeManager: NSObject {
         pttCaptureId: String?,
         recognitionGeneration: UInt64)
     {
-        guard let doubao = DoubaoASRClient() else { return }
+        guard DoubaoConfig.isConfigured else { return }
+        let doubao = DoubaoASRClient(
+            appID: DoubaoConfig.appID,
+            token: DoubaoConfig.token)
         self.doubaoASR = doubao
         doubao.onPartial = { [weak self] text in
             guard let self else { return }
@@ -1803,7 +1806,7 @@ final class TalkModeManager: NSObject {
     {
         guard self.recognitionGeneration == recognitionGeneration else { return }
         self.pendingRealtimeIssue = TalkRuntimeIssue(
-            code: "doubao_asr_unavailable",
+            code: .realtimeUnavailable,
             message: error.localizedDescription)
         self.doubaoASR?.close()
         self.doubaoASR = nil
