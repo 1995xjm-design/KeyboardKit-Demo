@@ -13,6 +13,8 @@ on:
 jobs:
   build:
     runs-on: macos-26
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,6 +53,17 @@ jobs:
           cp -R "build/Build/Products/Release-iphoneos/Demo.app" Payload/
           zip -r KeyboardKit-Demo.ipa Payload
           ls -lh KeyboardKit-Demo.ipa
+
+      - name: Commit IPA back to CI repo
+        run: |
+          mkdir -p dist
+          cp KeyboardKit-Demo.ipa dist/
+          git config user.name "CI Bot"
+          git config user.email "actions@github.com"
+          git add dist/KeyboardKit-Demo.ipa
+          git commit -m "build: KeyboardKit Demo zh IPA [skip ci]" || echo "no changes"
+          git pull --rebase origin main || true
+          git push
 
       - name: Upload artifact
         if: always()
