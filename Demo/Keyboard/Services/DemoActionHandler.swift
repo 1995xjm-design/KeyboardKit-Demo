@@ -25,17 +25,27 @@ class DemoActionHandler: KeyboardAction.StandardActionHandler {
         super.init(controller: controller)
     }
 
-    /// Intercepts taps on character, backspace, space and
-    /// newline keys while pinyin composition is active.
+    /// Intercepts presses on character/backspace/space keys
+    /// while pinyin composition is active, and keeps the
+    /// demo's image long-press/release actions.
     override func action(
         for gesture: Keyboard.Gesture,
         on action: KeyboardAction
     ) -> KeyboardAction.GestureAction? {
         let standard = super.action(for: gesture, on: action)
-        guard gesture == .tap else { return standard }
-        return { [weak self] controller in
-            guard let self, !self.intercept(action, controller: controller) else { return }
-            standard?(controller)
+        if gesture == .press {
+            return { [weak self] controller in
+                guard let self else { return }
+                if let controller, self.intercept(action, controller: controller) {
+                    return
+                }
+                standard?(controller)
+            }
+        }
+        switch gesture {
+        case .longPress: return longPressAction(for: action) ?? standard
+        case .release: return releaseAction(for: action) ?? standard
+        default: return standard
         }
     }
 
@@ -43,7 +53,7 @@ class DemoActionHandler: KeyboardAction.StandardActionHandler {
     /// Chinese input controller (pinyin buffer / candidates).
     private func intercept(
         _ action: KeyboardAction,
-        controller: KeyboardInputViewController
+        controller: any KeyboardController
     ) -> Bool {
         switch action {
         case .character(let char):
@@ -59,30 +69,11 @@ class DemoActionHandler: KeyboardAction.StandardActionHandler {
                 return true
             }
             return false
-        case .newLine:
-            if let output = chinese.handleReturn() {
-                controller.textDocumentProxy.insertText(output)
-                return true
-            }
-            return false
         default:
             return false
         }
     }
 
-    /// Trigger custom actions for `.image` keyboard actions.
-    override func action(
-        for gesture: Keyboard.Gesture,
-        on action: KeyboardAction
-    ) -> KeyboardAction.GestureAction? {
-        let standard = super.action(for: gesture, on: action)
-        switch gesture {
-        case .longPress: return longPressAction(for: action) ?? standard
-        case .release: return releaseAction(for: action) ?? standard
-        default: return standard
-        }
-    }
-    
     /// Save an image to Photos when you long press it.
     func longPressAction(
         for action: KeyboardAction
