@@ -55,17 +55,18 @@ class DemoActionHandler: KeyboardAction.StandardActionHandler {
         _ action: KeyboardAction,
         controller: any KeyboardController
     ) -> Bool {
+        guard let kvc = controller as? KeyboardInputViewController else { return false }
         switch action {
         case .character(let char):
             if let output = chinese.handleCharacter(char) {
-                controller.textDocumentProxy.insertText(output)
+                kvc.textDocumentProxy.insertText(output)
             }
             return true
         case .backspace:
             return chinese.handleDelete()
         case .space:
             if let output = chinese.handleSpace() {
-                controller.textDocumentProxy.insertText(output)
+                kvc.textDocumentProxy.insertText(output)
                 return true
             }
             return false
