@@ -36,9 +36,9 @@ jobs:
           status=$?
           if [ $status -ne 0 ]; then
             {
-              grep -E "error:|The following build commands failed|fatal error|Command .* failed" xcodebuild.log | head -n 40
+              grep -E "error:|Undefined symbols|duplicate symbol|ld: |Linker command|_OBJC_CLASS_|referenced from" xcodebuild.log | head -n 60
               echo "--- tail ---"
-              tail -n 50 xcodebuild.log
+              tail -n 60 xcodebuild.log
             } | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g; s/:/%3A/g; s/,/%2C/g' | while IFS= read -r line; do
               echo "::error::$line"
             done
