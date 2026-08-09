@@ -164,6 +164,57 @@ class APIService {
         }
     }
 
+    // MARK: - AI 恋爱键盘
+
+    /// Generates quick replies for a pasted conversation with
+    /// the given persona and intimacy level.
+    func generateReply(
+        content: String,
+        role: ChatRole,
+        intimacy: IntimacyLevel,
+        count: Int = 5
+    ) async throws -> [String] {
+        let promptLines = role.prompts.map { "\($0.key)：\($0.value)" }.joined(separator: "\n")
+        let system = """
+        你是一位擅长写中文聊天回复的恋爱助手。请根据人设与亲密度，针对用户发来的聊天内容，生成 \(count) 条自然、得体、有感情的中文回复。
+        人设名称：\(role.name)
+        人设描述：\(role.description)
+        亲密度：\(intimacy.rawValue)（\(intimacy.description)）
+        \(promptLines.isEmpty ? "" : "人设要求：\n\(promptLines)")
+        要求：只输出一个 JSON 数组，格式如 ["回复1","回复2","回复3"]，不要输出任何其他内容或解释。
+        """
+        let raw = try await chat([.system(system), .user(content)])
+        return Self.parseStringArray(raw)
+    }
+
+    /// Generates icebreaker openers for a given scene.
+    func generateIcebreaker(
+        scene: String,
+        count: Int = 4
+    ) async throws -> [String] {
+        let system = """
+        你是一位恋爱聊天开场白专家。请针对场景“\(scene)”生成 \(count) 条自然、有趣、不油腻的中文开场白，适合直接发给喜欢的人，帮助破冰。
+        要求：只输出一个 JSON 数组，格式如 ["开场白1","开场白2","开场白3"]，不要输出任何其他内容或解释。
+        """
+        let raw = try await chat([.system(system), .user("场景：\(scene)")])
+        return Self.parseStringArray(raw)
+    }
+
+    /// Generates love messages / polished sweet replies.
+    func generateLoveMessage(
+        content: String,
+        style: ReplyStyle,
+        intimacy: IntimacyLevel,
+        count: Int = 4
+    ) async throws -> [String] {
+        let system = """
+        你是一位擅长写中文情话和甜蜜回复的文案高手。请\(style.promptPrefix)，结合亲密度（\(intimacy.rawValue)：\(intimacy.description)），把用户想表达的意思润色成 \(count) 种不同的聊天回复。
+        要求：只输出一个 JSON 数组，格式如 ["回复1","回复2","回复3"]，不要输出任何其他内容或解释。
+        """
+        let raw = try await chat([.system(system), .user(content)])
+        return Self.parseStringArray(raw)
+    }
+
     // MARK: - 解析工具
 
     /// 解析模型返回的字符串数组（兼容 ```json 代码块包裹）

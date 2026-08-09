@@ -24,6 +24,9 @@ final class ChineseInputController: ObservableObject {
     /// Whether pinyin composition is active (Chinese mode).
     @Published var isChineseMode = true
 
+    /// AI-generated reply candidates shown in the candidate bar.
+    @Published var aiCandidates: [String] = []
+
     /// Whether the symbol keyboard is showing.
     @Published var isSymbolKeyboard = false
 
@@ -35,6 +38,7 @@ final class ChineseInputController: ObservableObject {
         case helpReply
         case superTalk
         case more
+        case loveKeyboard
 
         var id: String { rawValue }
     }
@@ -194,6 +198,14 @@ final class ChineseInputController: ObservableObject {
 
     func showMore() {
         activePanel = .more
+    }
+
+    func showLoveKeyboard() {
+        activePanel = .loveKeyboard
+    }
+
+    func clearAICandidates() {
+        aiCandidates = []
     }
 
     func closePanel() {

@@ -14,6 +14,8 @@
 		A9CC00000000000000000204 /* SymbolKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000104 /* SymbolKeyboardView.swift */; };
 		A9CC00000000000000000205 /* HelpReplyPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000105 /* HelpReplyPanelView.swift */; };
 		A9CC00000000000000000206 /* SuperTalkPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000106 /* SuperTalkPanelView.swift */; };
+		A9CC00000000000000000224 /* LoveKeyboardPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000115 /* LoveKeyboardPanelView.swift */; };
+		A9CC00000000000000000225 /* LoveKeyboardPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000115 /* LoveKeyboardPanelView.swift */; };
 		A9CC0000000000000000020E /* MoreOptionsPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000110 /* MoreOptionsPanelView.swift */; };
 		A9CC0000000000000000020F /* APIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000111 /* APIKeyStore.swift */; };
 		A9CC00000000000000000210 /* APIKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9CC00000000000000000111 /* APIKeyStore.swift */; };
@@ -104,6 +106,7 @@
 		A9CC00000000000000000104 /* SymbolKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolKeyboardView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000105 /* HelpReplyPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpReplyPanelView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000106 /* SuperTalkPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperTalkPanelView.swift; sourceTree = "<group>"; };
+		A9CC00000000000000000115 /* LoveKeyboardPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoveKeyboardPanelView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000110 /* MoreOptionsPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreOptionsPanelView.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000107 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A9CC00000000000000000108 /* ChatRole.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRole.swift; sourceTree = "<group>"; };
@@ -278,6 +281,7 @@
 				A9CC00000000000000000104 /* SymbolKeyboardView.swift */,
 				A9CC00000000000000000105 /* HelpReplyPanelView.swift */,
 				A9CC00000000000000000106 /* SuperTalkPanelView.swift */,
+				A9CC00000000000000000115 /* LoveKeyboardPanelView.swift */,
 				A9CC00000000000000000110 /* MoreOptionsPanelView.swift */,
 			);
 			path = Keyboard;
@@ -464,6 +468,7 @@
 				A9CC0000000000000000021B /* SymbolKeyboardView.swift in Sources */,
 				A9CC0000000000000000021C /* HelpReplyPanelView.swift in Sources */,
 				A9CC0000000000000000021D /* SuperTalkPanelView.swift in Sources */,
+				A9CC00000000000000000225 /* LoveKeyboardPanelView.swift in Sources */,
 				A9CC0000000000000000021E /* MoreOptionsPanelView.swift in Sources */,
 				A9CC0000000000000000021F /* ChatRole.swift in Sources */,
 				A9CC00000000000000000220 /* ReplyStyle.swift in Sources */,
@@ -494,6 +499,7 @@
 				A9CC00000000000000000204 /* SymbolKeyboardView.swift in Sources */,
 				A9CC00000000000000000205 /* HelpReplyPanelView.swift in Sources */,
 				A9CC00000000000000000206 /* SuperTalkPanelView.swift in Sources */,
+				A9CC00000000000000000224 /* LoveKeyboardPanelView.swift in Sources */,
 				A9CC00000000000000000207 /* Constants.swift in Sources */,
 				A9CC00000000000000000209 /* ChatRole.swift in Sources */,
 				A9CC0000000000000000020A /* ReplyStyle.swift in Sources */,

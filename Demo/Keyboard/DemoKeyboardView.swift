@@ -36,18 +36,8 @@ struct DemoKeyboardView: View {
     var body: some View {
         VStack(spacing: 0) {
 
-            // 💡 Pinyin candidate bar while composing Chinese.
-            if chinese.hasActiveInput {
-                CandidateBarView(
-                    pinyin: chinese.pinyinBuffer,
-                    candidates: chinese.candidates
-                ) { candidate in
-                    controller.textDocumentProxy.insertText(chinese.select(candidate))
-                }
-            }
-
-            // 💡 Chinese feature bar: mode, symbols, AI panels.
-            featureBar
+            // Native-style functional bar: candidates + mode keys.
+            topFunctionalBar
 
             keyboardContent
         }
@@ -87,48 +77,74 @@ struct DemoKeyboardView: View {
 
 private extension DemoKeyboardView {
 
-    // 💡 Chinese feature bar shown above the keyboard.
-    var featureBar: some View {
-        HStack(spacing: 18) {
-            Button {
-                toggleInputMode()
-            } label: {
-                Text(chinese.isChineseMode ? "中" : "EN")
-                    .font(.subheadline.bold())
-                    .frame(width: 34, height: 26)
-                    .background(Color(.tertiarySystemBackground))
-                    .clipShape(Capsule())
+    // Native-style top bar: candidates + mode switches + AI entry.
+    var topFunctionalBar: some View {
+        HStack(spacing: 6) {
+            if chinese.hasActiveInput {
+                CandidateBarView(
+                    pinyin: chinese.pinyinBuffer,
+                    candidates: chinese.candidates
+                ) { candidate in
+                    controller.textDocumentProxy.insertText(chinese.select(candidate))
+                }
+            } else if !chinese.aiCandidates.isEmpty {
+                AICandidateBarView(candidates: chinese.aiCandidates) { text in
+                    controller.textDocumentProxy.insertText(text)
+                    chinese.clearAICandidates()
+                }
+            } else {
+                Spacer()
             }
-
-            Button {
-                chinese.toggleSymbolKeyboard()
-            } label: {
-                Text(LKString("符号", "Symbols"))
-                    .font(.subheadline)
-            }
-
-            Button {
-                chinese.showHelpReply()
-            } label: {
-                Text(LKString("帮你回", "Help Reply"))
-                    .font(.subheadline)
-            }
-
-            Button {
-                chinese.showMore()
-            } label: {
-                Text(LKString("更多", "More"))
-                    .font(.subheadline)
-            }
-
-            Spacer()
+            modeButton
+            t9Button
+            aiButton
         }
         .buttonStyle(.plain)
-        .padding(.leading, 10)
-        .frame(height: 34)
+        .padding(.leading, 8)
+        .frame(height: 38)
         .background(Color(.systemGroupedBackground))
         .overlay(alignment: .bottom) {
             Divider()
+        }
+    }
+
+    // Switches between Chinese and English input mode.
+    var modeButton: some View {
+        Button {
+            toggleInputMode()
+        } label: {
+            Text(chinese.isChineseMode ? "中" : "EN")
+                .font(.subheadline.bold())
+                .frame(width: 30, height: 26)
+                .background(Color(.tertiarySystemBackground))
+                .clipShape(Capsule())
+        }
+    }
+
+    // Toggles the T9 nine-grid layout.
+    var t9Button: some View {
+        Button {
+            chinese.toggleT9Mode()
+        } label: {
+            Text(chinese.isT9Mode ? LKString("26键", "26") : LKString("九宫格", "T9"))
+                .font(.subheadline)
+                .frame(height: 26)
+                .padding(.horizontal, 8)
+                .background(Color(.tertiarySystemBackground))
+                .clipShape(Capsule())
+        }
+    }
+
+    // Opens the AI love keyboard panel.
+    var aiButton: some View {
+        Button {
+            chinese.showLoveKeyboard()
+        } label: {
+            Text(verbatim: "❤")
+                .font(.subheadline.bold())
+                .frame(width: 30, height: 26)
+                .background(Color.accentColor.opacity(0.15))
+                .clipShape(Capsule())
         }
     }
 
@@ -246,6 +262,22 @@ private extension DemoKeyboardView {
                     if let pasted = UIPasteboard.general.string {
                         insertText(pasted)
                     }
+                    chinese.closePanel()
+                }
+            )
+        case .loveKeyboard:
+            LoveKeyboardPanelView(
+                onClose: { chinese.closePanel() },
+                onPaste: {
+                    guard controller.hasFullAccess else { return nil }
+                    return UIPasteboard.general.string
+                },
+                onSelect: { text in
+                    insertText(text)
+                    chinese.closePanel()
+                },
+                onPublish: { results in
+                    chinese.aiCandidates = results
                     chinese.closePanel()
                 }
             )

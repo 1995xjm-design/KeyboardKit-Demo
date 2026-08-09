@@ -76,3 +76,23 @@ struct PolishResult: Identifiable {
     let styleName: String
     let text: String
 }
+
+
+// MARK: - 亲密度（AI 恋爱键盘用）
+enum IntimacyLevel: String, Codable, CaseIterable {
+    case stranger = "陌生人"
+    case acquaintance = "普通朋友"
+    case ambiguous = "暧昧期"
+    case lover = "恋人"
+    case partner = "伴侣"
+
+    var description: String {
+        switch self {
+        case .stranger: return "刚认识不久，回复保持礼貌分寸，不越界"
+        case .acquaintance: return "普通朋友，回复自然轻松，不过分热情"
+        case .ambiguous: return "暧昧期，回复带一点撩和心动，试探推进"
+        case .lover: return "恋人关系，回复甜蜜体贴，充满爱意"
+        case .partner: return "长期伴侣，回复温暖亲昵，像家人般自然"
+        }
+    }
+}
