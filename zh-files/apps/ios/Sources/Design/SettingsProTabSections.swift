@@ -178,6 +178,23 @@ extension SettingsProTab {
     private var doubaoVoiceTypeBinding: Binding<String> {
         Binding(get: { DoubaoConfig.voiceType }, set: { DoubaoConfig.voiceType = $0 })
     }
+
+    /// Picker selection: preset IDs, or the custom tag when the stored voice
+    /// type is not one of the presets. Selecting a preset saves it; selecting
+    /// the custom tag keeps the current value and reveals the ID field.
+    private var doubaoVoicePickerBinding: Binding<String> {
+        Binding(
+            get: {
+                DoubaoConfig.isPresetVoice(DoubaoConfig.voiceType)
+                    ? DoubaoConfig.voiceType
+                    : DoubaoConfig.customVoiceTag
+            },
+            set: { newValue in
+                if newValue != DoubaoConfig.customVoiceTag {
+                    DoubaoConfig.voiceType = newValue
+                }
+            })
+    }
     var appearanceRow: some View {
         AppearanceSettingsRow()
     }
@@ -1522,10 +1539,19 @@ extension SettingsProTab {
                         .autocorrectionDisabled()
                     SecureField("Access Token", text: self.doubaoTokenBinding)
                         .font(OpenClawType.body)
-                    TextField("Voice Type", text: self.doubaoVoiceTypeBinding)
-                        .font(OpenClawType.body)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
+                    Picker("Voice", selection: self.doubaoVoicePickerBinding) {
+                        ForEach(DoubaoConfig.presetVoices) { voice in
+                            Text(voice.name).font(OpenClawType.body).tag(voice.id)
+                        }
+                        Text("Custom...").font(OpenClawType.body).tag(DoubaoConfig.customVoiceTag)
+                    }
+                    .font(OpenClawType.body)
+                    if !DoubaoConfig.isPresetVoice(DoubaoConfig.voiceType) {
+                        TextField("Voice Type ID", text: self.doubaoVoiceTypeBinding)
+                            .font(OpenClawType.body)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    }
                     if !DoubaoConfig.isConfigured {
                         Text("Enter your Volcano Engine speech App ID and Access Token to use Doubao TTS and ASR.")
                             .font(OpenClawType.caption)
