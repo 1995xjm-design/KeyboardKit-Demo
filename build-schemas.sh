@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # encoding: utf-8
 # 移植自 Hamster InputSchemaBuild.sh（去掉 hamster.yaml，schema_list 交由 default.custom.yaml 控制）
 set -e
