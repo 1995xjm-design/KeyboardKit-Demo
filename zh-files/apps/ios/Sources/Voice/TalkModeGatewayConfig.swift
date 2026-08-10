@@ -237,7 +237,9 @@ enum TalkModeRuntimeRoute: Equatable {
     }
 
     var usesGatewayTalkSpeak: Bool {
-        self == .gatewayTalkSpeak
+        // localDoubao synthesizes locally (DoubaoTTSGatewaySynthesizer) but
+        // reuses the same play path as gateway talk.speak.
+        self == .gatewayTalkSpeak || self == .localDoubao
     }
 
     var gatewayOwnsCredentials: Bool {
