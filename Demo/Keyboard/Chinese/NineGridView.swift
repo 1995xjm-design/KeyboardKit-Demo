@@ -7,6 +7,7 @@
 //
 
 import HamsterKit
+import KeyboardKit
 import RimeKit
 import SwiftUI
 
@@ -71,8 +72,8 @@ private extension NineGridView {
   }
 
   @ViewBuilder
-  func trailingKey(_ key: NineKey) -> some View {
-    switch key {
+  func trailingKey(_ nineKey: NineKey) -> some View {
+    switch nineKey {
     case .backspace:
       key(title: "⌫", isFunction: true) { handleBackspace() }
     case .clean:
