@@ -2,20 +2,21 @@
 //  DoubaoConfig.swift
 //  OpenClaw
 //
-//  Doubao (Volcano Engine) speech configuration: TTS + ASR
-//  credentials and endpoints.
+//  Doubao (Volcano Engine) speech configuration.
+//  Single API Key auth (X-Api-Key), the ClawTalk-verified mode.
 //
 
 import Foundation
 
-/// Doubao / Volcano Engine speech credentials and endpoints.
+/// Doubao / Volcano Engine speech credentials.
 ///
-/// TTS uses the big-model HTTP API (`api/v1/tts`, token auth).
-/// ASR uses the big-model streaming WebSocket API
-/// (`api/v3/sauc/bigmodel/recognize`, token auth).
+/// Both TTS and ASR use the V3 WebSocket APIs authenticated with a single
+/// speech console API Key (`X-Api-Key` header), the same integration
+/// verified in the ClawTalk client:
+///  - TTS: wss://openspeech.bytedance.com/api/v3/tts/unidirectional/stream
+///  - ASR: wss://openspeech.bytedance.com/api/v3/sauc/bigmodel_async
 enum DoubaoConfig {
-    static let appIDKey = "talk.doubao.appid"
-    static let tokenKey = "talk.doubao.token"
+    static let apiKeyKey = "talk.doubao.apiKey"
     static let voiceTypeKey = "talk.doubao.voiceType"
     static let asrLanguageKey = "talk.doubao.asrLanguage"
 
@@ -47,18 +48,9 @@ enum DoubaoConfig {
         presetVoices.contains { $0.id == voiceType }
     }
 
-    static let ttsEndpoint = URL(string: "https://openspeech.bytedance.com/api/v1/tts")!
-    static let asrEndpoint = URL(string: "wss://openspeech.bytedance.com/api/v3/sauc/bigmodel/recognize")!
-    static let asrResourceID = "volc.bigasr.auc"
-
-    static var appID: String {
-        get { UserDefaults.standard.string(forKey: appIDKey) ?? "" }
-        set { UserDefaults.standard.set(newValue, forKey: appIDKey) }
-    }
-
-    static var token: String {
-        get { UserDefaults.standard.string(forKey: tokenKey) ?? "" }
-        set { UserDefaults.standard.set(newValue, forKey: tokenKey) }
+    static var apiKey: String {
+        get { UserDefaults.standard.string(forKey: apiKeyKey) ?? "" }
+        set { UserDefaults.standard.set(newValue, forKey: apiKeyKey) }
     }
 
     static var voiceType: String {
@@ -77,9 +69,15 @@ enum DoubaoConfig {
         set { UserDefaults.standard.set(newValue, forKey: asrLanguageKey) }
     }
 
-    /// Whether the verified App ID + Access Token pair is configured
-    /// (the ClawTalk-verified Volcano speech credential mode).
+    /// Whether the speech console API Key is configured.
     static var isConfigured: Bool {
-        !appID.isEmpty && !token.isEmpty
+        !apiKey.isEmpty
     }
+
+    // MARK: - Endpoints (ClawTalk-verified)
+
+    static let ttsEndpoint = URL(string: "wss://openspeech.bytedance.com/api/v3/tts/unidirectional/stream")!
+    static let asrEndpoint = URL(string: "wss://openspeech.bytedance.com/api/v3/sauc/bigmodel_async")!
+    static let ttsResourceID = "seed-tts-2.0"
+    static let asrResourceID = "volc.seedasr.sauc.duration"
 }

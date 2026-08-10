@@ -2,155 +2,173 @@
 //  DoubaoTTSClient.swift
 //  OpenClaw
 //
-//  Doubao (Volcano Engine) big-model TTS via the HTTP V1 API.
-//  Auth: "Bearer; <access_token>" header, body carries appid.
+//  Doubao (Volcano Engine) big-model TTS via the V3 unidirectional
+//  streaming WebSocket API — the ClawTalk-verified integration.
+//
+//  URL: wss://openspeech.bytedance.com/api/v3/tts/unidirectional/stream
+//  Auth: X-Api-Key (speech console API Key) + X-Api-Resource-Id
+//  Request frame: [0x11,0x10,0x10,0x00] + uint32 BE len + JSON
+//  Response: PCM s16le 24kHz mono frames (msgType 0b1011 audio).
 //
 
+import AVFoundation
 import Foundation
-
-struct DoubaoTTSResult: Decodable {
-    let code: Int?
-    let message: String?
-    // The verified big-model HTTP API returns `data` as a single base64
-    // audio string (PCM int16 24kHz mono); some deployments return an
-    // array of chunks. Support both.
-    let data: String?
-    let dataChunks: [DoubaoTTSChunk]?
-
-    enum CodingKeys: String, CodingKey {
-        case code, message, data
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        code = try container.decodeIfPresent(Int.self, forKey: .code)
-        message = try container.decodeIfPresent(String.self, forKey: .message)
-        if let string = try? container.decodeIfPresent(String.self, forKey: .data) {
-            data = string
-            dataChunks = nil
-        } else if let chunks = try? container.decodeIfPresent([DoubaoTTSChunk].self, forKey: .data) {
-            data = nil
-            dataChunks = chunks
-        } else {
-            data = nil
-            dataChunks = nil
-        }
-    }
-
-    var isSuccess: Bool { (code ?? 0) == 3000 }
-}
-
-struct DoubaoTTSChunk: Decodable {
-    let audio: String?
-    let index: Int?
-    let addition: String?
-}
 
 enum DoubaoTTSClientError: LocalizedError {
     case notConfigured
-    case httpStatus(Int)
-    case apiError(Int, String)
+    case serverError(UInt32, String)
+    case serverMessage(String)
+    case malformedFrame
     case emptyAudio
-    case invalidResponse
 
     var errorDescription: String? {
         switch self {
         case .notConfigured: "Doubao TTS is not configured"
-        case .httpStatus(let code): "Doubao TTS HTTP \(code)"
-        case .apiError(let code, let message): "Doubao TTS error \(code): \(message)"
+        case .serverError(let code, let message): "Doubao TTS error \(code): \(message)"
+        case .serverMessage(let message): "Doubao TTS server: \(message)"
+        case .malformedFrame: "Doubao TTS returned a malformed frame"
         case .emptyAudio: "Doubao TTS returned empty audio"
-        case .invalidResponse: "Doubao TTS returned an invalid response"
         }
     }
 }
 
-/// Synthesizes text with the Doubao big-model TTS HTTP API.
+/// Synthesizes text with the Doubao big-model TTS V3 WebSocket API.
+/// Returns the complete PCM s16le 24kHz mono audio.
 struct DoubaoTTSClient {
-    let appID: String
-    let token: String
+    let apiKey: String
     let voiceType: String
+    let sampleRate: Int
 
     init(
-        appID: String,
-        token: String,
-        voiceType: String = DoubaoConfig.defaultVoiceType)
+        apiKey: String,
+        voiceType: String = DoubaoConfig.defaultVoiceType,
+        sampleRate: Int = 24000)
     {
-        self.appID = appID
-        self.token = token
+        self.apiKey = apiKey
         self.voiceType = voiceType
+        self.sampleRate = sampleRate
     }
 
-    /// Synthesizes text into a complete audio file (MP3 by default).
+    /// Synthesizes text into complete PCM audio (s16le 24kHz mono).
     func synthesize(text: String) async throws -> Data {
-        let reqid = UUID().uuidString
-        let body: [String: Any] = [
-            "app": [
-                "appid": appID,
-                "token": token,
-                "cluster": "volcano_tts",
-            ],
-            "user": [
-                "uid": "openclaw-ios",
-            ],
-            "audio": [
-                "voice_type": voiceType,
-                "encoding": "pcm",
-                "rate": 24000,
-                "speed_ratio": 1.0,
-            ],
-            "request": [
-                "reqid": reqid,
+        var request = URLRequest(url: DoubaoConfig.ttsEndpoint)
+        request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key")
+        request.setValue(DoubaoConfig.ttsResourceID, forHTTPHeaderField: "X-Api-Resource-Id")
+        request.setValue(UUID().uuidString, forHTTPHeaderField: "X-Api-Request-Id")
+
+        let session = URLSession(configuration: .default)
+        let task = session.webSocketTask(with: request)
+        task.resume()
+
+        let payload: [String: Any] = [
+            "user": ["uid": "openclaw-ios"],
+            "req_params": [
                 "text": text,
-                "text_type": "plain",
-                "operation": "query",
+                "speaker": voiceType,
+                "audio_params": ["format": "pcm", "sample_rate": sampleRate],
             ],
         ]
+        let jsonData = try JSONSerialization.data(withJSONObject: payload)
+        var frame = Data([0x11, 0x10, 0x10, 0x00])
+        var payloadLen = UInt32(jsonData.count).bigEndian
+        frame.append(Data(bytes: &payloadLen, count: 4))
+        frame.append(jsonData)
 
-        var request = URLRequest(url: DoubaoConfig.ttsEndpoint)
-        request.httpMethod = "POST"
-        request.setValue("Bearer; \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        try await task.send(.data(frame))
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw DoubaoTTSClientError.invalidResponse
-        }
-        guard http.statusCode == 200 else {
-            throw DoubaoTTSClientError.httpStatus(http.statusCode)
-        }
-
-        let result = try JSONDecoder().decode(DoubaoTTSResult.self, from: data)
-        guard result.isSuccess else {
-            throw DoubaoTTSClientError.apiError(
-                result.code ?? -1,
-                result.message ?? "unknown")
-        }
-
-        // The verified API returns a single base64 audio string; also
-        // support chunk arrays for compatibility.
         var audio = Data()
-        if let b64 = result.data, let direct = Data(base64Encoded: b64) {
-            audio = direct
-        } else if let chunks = result.dataChunks {
-            for chunk in chunks {
-                if let b64 = chunk.audio, let chunkData = Data(base64Encoded: b64) {
-                    audio.append(chunkData)
+        var finished = false
+        var receivedError: Error?
+
+        while !finished, receivedError == nil {
+            let message: URLSessionWebSocketTask.Message
+            do {
+                message = try await task.receive()
+            } catch {
+                // Server closes after the final result; treat as normal end
+                // if we already have audio.
+                if !audio.isEmpty {
+                    break
                 }
+                receivedError = error
+                break
+            }
+            switch message {
+            case .data(let data):
+                do {
+                    let outcome = try Self.parseFrame(data, audio: &audio)
+                    if outcome.finished {
+                        finished = true
+                    }
+                } catch {
+                    receivedError = error
+                }
+            case .string(let string):
+                receivedError = DoubaoTTSClientError.serverMessage(string)
+            @unknown default:
+                break
             }
         }
-        if audio.isEmpty {
-            if let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let b64 = obj["audio"] as? String,
-               let direct = Data(base64Encoded: b64)
-            {
-                audio = direct
-            }
+        task.cancel(with: .goingAway, reason: nil)
+
+        if let receivedError {
+            throw receivedError
         }
         guard !audio.isEmpty else {
             throw DoubaoTTSClientError.emptyAudio
         }
         return audio
+    }
+
+    /// Parses one TTS response frame, appending audio payloads.
+    private static func parseFrame(
+        _ data: Data,
+        audio: inout Data) throws -> (finished: Bool)
+    {
+        guard data.count >= 4 else { throw DoubaoTTSClientError.malformedFrame }
+        let msgType = (data[1] >> 4) & 0x0F
+        var offset = 4
+
+        // Error frame: uint32 code + uint32 len + body
+        if msgType == 0b1111 {
+            guard data.count >= offset + 8 else { throw DoubaoTTSClientError.malformedFrame }
+            let code = data.subdata(in: offset..<offset + 4)
+                .withUnsafeBytes { $0.loadUnaligned(as: UInt32.self).bigEndian }
+            offset += 4
+            let bodyLen = Int(data.subdata(in: offset..<offset + 4)
+                .withUnsafeBytes { $0.loadUnaligned(as: UInt32.self).bigEndian })
+            offset += 4
+            guard data.count >= offset + bodyLen else { throw DoubaoTTSClientError.malformedFrame }
+            let body = String(data: data.subdata(in: offset..<offset + bodyLen), encoding: .utf8) ?? ""
+            throw DoubaoTTSClientError.serverError(code, body)
+        }
+
+        guard data.count >= offset + 4 else { throw DoubaoTTSClientError.malformedFrame }
+        let event = data.subdata(in: offset..<offset + 4)
+            .withUnsafeBytes { $0.loadUnaligned(as: UInt32.self).bigEndian }
+        offset += 4
+
+        // session id: uint32 len + bytes
+        guard data.count >= offset + 4 else { throw DoubaoTTSClientError.malformedFrame }
+        let sidLen = Int(data.subdata(in: offset..<offset + 4)
+            .withUnsafeBytes { $0.loadUnaligned(as: UInt32.self).bigEndian })
+        offset += 4
+        guard data.count >= offset + sidLen + 4 else { throw DoubaoTTSClientError.malformedFrame }
+        offset += sidLen
+
+        guard data.count >= offset + 4 else { throw DoubaoTTSClientError.malformedFrame }
+        let payloadLen = Int(data.subdata(in: offset..<offset + 4)
+            .withUnsafeBytes { $0.loadUnaligned(as: UInt32.self).bigEndian })
+        offset += 4
+        guard data.count >= offset + payloadLen else { throw DoubaoTTSClientError.malformedFrame }
+        let payload = data.subdata(in: offset..<offset + payloadLen)
+
+        if msgType == 0b1011, !payload.isEmpty {
+            audio.append(payload)
+        }
+
+        // 152 = SessionFinished, 52 = ConnectionFinished
+        return (finished: event == 152 || event == 52)
     }
 }
 
@@ -167,8 +185,7 @@ final class DoubaoTTSGatewaySynthesizer: TalkGatewaySpeechSynthesizing {
     convenience init?() {
         guard DoubaoConfig.isConfigured else { return nil }
         self.init(client: DoubaoTTSClient(
-            appID: DoubaoConfig.appID,
-            token: DoubaoConfig.token,
+            apiKey: DoubaoConfig.apiKey,
             voiceType: DoubaoConfig.voiceType))
     }
 

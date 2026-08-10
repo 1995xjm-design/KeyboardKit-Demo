@@ -167,12 +167,8 @@ private struct AppearanceSettingsScreen: View {
 extension SettingsProTab {
     /// Doubao credential bindings (UserDefaults-backed; extensions cannot
     /// declare @AppStorage stored properties).
-    private var doubaoAppIDBinding: Binding<String> {
-        Binding(get: { DoubaoConfig.appID }, set: { DoubaoConfig.appID = $0 })
-    }
-
-    private var doubaoTokenBinding: Binding<String> {
-        Binding(get: { DoubaoConfig.token }, set: { DoubaoConfig.token = $0 })
+    private var doubaoAPIKeyBinding: Binding<String> {
+        Binding(get: { DoubaoConfig.apiKey }, set: { DoubaoConfig.apiKey = $0 })
     }
 
     private var doubaoVoiceTypeBinding: Binding<String> {
@@ -1533,12 +1529,10 @@ extension SettingsProTab {
             }
             if self.talkProviderSelectionRaw == TalkModeProviderSelection.doubao.rawValue {
                 Section("Doubao Credentials") {
-                    TextField("App ID", text: self.doubaoAppIDBinding)
+                    SecureField("API Key", text: self.doubaoAPIKeyBinding)
                         .font(OpenClawType.body)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
-                    SecureField("Access Token", text: self.doubaoTokenBinding)
-                        .font(OpenClawType.body)
                     Picker("Voice", selection: self.doubaoVoicePickerBinding) {
                         ForEach(DoubaoConfig.presetVoices) { voice in
                             Text(voice.name).font(OpenClawType.body).tag(voice.id)
