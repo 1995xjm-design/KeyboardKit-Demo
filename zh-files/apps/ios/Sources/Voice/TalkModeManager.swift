@@ -1791,7 +1791,7 @@ final class TalkModeManager: NSObject {
             let doubaoTapClient = doubao
             input.installTap(onBus: 0, bufferSize: 2048, format: format) { buffer, _ in
                 if let pcm = DoubaoASRClient.resample(buffer, converter: &doubaoConverter) {
-                    doubaoTapClient?.appendPCM(pcm)
+                    doubaoTapClient.appendPCM(pcm)
                 }
                 diagnostics.onBuffer(buffer)
             }
