@@ -24,24 +24,8 @@ final class ChineseInputController: ObservableObject {
     /// Whether pinyin composition is active (Chinese mode).
     @Published var isChineseMode = true
 
-    /// AI-generated reply candidates shown in the candidate bar.
-    @Published var aiCandidates: [String] = []
-
     /// Whether the symbol keyboard is showing.
     @Published var isSymbolKeyboard = false
-
-    /// The currently visible feature panel, if any.
-    @Published var activePanel: Panel?
-
-    /// Feature panels that can replace the keyboard.
-    enum Panel: String, Identifiable {
-        case helpReply
-        case superTalk
-        case more
-        case loveKeyboard
-
-        var id: String { rawValue }
-    }
 
     // MARK: - Dependencies
 
@@ -50,11 +34,6 @@ final class ChineseInputController: ObservableObject {
     // MARK: - Computed state
 
     var hasActiveInput: Bool { !pinyinBuffer.isEmpty }
-
-    /// Whether T9 digit composition is active.
-    var t9HasActiveInput: Bool { !t9Buffer.isEmpty }
-
-    var isKeyboardReplaced: Bool { activePanel != nil }
 
     // MARK: - Character handling
 
@@ -127,120 +106,6 @@ final class ChineseInputController: ObservableObject {
     func clear() {
         pinyinBuffer = ""
         candidates = []
-    }
-
-    // MARK: - T9 handling
-
-    /// Whether the T9 (nine-grid) keyboard is active.
-    @Published var isT9Mode = false
-
-    /// The T9 digit buffer accumulated so far.
-    @Published var t9Buffer = ""
-
-    /// Toggles between QWERTY and T9 (nine-grid) layouts.
-    @discardableResult
-    func toggleT9Mode() -> Bool {
-        isT9Mode.toggle()
-        clearT9()
-        if isT9Mode {
-            isSymbolKeyboard = false
-            activePanel = nil
-        }
-        return isT9Mode
-    }
-
-    /// Handles a tapped T9 digit key. Returns the text that
-    /// should be inserted, or `nil` when consumed by the buffer.
-    func handleT9Digit(_ digit: String) -> String? {
-        guard isChineseMode, digit.count == 1, let d = digit.first, d.isNumber else {
-            return digit
-        }
-        t9Buffer.append(String(d))
-        refreshT9Candidates()
-        return nil
-    }
-
-    /// Handles backspace in T9 mode. Returns `true` when the
-    /// press was consumed by the digit buffer.
-    func handleT9Delete() -> Bool {
-        guard !t9Buffer.isEmpty else { return false }
-        t9Buffer.removeLast()
-        refreshT9Candidates()
-        return true
-    }
-
-    /// Handles space in T9 mode. Returns the text to insert
-    /// (the first candidate when available, otherwise a space).
-    func handleT9Space() -> String? {
-        if !t9Buffer.isEmpty, let first = candidates.first {
-            return selectT9(first)
-        }
-        return " "
-    }
-
-    /// Clears the T9 digit buffer.
-    func clearT9() {
-        t9Buffer = ""
-        candidates = []
-    }
-
-    /// Selects a T9 candidate, clearing the digit buffer.
-    @discardableResult
-    func selectT9(_ candidate: String) -> String {
-        t9Buffer = ""
-        candidates = []
-        return candidate
-    }
-
-    /// Handles a punctuation key in T9 mode. Commits the
-    /// current candidate first (like iOS nine-grid), then
-    /// returns the punctuation for insertion.
-    func handleT9Punctuation(_ punctuation: String) -> String {
-        if !t9Buffer.isEmpty, let first = candidates.first {
-            return selectT9(first) + punctuation
-        }
-        return punctuation
-    }
-
-    /// Handles the confirm (search) key in T9 mode. Returns
-    /// the committed text, or `nil` when nothing to commit.
-    func handleT9Confirm() -> String? {
-        guard !t9Buffer.isEmpty else { return nil }
-        let output = candidates.first ?? t9Buffer
-        t9Buffer = ""
-        candidates = []
-        return output
-    }
-
-    private func refreshT9Candidates() {
-        candidates = t9Buffer.isEmpty
-            ? []
-            : engine.getCandidates(forT9: t9Buffer)
-    }
-    // MARK: - Panels
-
-    func showHelpReply() {
-        activePanel = .helpReply
-    }
-
-    func showSuperTalk() {
-        activePanel = .superTalk
-    }
-
-    func showMore() {
-        activePanel = .more
-    }
-
-    func showLoveKeyboard() {
-        activePanel = .loveKeyboard
-    }
-
-    func clearAICandidates() {
-        aiCandidates = []
-    }
-
-    func closePanel() {
-        activePanel = nil
     }
 
     func toggleSymbolKeyboard() {

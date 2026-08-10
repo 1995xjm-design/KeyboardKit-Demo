@@ -77,31 +77,20 @@ struct DemoKeyboardView: View {
 
 private extension DemoKeyboardView {
 
-    // Native-style top bar: candidates + mode switches + AI entry.
+    // Native-style top bar: candidates + mode switch.
     var topFunctionalBar: some View {
         HStack(spacing: 6) {
-            if chinese.hasActiveInput || chinese.t9HasActiveInput {
+            if chinese.hasActiveInput {
                 CandidateBarView(
-                    pinyin: chinese.isT9Mode ? chinese.t9Buffer : chinese.pinyinBuffer,
+                    pinyin: chinese.pinyinBuffer,
                     candidates: chinese.candidates
                 ) { candidate in
-                    if chinese.isT9Mode {
-                        controller.textDocumentProxy.insertText(chinese.selectT9(candidate))
-                    } else {
-                        controller.textDocumentProxy.insertText(chinese.select(candidate))
-                    }
-                }
-            } else if !chinese.aiCandidates.isEmpty {
-                AICandidateBarView(candidates: chinese.aiCandidates) { text in
-                    controller.textDocumentProxy.insertText(text)
-                    chinese.clearAICandidates()
+                    controller.textDocumentProxy.insertText(chinese.select(candidate))
                 }
             } else {
                 Spacer()
             }
             modeButton
-            t9Button
-            aiButton
         }
         .buttonStyle(.plain)
         .padding(.leading, 8)
@@ -124,36 +113,6 @@ private extension DemoKeyboardView {
                 .clipShape(Capsule())
         }
     }
-
-    // Toggles the T9 nine-grid layout.
-    var t9Button: some View {
-        Button {
-            chinese.toggleT9Mode()
-        } label: {
-            Text(chinese.isT9Mode ? LKString("26键", "26") : LKString("九宫格", "T9"))
-                .font(.subheadline)
-                .frame(height: 26)
-                .padding(.horizontal, 8)
-                .background(Color(.tertiarySystemBackground))
-                .clipShape(Capsule())
-        }
-    }
-
-    // Opens the AI love keyboard panel.
-    var aiButton: some View {
-        Button {
-            chinese.showLoveKeyboard()
-        } label: {
-            Text(verbatim: "❤")
-                .font(.subheadline.bold())
-                .frame(width: 30, height: 26)
-                .background(Color.accentColor.opacity(0.15))
-                .clipShape(Capsule())
-        }
-    }
-
-    // 💡 Switches between symbol keyboard, feature panels and
-    // the standard KeyboardKit keyboard.
     @ViewBuilder
     var keyboardContent: some View {
         if chinese.isSymbolKeyboard {
@@ -164,45 +123,6 @@ private extension DemoKeyboardView {
                 onSpace: { insertText(" ") },
                 onDelete: { deleteBackward() },
                 onReturn: { insertText("\n") }
-            )
-        } else if let panel = chinese.activePanel {
-            panelView(panel)
-        } else if chinese.isT9Mode {
-            T9KeyboardView(
-                isChineseMode: chinese.isChineseMode,
-                onDigit: { digit in
-                    if let output = chinese.handleT9Digit(digit) {
-                        insertText(output)
-                    }
-                },
-                onPunctuation: { punctuation in
-                    insertText(chinese.handleT9Punctuation(punctuation))
-                },
-                onSymbol1: { insertText("@") },
-                onSymbols: { chinese.toggleSymbolKeyboard() },
-                onNumeric: { chinese.toggleSymbolKeyboard() },
-                onConfirm: {
-                    if let output = chinese.handleT9Confirm() {
-                        insertText(output)
-                    }
-                },
-                onToggleMode: { toggleInputMode() },
-                onSpace: {
-                    if let output = chinese.handleT9Space() {
-                        insertText(output)
-                    }
-                },
-                onSpaceDrag: { delta in
-                    moveCursor(by: delta)
-                },
-                onDelete: {
-                    if !chinese.handleT9Delete() {
-                        deleteBackward()
-                    }
-                },
-                onReturn: { insertText("\n") },
-                onDictation: { services.actionHandler.handle(.dictation) },
-                onLocaleSwitch: { toggleInputMode() }
             )
         } else {
             mainKeyboard
@@ -237,69 +157,6 @@ private extension DemoKeyboardView {
         )
     }
 
-    // 💡 Feature panels: Help Reply and Super Talk.
-    @ViewBuilder
-    func panelView(_ panel: ChineseInputController.Panel) -> some View {
-        switch panel {
-        case .helpReply:
-            HelpReplyPanelView(
-                onClose: { chinese.closePanel() },
-                onPaste: {
-                    guard controller.hasFullAccess else { return nil }
-                    return UIPasteboard.general.string
-                },
-                onSelect: { text in
-                    insertText(text)
-                    chinese.closePanel()
-                }
-            )
-        case .superTalk:
-            SuperTalkPanelView(
-                onClose: { chinese.closePanel() },
-                onSelectResult: { text in
-                    insertText(text)
-                    chinese.closePanel()
-                }
-            )
-        case .more:
-            MoreOptionsPanelView(
-                onClose: { chinese.closePanel() },
-                onToggleSymbolKeyboard: {
-                    chinese.toggleSymbolKeyboard()
-                    chinese.closePanel()
-                },
-                onToggleT9: {
-                    chinese.toggleT9Mode()
-                    chinese.closePanel()
-                },
-                onPasteFromClipboard: {
-                    guard controller.hasFullAccess else { return }
-                    if let pasted = UIPasteboard.general.string {
-                        insertText(pasted)
-                    }
-                    chinese.closePanel()
-                }
-            )
-        case .loveKeyboard:
-            LoveKeyboardPanelView(
-                onClose: { chinese.closePanel() },
-                onPaste: {
-                    guard controller.hasFullAccess else { return nil }
-                    return UIPasteboard.general.string
-                },
-                onSelect: { text in
-                    insertText(text)
-                    chinese.closePanel()
-                },
-                onPublish: { results in
-                    chinese.aiCandidates = results
-                    chinese.closePanel()
-                }
-            )
-        }
-    }
-
-    // 💡 Toggles Chinese/English mode and syncs the keyboard locale.
     func toggleInputMode() {
         chinese.toggleMode()
         keyboardContext.locale = Locale(identifier: chinese.isChineseMode ? "zh-Hans" : "en")
@@ -312,14 +169,6 @@ private extension DemoKeyboardView {
 
     func deleteBackward() {
         controller.textDocumentProxy.deleteBackward()
-    }
-
-    /// Moves the input cursor by the given horizontal offset.
-    /// Used by the T9 space key's long-press drag gesture.
-    func moveCursor(by offset: CGFloat) {
-        let steps = Int(offset / 16)
-        guard steps != 0 else { return }
-        controller.textDocumentProxy.adjustTextPosition(byCharacterOffset: steps)
     }
 
     // 💡 Setup a custom keyboard layout

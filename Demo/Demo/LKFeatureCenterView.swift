@@ -14,7 +14,6 @@ struct LKFeatureCenterView: View {
 
     var body: some View {
         List {
-            aiSection
             keyboardToolsSection
             settingsSection
             guideSection
@@ -25,26 +24,6 @@ struct LKFeatureCenterView: View {
 }
 
 private extension LKFeatureCenterView {
-
-    var aiSection: some View {
-        Section {
-            NavigationLink {
-                InAppHelpReplyView()
-            } label: {
-                Label("帮你回", systemImage: "bubble.left.and.bubble.right")
-            }
-            NavigationLink {
-                InAppSuperTalkView()
-            } label: {
-                Label("超会说", systemImage: "wand.and.stars")
-            }
-        } header: {
-            Text("AI 功能")
-        } footer: {
-            Text("AI 功能需要先配置 API 密钥，可在下方「API 设置」中填写。")
-        }
-    }
-
     var keyboardToolsSection: some View {
         Section {
             NavigationLink {
@@ -86,65 +65,6 @@ private extension LKFeatureCenterView {
             Text("使用引导")
         } footer: {
             Text("提示：键盘默认中文输入，点「中/EN」切换英文。")
-        }
-    }
-}
-
-/// App 内嵌的「帮你回」面板，点选结果后复制到剪贴板
-struct InAppHelpReplyView: View {
-
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var copied = false
-
-    var body: some View {
-        HelpReplyPanelView(
-            onClose: { dismiss() },
-            onPaste: { UIPasteboard.general.string },
-            onSelect: { text in
-                UIPasteboard.general.string = text
-                showCopied()
-            }
-        )
-        .copyToast(isShowing: $copied)
-        .navigationTitle("帮你回")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func showCopied() {
-        withAnimation { copied = true }
-        Task {
-            try? await Task.sleep(nanoseconds: 1_200_000_000)
-            withAnimation { copied = false }
-        }
-    }
-}
-
-/// App 内嵌的「超会说」面板，点选结果后复制到剪贴板
-struct InAppSuperTalkView: View {
-
-    @Environment(\.dismiss) private var dismiss
-
-    @State private var copied = false
-
-    var body: some View {
-        SuperTalkPanelView(
-            onClose: { dismiss() },
-            onSelectResult: { text in
-                UIPasteboard.general.string = text
-                showCopied()
-            }
-        )
-        .copyToast(isShowing: $copied)
-        .navigationTitle("超会说")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func showCopied() {
-        withAnimation { copied = true }
-        Task {
-            try? await Task.sleep(nanoseconds: 1_200_000_000)
-            withAnimation { copied = false }
         }
     }
 }
