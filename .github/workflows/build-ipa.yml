@@ -55,8 +55,7 @@ jobs:
               grep -E "error:|failed|Could not|manifest|package|dependency|xcframework|binary" resolve.log | head -n 80
               echo "--- resolve.log tail ---"
               tail -n 60 resolve.log
-            } | sed 's/%/%25/g; s//%0D/g; s/
-/%0A/g; s/:/%3A/g; s/,/%2C/g' | while IFS= read -r line; do
+            } | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g; s/:/%3A/g; s/,/%2C/g' | while IFS= read -r line; do
               echo "::error::$line"
             done
             exit $status
