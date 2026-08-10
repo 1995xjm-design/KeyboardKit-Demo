@@ -195,8 +195,6 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
     case gatewayDefault = "gateway"
     case nativeElevenLabs = "elevenlabs"
     case openAIRealtime = "openai-realtime"
-    case doubao = "doubao"
-    case doubaoHybrid = "doubao-hybrid"
 
     static let storageKey = "talk.providerSelection"
 
@@ -212,10 +210,6 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
             "ElevenLabs"
         case .openAIRealtime:
             "Realtime-2 (OpenAI)"
-        case .doubao:
-            "Doubao (Volcano)"
-        case .doubaoHybrid:
-            "Doubao TTS + iOS Speech"
         }
     }
 
@@ -227,7 +221,6 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
 
 enum TalkModeRuntimeRoute: Equatable {
     case localElevenLabs
-    case localDoubao
     case gatewayTalkSpeak
     case realtimeWebRTC
     case realtimeRelay
@@ -237,13 +230,12 @@ enum TalkModeRuntimeRoute: Equatable {
     }
 
     var usesGatewayTalkSpeak: Bool {
-        // localDoubao synthesizes locally (DoubaoTTSGatewaySynthesizer) but
         // reuses the same play path as gateway talk.speak.
-        self == .gatewayTalkSpeak || self == .localDoubao
+        self == .gatewayTalkSpeak
     }
 
     var gatewayOwnsCredentials: Bool {
-        self != .localElevenLabs && self != .localDoubao
+        self != .localElevenLabs
     }
 }
 
@@ -284,9 +276,6 @@ enum TalkModeRoutingResolver {
         case .nativeElevenLabs:
             activeProvider = defaultProvider
             route = .localElevenLabs
-        case .doubao, .doubaoHybrid:
-            activeProvider = "doubao"
-            route = .localDoubao
         case .openAIRealtime:
             activeProvider = "openai"
             realtimeProvider = "openai"
@@ -306,7 +295,7 @@ enum TalkModeRoutingResolver {
 
     private static func executionMode(for route: TalkModeRuntimeRoute) -> TalkModeExecutionMode {
         switch route {
-        case .localElevenLabs, .localDoubao, .gatewayTalkSpeak:
+        case .localElevenLabs, .gatewayTalkSpeak:
             .native
         case .realtimeWebRTC:
             .realtimeWebRTC

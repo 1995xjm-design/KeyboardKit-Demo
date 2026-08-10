@@ -1524,30 +1524,6 @@ final class TalkModeManager: NSObject {
         }
         input.removeTap(onBus: 0)
 
-        // Doubao ASR: install ONLY the Doubao tap (never the SFSpeech tap) and
-        // start the WebSocket recognizer before the engine runs. Reconfiguring
-        // a running engine's tap (remove+install on the same bus) trips
-        // AVAudioEngine assertions, so branch before any tap is installed.
-        if self.shouldUseDoubaoASR {
-            try self.startDoubaoRecognition(
-                pttCaptureId: pttCaptureId,
-                recognitionGeneration: recognitionGeneration,
-                input: input,
-                format: format)
-            self.audioEngine.prepare()
-            do {
-                try self.audioEngine.start()
-            } catch {
-                self.stopRecognition()
-                throw error
-            }
-            self.loggedPartialThisCycle = false
-            GatewayDiagnostics.log(
-                "talk speech: doubao ASR started mode=\(String(describing: self.captureMode)) "
-                    + "engineRunning=\(self.audioEngine.isRunning)")
-            return
-        }
-
         let tapDiagnostics = AudioTapDiagnostics(label: "talk") { [weak self] level in
             Task { @MainActor in
                 self?.updateMicLevel(level, recognitionGeneration: recognitionGeneration)
@@ -1738,106 +1714,10 @@ final class TalkModeManager: NSObject {
         self.speechErrorStatusRevisionPendingRestart = nil
     }
 
-    /// Whether Doubao ASR should be used instead of on-device recognition.
-    private var shouldUseDoubaoASR: Bool {
-        // Pure Doubao mode uses Doubao ASR; hybrid mode keeps iOS on-device
-        // speech recognition (free, low latency) with Doubao TTS.
-        self.talkProviderSelection == .doubao && DoubaoConfig.isConfigured
-    }
-
-    /// Doubao streaming recognizer while a Doubao ASR capture is active.
-    private var doubaoASR: DoubaoASRClient?
-
-    /// Starts Doubao big-model streaming ASR. The audio tap feeds
-    /// resampled 16k PCM to the WebSocket recognizer.
-    /// Starts Doubao big-model streaming ASR. Installs ONLY the Doubao tap
-    /// (caller has already removed any previous tap and has NOT installed
-    /// the SFSpeech tap yet). The engine is started by the caller.
-    private func startDoubaoRecognition(
-        pttCaptureId: String?,
-        recognitionGeneration: UInt64,
-        input: AVAudioInputNode,
-        format: AVAudioFormat) throws
-    {
-        guard DoubaoConfig.isConfigured else { return }
-        let doubao = DoubaoASRClient(apiKey: DoubaoConfig.apiKey)
-        self.doubaoASR = doubao
-        doubao.onPartial = { [weak self] text in
-            guard let self else { return }
-            Task { @MainActor in
-                await self.handleTranscript(
-                    transcript: text,
-                    isFinal: false,
-                    pttCaptureId: pttCaptureId,
-                    recognitionGeneration: recognitionGeneration)
-            }
-        }
-        doubao.onFinal = { [weak self] text in
-            guard let self else { return }
-            Task { @MainActor in
-                await self.handleTranscript(
-                    transcript: text,
-                    isFinal: true,
-                    pttCaptureId: pttCaptureId,
-                    recognitionGeneration: recognitionGeneration)
-            }
-        }
-        doubao.onError = { [weak self] error in
-            guard let self else { return }
-            Task { @MainActor in
-                self.handleDoubaoASRError(
-                    error,
-                    pttCaptureId: pttCaptureId,
-                    recognitionGeneration: recognitionGeneration)
-            }
-        }
-        try doubao.start()
-
-        let diagnostics = AudioTapDiagnostics(label: "talk-doubao") { [weak self] level in
-            Task { @MainActor in
-                self?.updateMicLevel(level, recognitionGeneration: recognitionGeneration)
-            }
-        }
-        self.audioTapDiagnostics = diagnostics
-        // Tap buffers are reused by AVAudioEngine: resample synchronously
-        // on the audio thread and hand a Data copy to the recognizer.
-        // DoubaoASRClient is thread-safe (not MainActor), so the tap can
-        // call appendPCM directly without a MainActor hop — hopping from
-        // the audio thread trips Swift 6 executor assertions (SIGTRAP).
-        var doubaoConverter: AVAudioConverter?
-        let doubaoTapClient = doubao
-        input.installTap(onBus: 0, bufferSize: 2048, format: format) { buffer, _ in
-            if let pcm = DoubaoASRClient.resample(buffer, converter: &doubaoConverter) {
-                doubaoTapClient.appendPCM(pcm)
-            }
-            diagnostics.onBuffer(buffer)
-        }
-        self.inputTapInstalled = true
-        self.loggedPartialThisCycle = false
-        GatewayDiagnostics.log("talk speech: doubao ASR started")
-    }
-
-    /// Reports a Doubao ASR failure through the normal talk issue path.
-    private func handleDoubaoASRError(
-        _ error: Error,
-        pttCaptureId: String?,
-        recognitionGeneration: UInt64)
-    {
-        guard self.recognitionGeneration == recognitionGeneration else { return }
-        self.pendingRealtimeIssue = TalkRuntimeIssue(
-            code: .realtimeUnavailable,
-            message: error.localizedDescription)
-        self.doubaoASR?.close()
-        self.doubaoASR = nil
-    }
-
     private func stopRecognition() {
         // Speech may deliver buffered callbacks after cancellation. Advancing the
         // owner before teardown makes every old callback and audio-level task inert.
         self.recognitionGeneration &+= 1
-        self.doubaoASR?.finish()
-        self.doubaoASR?.close()
-        self.doubaoASR = nil
         self.recognitionTask?.cancel()
         self.recognitionTask = nil
         self.recognitionRequest?.endAudio()
@@ -3221,9 +3101,6 @@ final class TalkModeManager: NSObject {
         let synthesizer: any TalkGatewaySpeechSynthesizing
         if let gatewaySpeechSynthesizerOverride {
             synthesizer = gatewaySpeechSynthesizerOverride
-        } else if (self.talkProviderSelection == .doubao || self.talkProviderSelection == .doubaoHybrid),
-                  let doubaoSynthesizer = DoubaoTTSGatewaySynthesizer() {
-            synthesizer = doubaoSynthesizer
         } else if let gateway = gatewayOverride ?? gateway, let gatewayRoute {
             synthesizer = TalkGatewaySpeechClient(gateway: gateway, route: gatewayRoute)
         } else {
@@ -4193,8 +4070,6 @@ extension TalkModeManager {
         switch provider.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
         case "elevenlabs":
             "ElevenLabs"
-        case "doubao":
-            "Doubao"
         case "openai":
             "OpenAI"
         case "google":

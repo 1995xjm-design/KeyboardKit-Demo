@@ -1,5 +1,4 @@
 import OpenClawKit
-import AVFoundation
 import SwiftUI
 
 /// iOS Settings-style icon: white glyph on a solid rounded-square, sized for a List row.
@@ -166,31 +165,6 @@ private struct AppearanceSettingsScreen: View {
 }
 
 extension SettingsProTab {
-    /// Doubao credential bindings (UserDefaults-backed; extensions cannot
-    /// declare @AppStorage stored properties).
-    private var doubaoAPIKeyBinding: Binding<String> {
-        Binding(get: { DoubaoConfig.apiKey }, set: { DoubaoConfig.apiKey = $0 })
-    }
-
-    private var doubaoVoiceTypeBinding: Binding<String> {
-        Binding(get: { DoubaoConfig.voiceType }, set: { DoubaoConfig.voiceType = $0 })
-    }
-
-    /// Picker selection: preset IDs, or the custom tag when the stored voice
-    /// type is not one of the presets. Selecting a preset saves it; selecting
-    /// the custom tag keeps the current value and reveals the ID field.
-    private var doubaoVoicePickerBinding: Binding<String> {
-        Binding(
-            get: {
-                DoubaoConfig.isPresetVoice(DoubaoConfig.voiceType)
-                    ? DoubaoConfig.voiceType
-                    : DoubaoConfig.customVoiceTag
-            },
-            set: { newValue in
-                if newValue != DoubaoConfig.customVoiceTag {
-                    DoubaoConfig.voiceType = newValue
-                }
-            })
     }
     var appearanceRow: some View {
         AppearanceSettingsRow()
@@ -1528,33 +1502,6 @@ extension SettingsProTab {
                     value: .localized(self.appModel.talkMode.gatewayTalkTransportLabel))
                 SettingsDetailRow("API Key", value: .verbatim(self.talkApiKeyStatus))
             }
-            if self.talkProviderSelectionRaw == TalkModeProviderSelection.doubao.rawValue {
-                Section("Doubao Credentials") {
-                    SecureField("API Key", text: self.doubaoAPIKeyBinding)
-                        .font(OpenClawType.body)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                    Picker("Voice", selection: self.doubaoVoicePickerBinding) {
-                        ForEach(DoubaoConfig.presetVoices) { voice in
-                            Text(voice.name).font(OpenClawType.body).tag(voice.id)
-                        }
-                        Text("Custom...").font(OpenClawType.body).tag(DoubaoConfig.customVoiceTag)
-                    }
-                    .font(OpenClawType.body)
-                    DoubaoVoicePreviewButton()
-                    if !DoubaoConfig.isPresetVoice(DoubaoConfig.voiceType) {
-                        TextField("Voice Type ID", text: self.doubaoVoiceTypeBinding)
-                            .font(OpenClawType.body)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                    }
-                    if !DoubaoConfig.isConfigured {
-                        Text("Enter your Volcano Engine speech App ID and Access Token to use Doubao TTS and ASR.")
-                            .font(OpenClawType.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
         }
     }
 
@@ -1641,93 +1588,6 @@ extension SettingsProTab {
             : String(localized: "Off"))
         .onChange(of: isOn.wrappedValue) { _, enabled in
             onChange?(enabled)
-        }
-    }
-}
-
-// MARK: - Doubao voice preview
-
-/// Plays a short Doubao TTS sample for the currently selected voice,
-/// using the same V3 WebSocket synthesis as talk playback.
-private struct DoubaoVoicePreviewButton: View {
-    @State private var isPreviewing = false
-    @State private var player: AVAudioPlayer?
-
-    var body: some View {
-        Button {
-            togglePreview()
-        } label: {
-            Label(
-                isPreviewing ? "Stop Preview" : "Preview Voice",
-                systemImage: isPreviewing ? "stop.circle.fill" : "speaker.wave.2.fill")
-                .font(OpenClawType.body)
-                .foregroundStyle(OpenClawBrand.accent)
-        }
-        .disabled(!DoubaoConfig.isConfigured)
-        .opacity(DoubaoConfig.isConfigured ? 1 : 0.4)
-    }
-
-    private func togglePreview() {
-        if isPreviewing {
-            player?.stop()
-            player = nil
-            isPreviewing = false
-            return
-        }
-        guard DoubaoConfig.isConfigured else { return }
-        isPreviewing = true
-        Task {
-            do {
-                let client = DoubaoTTSClient(
-                    apiKey: DoubaoConfig.apiKey,
-                    voiceType: DoubaoConfig.voiceType)
-                let pcm = try await client.synthesize(
-                    text: "你好，我是你的豆包语音助手，很高兴认识你。")
-                let wav = Self.wavData(pcm: pcm, sampleRate: 24000)
-                let player = try AVAudioPlayer(data: wav)
-                player.delegate = self
-                player.play()
-                self.player = player
-            } catch {
-                self.isPreviewing = false
-            }
-        }
-    }
-
-    /// Wraps raw s16le PCM into a WAV container for AVAudioPlayer.
-    private static func wavData(pcm: Data, sampleRate: Int) -> Data {
-        var header = Data()
-        header.append(contentsOf: "RIFF".utf8)
-        var fileSize = UInt32(36 + pcm.count).littleEndian
-        header.append(Data(bytes: &fileSize, count: 4))
-        header.append(contentsOf: "WAVE".utf8)
-        header.append(contentsOf: "fmt ".utf8)
-        var fmtSize = UInt32(16).littleEndian
-        header.append(Data(bytes: &fmtSize, count: 4))
-        var format = UInt16(1).littleEndian
-        header.append(Data(bytes: &format, count: 2))
-        var channels = UInt16(1).littleEndian
-        header.append(Data(bytes: &channels, count: 2))
-        var rate = UInt32(sampleRate).littleEndian
-        header.append(Data(bytes: &rate, count: 4))
-        var byteRate = UInt32(sampleRate * 2).littleEndian
-        header.append(Data(bytes: &byteRate, count: 4))
-        var blockAlign = UInt16(2).littleEndian
-        header.append(Data(bytes: &blockAlign, count: 2))
-        var bits = UInt16(16).littleEndian
-        header.append(Data(bytes: &bits, count: 2))
-        header.append(contentsOf: "data".utf8)
-        var dataSize = UInt32(pcm.count).littleEndian
-        header.append(Data(bytes: &dataSize, count: 4))
-        return header + pcm
-    }
-}
-
-extension DoubaoVoicePreviewButton: AVAudioPlayerDelegate {
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        Task { @MainActor in
-            self.isPreviewing = false
-            self.player = nil
         }
     }
 }
