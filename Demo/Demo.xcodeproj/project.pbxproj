@@ -147,7 +147,7 @@
 		A99A1F052E640E130014973F /* KeyboardKit+Demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardKit+Demo.swift"; sourceTree = "<group>"; };
 		A99A1F062E640E130014973F /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		A9A58B7F2CF4C0EF004DC7BE /* StandardSpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardSpeechRecognizer.swift; sourceTree = "<group>"; };
-		A9D300000000000000000003 /* SharedSupport */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources/SharedSupport; sourceTree = "<group>"; };
+		A9D300000000000000000003 /* SharedSupport */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "../Resources/SharedSupport"; sourceTree = "<group>"; };
 		A9DBBFDB2CF3C53A007B48F4 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		A9D200000000000000000011 /* RimeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese/RimeContext.swift; sourceTree = "<group>"; };
 		A9D200000000000000000012 /* CandidateSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese/CandidateSuggestion.swift; sourceTree = "<group>"; };
