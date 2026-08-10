@@ -190,6 +190,6 @@ final class DoubaoTTSGatewaySynthesizer: TalkGatewaySpeechSynthesizing {
         return TalkGatewaySpeechAudio(
             data: data,
             provider: "doubao",
-            outputFormat: "pcm")
+            outputFormat: "pcm_24000")
     }
 }
