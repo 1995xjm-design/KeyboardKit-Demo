@@ -21,6 +21,7 @@ struct DemoKeyboardView: View {
     var state: Keyboard.State
     let controller: KeyboardInputViewController
     @ObservedObject var chinese: ChineseInputController
+    let rime: RimeContext
 
     @AppStorage("com.keyboardkit.demo.isToolbarToggled")
     var isToolbarToggled = false
@@ -80,12 +81,9 @@ private extension DemoKeyboardView {
     // Native-style top bar: candidates + mode switch.
     var topFunctionalBar: some View {
         HStack(spacing: 6) {
-            if chinese.hasActiveInput {
-                CandidateBarView(
-                    pinyin: chinese.pinyinBuffer,
-                    candidates: chinese.candidates
-                ) { candidate in
-                    controller.textDocumentProxy.insertText(chinese.select(candidate))
+            if chinese.isChineseMode {
+                RimeCandidateBarView(rime: rime) { candidate in
+                    rime.selectCandidate(index: candidate.index)
                 }
             } else {
                 Spacer()
@@ -124,6 +122,14 @@ private extension DemoKeyboardView {
                 onDelete: { deleteBackward() },
                 onReturn: { insertText("\n") }
             )
+        } else if chinese.isChineseMode {
+            // 中文模式：Hamster 原版九宫格（Rime 引擎）
+            NineGridView(
+                rime: rime,
+                controller: controller,
+                onShowSymbols: { chinese.toggleSymbolKeyboard() },
+                onToggleMode: { toggleInputMode() }
+            )
         } else {
             mainKeyboard
         }
@@ -159,7 +165,15 @@ private extension DemoKeyboardView {
 
     func toggleInputMode() {
         chinese.toggleMode()
-        keyboardContext.locale = Locale(identifier: chinese.isChineseMode ? "zh-Hans" : "en")
+        Task { @MainActor in
+            if chinese.isChineseMode {
+                rime.reset()
+                rime.setAsciiMode(false)
+            } else {
+                rime.setAsciiMode(true)
+            }
+            keyboardContext.locale = Locale(identifier: chinese.isChineseMode ? "zh-Hans" : "en")
+        }
     }
 
     // 💡 Text output helpers.

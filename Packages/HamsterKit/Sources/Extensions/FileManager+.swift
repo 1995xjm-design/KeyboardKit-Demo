@@ -252,9 +252,12 @@ public extension FileManager {
   // 注意：AppGroup已变为Keyboard复制方案使用的中转站
   // App内部使用位置在 Document 和 iCloud 下
   static var shareURL: URL {
-    FileManager.default.containerURL(
-      forSecurityApplicationGroupIdentifier: HamsterConstants.appGroupName)!
-      .appendingPathComponent("InputSchema")
+    // App Group 未配置（未签名/侧载）时降级到沙盒，避免 containerURL 返回 nil 崩溃
+    if let url = FileManager.default.containerURL(
+      forSecurityApplicationGroupIdentifier: HamsterConstants.appGroupName) {
+      return url.appendingPathComponent("InputSchema")
+    }
+    return sandboxDirectory.appendingPathComponent("InputSchema")
   }
 
   static var sandboxDirectory: URL {

@@ -70,6 +70,19 @@
 		A9D100000000000000000006 /* HamsterKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9D100000000000000000004 /* HamsterKit */; };
 		A9D100000000000000000007 /* RimeKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9D100000000000000000003 /* RimeKit */; };
 		A9D100000000000000000008 /* HamsterKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9D100000000000000000004 /* HamsterKit */; };
+		A9D300000000000000000001 /* SharedSupport in Resources */ = {isa = PBXBuildFile; fileRef = A9D300000000000000000003 /* SharedSupport */; };
+		A9D300000000000000000002 /* SharedSupport in Resources */ = {isa = PBXBuildFile; fileRef = A9D300000000000000000003 /* SharedSupport */; };
+		A9D200000000000000000001 /* RimeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000011 /* RimeContext.swift */; };
+		A9D20000000000000000000B /* RimeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000011 /* RimeContext.swift */; };
+		A9D200000000000000000002 /* CandidateSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000012 /* CandidateSuggestion.swift */; };
+		A9D20000000000000000000C /* CandidateSuggestion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000012 /* CandidateSuggestion.swift */; };
+		A9D200000000000000000003 /* RimeBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000013 /* RimeBootstrap.swift */; };
+		A9D20000000000000000000D /* RimeBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000013 /* RimeBootstrap.swift */; };
+		A9D200000000000000000004 /* NineGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000014 /* NineGridView.swift */; };
+		A9D20000000000000000000E /* NineGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000014 /* NineGridView.swift */; };
+		A9D200000000000000000005 /* RimeCandidateBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000015 /* RimeCandidateBarView.swift */; };
+		A9D20000000000000000000F /* RimeCandidateBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9D200000000000000000015 /* RimeCandidateBarView.swift */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,7 +147,14 @@
 		A99A1F052E640E130014973F /* KeyboardKit+Demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardKit+Demo.swift"; sourceTree = "<group>"; };
 		A99A1F062E640E130014973F /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		A9A58B7F2CF4C0EF004DC7BE /* StandardSpeechRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandardSpeechRecognizer.swift; sourceTree = "<group>"; };
+		A9D300000000000000000003 /* SharedSupport */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources/SharedSupport; sourceTree = "<group>"; };
 		A9DBBFDB2CF3C53A007B48F4 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		A9D200000000000000000011 /* RimeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese/RimeContext.swift; sourceTree = "<group>"; };
+		A9D200000000000000000012 /* CandidateSuggestion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese/CandidateSuggestion.swift; sourceTree = "<group>"; };
+		A9D200000000000000000013 /* RimeBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese/RimeBootstrap.swift; sourceTree = "<group>"; };
+		A9D200000000000000000014 /* NineGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese/NineGridView.swift; sourceTree = "<group>"; };
+		A9D200000000000000000015 /* RimeCandidateBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese/RimeCandidateBarView.swift; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +193,7 @@
 				A921152325D58A94003510D9 /* Products */,
 				A921155425D58D95003510D9 /* Frameworks */,
 				A9CC0000000000000000010D /* Shared */,
+				A9D300000000000000000003 /* SharedSupport */,
 			);
 			sourceTree = "<group>";
 		};
@@ -279,6 +300,11 @@
 				A9CC00000000000000000103 /* CandidateBarView.swift */,
 				A9CC00000000000000000104 /* SymbolKeyboardView.swift */,
 				A9CC00000000000000000110 /* MoreOptionsPanelView.swift */,
+				A9D200000000000000000011 /* RimeContext.swift */,
+				A9D200000000000000000012 /* CandidateSuggestion.swift */,
+				A9D200000000000000000013 /* RimeBootstrap.swift */,
+				A9D200000000000000000014 /* NineGridView.swift */,
+				A9D200000000000000000015 /* RimeCandidateBarView.swift */,
 			);
 			path = Keyboard;
 			sourceTree = "<group>";
@@ -434,6 +460,7 @@
 				A921152A25D58A96003510D9 /* Assets.xcassets in Resources */,
 				A9DBBFDC2CF3C53A007B48F4 /* Localizable.xcstrings in Resources */,
 				A9855EED2CCBDD8000FD9F0A /* KeyboardKit.license in Resources */,
+				A9D300000000000000000001 /* SharedSupport in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +471,7 @@
 				A99A1F082E640E130014973F /* fuse.wav in Resources */,
 				A99A1F152E640EB20014973F /* KeyboardKit.license in Resources */,
 				A99A1F472E66C2CC0014973F /* Localizable.xcstrings in Resources */,
+				A9D300000000000000000002 /* SharedSupport in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -474,6 +502,11 @@
 				A9CC00000000000000000221 /* UserPreferences.swift in Sources */,
 				A9CC00000000000000000222 /* StorageService.swift in Sources */,
 				A9CC00000000000000000223 /* APIService.swift in Sources */,
+				A9D200000000000000000001 /* RimeContext.swift in Sources */,
+				A9D200000000000000000002 /* CandidateSuggestion.swift in Sources */,
+				A9D200000000000000000003 /* RimeBootstrap.swift in Sources */,
+				A9D200000000000000000004 /* NineGridView.swift in Sources */,
+				A9D200000000000000000005 /* RimeCandidateBarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,6 +539,11 @@
 				A9CC00000000000000000210 /* APIKeyStore.swift in Sources */,
 				A9CC00000000000000000214 /* APISettingsView.swift in Sources */,
 				A9CC00000000000000000216 /* ChineseSettingsView.swift in Sources */,
+				A9D20000000000000000000B /* RimeContext.swift in Sources */,
+				A9D20000000000000000000C /* CandidateSuggestion.swift in Sources */,
+				A9D20000000000000000000D /* RimeBootstrap.swift in Sources */,
+				A9D20000000000000000000E /* NineGridView.swift in Sources */,
+				A9D20000000000000000000F /* RimeCandidateBarView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

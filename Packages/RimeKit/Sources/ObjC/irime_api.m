@@ -417,7 +417,11 @@ static RimeLeversApi *get_levers() {
 }
 
 - (BOOL)replaceInputKeys:(NSString *)keys withStartPos:(int)pos AndCount:(int)length AndSession:(RimeSessionId)session {
-  return RimeReplaceInput(session, pos, length, [keys UTF8String]);
+  // 部分 librime 构建（如 zhanggenlove/LibrimeKit v0.1.0）未导出 RimeReplaceInput。
+  // 该 API 语义为整段替换输入（start=0, len=全部），用「清空组合 + 模拟按键」等价实现，
+  // 九宫格场景下效果一致：清掉旧输入编码并重新输入新编码，候选由 Rime 引擎重新计算。
+  RimeClearComposition(session);
+  return RimeSimulateKeySequence(session, [keys UTF8String]);
 }
 
 - (NSArray<IRimeCandidate *> *)getCandidateList:(RimeSessionId)session {

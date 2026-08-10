@@ -6,7 +6,9 @@
 //  Copyright © 2023-2025 Daniel Saidi. All rights reserved.
 //
 
+import Combine
 import Foundation
+import HamsterKit
 import KeyboardKit
 import SwiftUI
 
@@ -21,9 +23,14 @@ import SwiftUI
 class KeyboardViewController: KeyboardInputViewController {
 
     /// Chinese input state shared by the action handler and
-    /// the keyboard view (candidate bar, symbol keyboard,
-    /// help reply and super talk panels).
+    /// the keyboard view (candidate bar, symbol keyboard).
     lazy var chineseInput = ChineseInputController()
+
+    /// Rime 引擎运行时（九宫格中文输入），由本控制器持有，
+    /// 与候选栏 / 九宫格键盘视图共享。
+    lazy var rime = RimeContext()
+
+    private var cancellables = Set<AnyCancellable>()
 
     /// ‼️ If this doesn't log when the debugger is attached,
     /// there is a memory leak.
@@ -31,6 +38,15 @@ class KeyboardViewController: KeyboardInputViewController {
         NSLog("__DEINIT__")
     }
 
+
+    /// 键盘加载时异步启动 Rime 引擎并订阅上屏事件。
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        Task { @MainActor in
+            await rime.start(hasFullAccess: state.keyboardContext.hasFullAccess)
+            setupCombineRIMEInput()
+        }
+    }
 
     /// This function is called when the controller launches,
     /// and is where you can set up KeyboardKit for your app.
@@ -71,13 +87,43 @@ class KeyboardViewController: KeyboardInputViewController {
                 services: controller.services,
                 state: controller.state,
                 controller: controller,
-                chinese: self?.chineseInput ?? ChineseInputController()
+                chinese: self?.chineseInput ?? ChineseInputController(),
+                rime: self?.rime ?? RimeContext()
             )
         }
     }
 }
 
 private extension KeyboardViewController {
+
+    /// Combine 观测 RIME 引擎中的用户输入及上屏文字。
+    func setupCombineRIMEInput() {
+        rime.userInputKeyPublished
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                var commitText = self.rime.commitText
+                self.rime.resetCommitText()
+                if !commitText.isEmpty {
+                    if self.chineseInput.isChineseMode {
+                        commitText = commitText.replaceT9pinyin
+                    }
+                    self.textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+                        self.textDocumentProxy.insertText(commitText)
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.001) {
+                    if self.chineseInput.isChineseMode {
+                        let t9 = self.rime.t9UserInputKey
+                        self.textDocumentProxy.setMarkedText(t9, selectedRange: NSRange(location: t9.utf8.count, length: 0))
+                    } else {
+                        self.textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
 
     /// Make demo-specific changes to your keyboard services.
     func setupDemoServices() {
