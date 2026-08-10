@@ -96,8 +96,7 @@ struct DoubaoTTSClient {
             switch message {
             case .data(let data):
                 do {
-                    let outcome = try Self.parseFrame(data, audio: &audio)
-                    if outcome.finished {
+                    if try Self.parseFrame(data, audio: &audio) {
                         finished = true
                     }
                 } catch {
@@ -123,7 +122,7 @@ struct DoubaoTTSClient {
     /// Parses one TTS response frame, appending audio payloads.
     private static func parseFrame(
         _ data: Data,
-        audio: inout Data) throws -> (finished: Bool)
+        audio: inout Data) throws -> Bool
     {
         guard data.count >= 4 else { throw DoubaoTTSClientError.malformedFrame }
         let msgType = (data[1] >> 4) & 0x0F
@@ -168,7 +167,7 @@ struct DoubaoTTSClient {
         }
 
         // 152 = SessionFinished, 52 = ConnectionFinished
-        return (finished: event == 152 || event == 52)
+        return event == 152 || event == 52
     }
 }
 
