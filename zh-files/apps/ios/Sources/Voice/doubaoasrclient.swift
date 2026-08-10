@@ -35,23 +35,19 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
 
     private let appID: String
     private let token: String
-    private let apiKey: String
     private let language: String
 
     init(
         appID: String,
         token: String,
-        apiKey: String = "",
         language: String = DoubaoConfig.defaultASRLanguage)
     {
         self.appID = appID
         self.token = token
-        self.apiKey = apiKey
         self.language = language
         super.init()
     }
 
-    private var usesArkKey: Bool { !apiKey.isEmpty }
 
     // MARK: - Lifecycle
 
@@ -62,24 +58,15 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         self.session = session
         lock.unlock()
 
-        let url: URL
-        if usesArkKey {
-            guard let arkURL = URL(string: DoubaoConfig.asrEndpoint.absoluteString + "?x-api-app-key=" + apiKey) else {
-                throw DoubaoASRClientError.invalidURL
-            }
-            url = arkURL
-        } else {
-            var urlComponents = URLComponents(
-                url: DoubaoConfig.asrEndpoint,
-                resolvingAgainstBaseURL: false)!
-            urlComponents.queryItems = [
-                URLQueryItem(name: "appid", value: appID),
-                URLQueryItem(name: "token", value: token),
-            ]
-            guard let composed = urlComponents.url else {
-                throw DoubaoASRClientError.invalidURL
-            }
-            url = composed
+        var urlComponents = URLComponents(
+            url: DoubaoConfig.asrEndpoint,
+            resolvingAgainstBaseURL: false)!
+        urlComponents.queryItems = [
+            URLQueryItem(name: "appid", value: appID),
+            URLQueryItem(name: "token", value: token),
+        ]
+        guard let url = urlComponents.url else {
+            throw DoubaoASRClientError.invalidURL
         }
 
         let task = session.webSocketTask(with: url)
@@ -87,11 +74,10 @@ final class DoubaoASRClient: NSObject, URLSessionWebSocketDelegate {
         self.task = task
         lock.unlock()
 
-        let authToken = usesArkKey ? apiKey : token
         let startPayload: [String: Any] = [
             "header": [
                 "appid": appID,
-                "token": authToken,
+                "token": token,
                 "event": "start",
                 "namespace": "audio",
                 "message_id": UUID().uuidString,

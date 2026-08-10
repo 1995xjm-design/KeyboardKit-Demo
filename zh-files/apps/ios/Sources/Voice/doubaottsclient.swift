@@ -68,23 +68,17 @@ enum DoubaoTTSClientError: LocalizedError {
 struct DoubaoTTSClient {
     let appID: String
     let token: String
-    let apiKey: String
     let voiceType: String
 
     init(
         appID: String,
         token: String,
-        apiKey: String = "",
         voiceType: String = DoubaoConfig.defaultVoiceType)
     {
         self.appID = appID
         self.token = token
-        self.apiKey = apiKey
         self.voiceType = voiceType
     }
-
-    /// Uses Ark API Key auth when present, otherwise appid+token.
-    private var usesArkKey: Bool { !apiKey.isEmpty }
 
     /// Synthesizes text into a complete audio file (MP3 by default).
     func synthesize(text: String) async throws -> Data {
@@ -92,7 +86,7 @@ struct DoubaoTTSClient {
         let body: [String: Any] = [
             "app": [
                 "appid": appID,
-                "token": usesArkKey ? apiKey : token,
+                "token": token,
                 "cluster": "volcano_tts",
             ],
             "user": [
@@ -114,12 +108,7 @@ struct DoubaoTTSClient {
 
         var request = URLRequest(url: DoubaoConfig.ttsEndpoint)
         request.httpMethod = "POST"
-        if usesArkKey {
-            request.setValue(apiKey, forHTTPHeaderField: "X-Api-App-Key")
-            request.setValue("Bearer; \(apiKey)", forHTTPHeaderField: "Authorization")
-        } else {
-            request.setValue("Bearer; \(token)", forHTTPHeaderField: "Authorization")
-        }
+        request.setValue("Bearer; \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
@@ -180,7 +169,6 @@ final class DoubaoTTSGatewaySynthesizer: TalkGatewaySpeechSynthesizing {
         self.init(client: DoubaoTTSClient(
             appID: DoubaoConfig.appID,
             token: DoubaoConfig.token,
-            apiKey: DoubaoConfig.apiKey,
             voiceType: DoubaoConfig.voiceType))
     }
 
