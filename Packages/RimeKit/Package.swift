@@ -32,7 +32,13 @@ let package = Package(
       path: "../../Frameworks/libyaml-cpp.xcframework"),
     .target(
       name: "RimeKitObjC",
-      dependencies: [],
+      dependencies: [
+        "librimeRIME",
+        "libleveldbRIME",
+        "libmarisaRIME",
+        "libopenccRIME",
+        "libyaml-cppRIME",
+      ],
       path: "Sources/ObjC",
       linkerSettings: [
         .linkedLibrary("c++"),
