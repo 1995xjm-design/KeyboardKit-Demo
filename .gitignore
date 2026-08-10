@@ -1,7 +1,10 @@
 .DS_Store
 /.build
-/Packages
-.swiftpm/**.*
+/Packages/*
+!/Packages/RimeKit/
+!/Packages/HamsterKit/
+/.swiftpm/**.*
 xcshareddata
 xcuserdata/
 DerivedData/
+/Frameworks/

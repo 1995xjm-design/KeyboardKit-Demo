@@ -66,6 +66,10 @@
 		A9C28FC52FE1959E00676DC4 /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9C28FC42FE1959E00676DC4 /* KeyboardKit */; };
 		A9C28FCA2FE196F100676DC4 /* KeyboardKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9C28FC92FE196F100676DC4 /* KeyboardKit */; };
 		A9DBBFDC2CF3C53A007B48F4 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = A9DBBFDB2CF3C53A007B48F4 /* Localizable.xcstrings */; };
+		A9D100000000000000000005 /* RimeKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9D100000000000000000003 /* RimeKit */; };
+		A9D100000000000000000006 /* HamsterKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9D100000000000000000004 /* HamsterKit */; };
+		A9D100000000000000000007 /* RimeKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9D100000000000000000003 /* RimeKit */; };
+		A9D100000000000000000008 /* HamsterKit in Frameworks */ = {isa = PBXBuildFile; productRef = A9D100000000000000000004 /* HamsterKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -144,6 +148,8 @@
 				A90FB59A2EB9194600D95EDE /* KeyboardKit in Frameworks */,
 				A9C28FCA2FE196F100676DC4 /* KeyboardKit in Frameworks */,
 				A99A1EAB2E6324B10014973F /* KeyboardKit in Frameworks */,
+				A9D100000000000000000005 /* RimeKit in Frameworks */,
+				A9D100000000000000000006 /* HamsterKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +157,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			A9D100000000000000000007 /* RimeKit in Frameworks */,
+			A9D100000000000000000008 /* HamsterKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,6 +354,8 @@
 				A944846D2ECDA485005337C1 /* KeyboardKit */,
 				A9C28FC42FE1959E00676DC4 /* KeyboardKit */,
 				A9C28FC92FE196F100676DC4 /* KeyboardKit */,
+				A9D100000000000000000003 /* RimeKit */,
+				A9D100000000000000000004 /* HamsterKit */,
 			);
 			productName = Demo;
 			productReference = A921152225D58A94003510D9 /* Demo.app */;
@@ -365,6 +375,8 @@
 			);
 			name = Keyboard;
 			packageProductDependencies = (
+			A9D100000000000000000003 /* RimeKit */,
+			A9D100000000000000000004 /* HamsterKit */,
 			);
 			productName = Keyboard;
 			productReference = A99A1ED52E640D5A0014973F /* Keyboard.appex */;
@@ -400,6 +412,8 @@
 			mainGroup = A921151925D58A94003510D9;
 			packageReferences = (
 				A9C28FC82FE196F100676DC4 /* XCRemoteSwiftPackageReference "keyboardkit" */,
+				A9D100000000000000000001 /* XCLocalSwiftPackageReference "RimeKit" */,
+				A9D100000000000000000002 /* XCLocalSwiftPackageReference "HamsterKit" */,
 			);
 			productRefGroup = A921152325D58A94003510D9 /* Products */;
 			projectDirPath = "";
@@ -762,6 +776,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		A9D100000000000000000001 /* XCLocalSwiftPackageReference "RimeKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../Packages/RimeKit";
+		};
+		A9D100000000000000000002 /* XCLocalSwiftPackageReference "HamsterKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../Packages/HamsterKit";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		A9C28FC82FE196F100676DC4 /* XCRemoteSwiftPackageReference "keyboardkit" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -798,6 +823,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A9C28FC82FE196F100676DC4 /* XCRemoteSwiftPackageReference "keyboardkit" */;
 			productName = KeyboardKit;
+		};
+		A9D100000000000000000003 /* RimeKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9D100000000000000000001 /* XCLocalSwiftPackageReference "RimeKit" */;
+			productName = RimeKit;
+		};
+		A9D100000000000000000004 /* HamsterKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9D100000000000000000002 /* XCLocalSwiftPackageReference "HamsterKit" */;
+			productName = HamsterKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
