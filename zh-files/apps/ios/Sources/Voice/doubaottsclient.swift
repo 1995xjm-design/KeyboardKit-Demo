@@ -11,7 +11,31 @@ import Foundation
 struct DoubaoTTSResult: Decodable {
     let code: Int?
     let message: String?
-    let data: [DoubaoTTSChunk]?
+    // The verified big-model HTTP API returns `data` as a single base64
+    // audio string (PCM int16 24kHz mono); some deployments return an
+    // array of chunks. Support both.
+    let data: String?
+    let dataChunks: [DoubaoTTSChunk]?
+
+    enum CodingKeys: String, CodingKey {
+        case code, message, data
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        code = try container.decodeIfPresent(Int.self, forKey: .code)
+        message = try container.decodeIfPresent(String.self, forKey: .message)
+        if let string = try? container.decodeIfPresent(String.self, forKey: .data) {
+            data = string
+            dataChunks = nil
+        } else if let chunks = try? container.decodeIfPresent([DoubaoTTSChunk].self, forKey: .data) {
+            data = nil
+            dataChunks = chunks
+        } else {
+            data = nil
+            dataChunks = nil
+        }
+    }
 
     var isSuccess: Bool { (code ?? 0) == 3000 }
 }
@@ -76,13 +100,14 @@ struct DoubaoTTSClient {
             ],
             "audio": [
                 "voice_type": voiceType,
-                "encoding": "mp3",
+                "encoding": "pcm",
                 "rate": 24000,
                 "speed_ratio": 1.0,
             ],
             "request": [
                 "reqid": reqid,
                 "text": text,
+                "text_type": "plain",
                 "operation": "query",
             ],
         ]
@@ -113,16 +138,18 @@ struct DoubaoTTSClient {
                 result.message ?? "unknown")
         }
 
-        // Big-model TTS returns audio in chunks; concatenate all base64 chunks.
+        // The verified API returns a single base64 audio string; also
+        // support chunk arrays for compatibility.
         var audio = Data()
-        if let chunks = result.data {
+        if let b64 = result.data, let direct = Data(base64Encoded: b64) {
+            audio = direct
+        } else if let chunks = result.dataChunks {
             for chunk in chunks {
                 if let b64 = chunk.audio, let chunkData = Data(base64Encoded: b64) {
                     audio.append(chunkData)
                 }
             }
         }
-        // Fallback: some responses carry audio directly under "audio".
         if audio.isEmpty {
             if let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let b64 = obj["audio"] as? String,
@@ -163,6 +190,6 @@ final class DoubaoTTSGatewaySynthesizer: TalkGatewaySpeechSynthesizing {
         return TalkGatewaySpeechAudio(
             data: data,
             provider: "doubao",
-            outputFormat: "mp3")
+            outputFormat: "pcm")
     }
 }
