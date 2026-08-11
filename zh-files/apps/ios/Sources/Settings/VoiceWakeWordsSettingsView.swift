@@ -46,7 +46,6 @@ struct VoiceWakeWordsSettingsView: View {
                 Text(
                     String(
                         localized:
-                        // swiftlint:disable:next line_length
                         "OpenClaw reacts when any trigger appears in a transcription. Keep them short to avoid false positives."))
                     .font(OpenClawType.caption)
                 // swiftlint:enable line_length

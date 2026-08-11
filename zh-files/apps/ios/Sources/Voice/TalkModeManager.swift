@@ -2001,8 +2001,8 @@ final class TalkModeManager: NSObject {
                 throw NSError(
                     domain: "TalkModeManager",
                     code: 2,
-                    // swiftlint:disable:next line_length
-                    userInfo: [NSLocalizedDescriptionKey: String(localized: "Gateway returned a mismatched chat run ID")])
+                    userInfo: [
+                NSLocalizedDescriptionKey: String(localized: "Gateway returned a mismatched chat run ID")])
             }
             let normalizedStatus = Self.normalizedChatSendStatus(acknowledgement.status)
             self.logger.info(

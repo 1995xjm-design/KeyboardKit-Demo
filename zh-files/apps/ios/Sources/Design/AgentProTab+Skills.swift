@@ -229,8 +229,9 @@ extension AgentProTab {
     }
 
     var skillPolicySummary: String {
-        // swiftlint:disable:next line_length
-        if appModel.isAppleReviewDemoModeEnabled { return String(localized: "Demo mode keeps live skill changes disabled.") }
+        if appModel.isAppleReviewDemoModeEnabled {
+            return String(localized: "Demo mode keeps live skill changes disabled.")
+        }
         guard gatewayConnected else { return String(localized: "Connect a gateway to edit skills.") }
         guard let filter = agentSkillFilter else {
             return String(localized: "All available skills are allowed for this agent.")
@@ -735,8 +736,8 @@ extension AgentProTab {
                 method: "skills.install",
                 params: params,
                 timeoutSeconds: 125)
-            // swiftlint:disable:next line_length
-            return (try? JSONDecoder().decode(SkillInstallResultLite.self, from: data).message) ?? String(localized: "Installed.")
+            return (try? JSONDecoder().decode(SkillInstallResultLite.self, from: data).message)
+                ?? String(localized: "Installed.")
         }
     }
 

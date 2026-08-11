@@ -2567,8 +2567,11 @@ final class NodeAppModel {
                 width: res.width,
                 height: res.height))
             try Task.checkCancellation()
-            // swiftlint:disable:next line_length
-            updateCameraHUD(ownerID: req.id, text: String(localized: "Photo captured"), kind: .success, autoHideSeconds: 1.6)
+            updateCameraHUD(
+                ownerID: req.id,
+                text: String(localized: "Photo captured"),
+                kind: .success,
+                autoHideSeconds: 1.6)
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
         case OpenClawCameraCommand.clip.rawValue:
             let params = (try? Self.decodeParams(OpenClawCameraClipParams.self, from: req.paramsJSON)) ??
@@ -2598,8 +2601,11 @@ final class NodeAppModel {
                 durationMs: res.durationMs,
                 hasAudio: res.hasAudio))
             try Task.checkCancellation()
-            // swiftlint:disable:next line_length
-            updateCameraHUD(ownerID: req.id, text: String(localized: "Clip captured"), kind: .success, autoHideSeconds: 1.8)
+            updateCameraHUD(
+                ownerID: req.id,
+                text: String(localized: "Clip captured"),
+                kind: .success,
+                autoHideSeconds: 1.8)
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
         default:
             return Self.unknownInvokeResponse(req)
@@ -3083,14 +3089,14 @@ final class NodeAppModel {
         // Talk must not reconfigure AVAudioSession while its recorder owns it.
         if self.voiceNoteRecorder.isRecording || self.voiceNoteRecorder.isRequestingPermission {
             throw NSError(domain: "TalkMode", code: 8, userInfo: [
-                // swiftlint:disable:next line_length
-                NSLocalizedDescriptionKey: String(localized: "Finish or cancel the active voice note before starting push-to-talk."),
+                NSLocalizedDescriptionKey: String(
+                    localized: "Finish or cancel the active voice note before starting push-to-talk."),
             ])
         }
         if self.auxiliaryAudioCapture != nil {
             throw NSError(domain: "TalkMode", code: 8, userInfo: [
-                // swiftlint:disable:next line_length
-                NSLocalizedDescriptionKey: String(localized: "Finish the active audio capture before starting push-to-talk."),
+                NSLocalizedDescriptionKey: String(
+                    localized: "Finish the active audio capture before starting push-to-talk."),
             ])
         }
     }
@@ -3103,8 +3109,8 @@ final class NodeAppModel {
               !self.voiceNoteRecorder.isRequestingPermission
         else {
             throw NSError(domain: "AudioCapture", code: 1, userInfo: [
-                // swiftlint:disable:next line_length
-                NSLocalizedDescriptionKey: String(localized: "Finish the active audio capture before starting another one."),
+                NSLocalizedDescriptionKey: String(
+                    localized: "Finish the active audio capture before starting another one."),
             ])
         }
         self.auxiliaryAudioCapture = owner
@@ -3435,8 +3441,8 @@ extension NodeAppModel {
         let status = await watchMessagingService.status()
         guard status.supported, status.paired, status.appInstalled else {
             throw NSError(domain: "WatchDirectSetup", code: 3, userInfo: [
-                // swiftlint:disable:next line_length
-                NSLocalizedDescriptionKey: String(localized: "Pair an Apple Watch and install the OpenClaw watch app first."),
+                NSLocalizedDescriptionKey: String(
+                    localized: "Pair an Apple Watch and install the OpenClaw watch app first."),
             ])
         }
 
@@ -4419,8 +4425,9 @@ extension NodeAppModel {
             kind: .unknown,
             owner: .iphone,
             title: String(localized: "Credential save failed"),
-            // swiftlint:disable:next line_length
-            message: String(localized: "OpenClaw disconnected because it could not securely save the new gateway credential."),
+            message: String(
+                localized: "OpenClaw disconnected because it could not securely save the new "
+                    "gateway credential."),
             retryable: true,
             pauseReconnect: true,
             technicalDetails: technicalDetails))
@@ -9289,8 +9296,9 @@ extension NodeAppModel {
             session: self.operatorGateway,
             shouldContinue: { true })
         else {
-            // swiftlint:disable:next line_length
-            return .failed(message: String(localized: "The gateway operator route changed before the approval response was applied."))
+            return .failed(
+                message: String(localized: "The gateway operator route changed before the approval "
+                    "response was applied."))
         }
         if rpcFamily == .legacy {
             guard approvalKind == .exec else {
@@ -9366,8 +9374,9 @@ extension NodeAppModel {
                 if let resolutionAttempt {
                     self.markExecApprovalResolutionWriteSettled(resolutionAttempt)
                 }
-                // swiftlint:disable:next line_length
-                return .failed(message: String(localized: "The gateway operator route changed before the decision was sent."))
+                return .failed(
+                    message: String(localized: "The gateway operator route changed before the decision "
+                        "was sent."))
             }
             guard await self.isCurrentGatewaySessionRoute(
                 context,
@@ -9526,8 +9535,9 @@ extension NodeAppModel {
                 if let resolutionAttempt {
                     self.markExecApprovalResolutionWriteSettled(resolutionAttempt)
                 }
-                // swiftlint:disable:next line_length
-                return .failed(message: String(localized: "The gateway operator route changed before the decision was sent."))
+                return .failed(
+                    message: String(localized: "The gateway operator route changed before the decision "
+                        "was sent."))
             }
             guard await self.isCurrentGatewaySessionRoute(
                 context,
@@ -9596,18 +9606,22 @@ extension NodeAppModel {
                 self.upsertWatchExecApprovalPrompt(prompt)
                 await self.publishWatchExecApprovalPrompt(prompt, reason: "resolve_retry")
             }
-            // swiftlint:disable:next line_length
-            return .pendingRetry(message: String(localized: "The previous decision was not recorded. Review and try again."))
+            return .pendingRetry(
+                message: String(localized: "The previous decision was not recorded. Review and "
+                    "try again."))
         case .stale:
             // This readback follows a dispatched write whose response was lost or malformed.
             // Legacy get removes committed rows, so not-found cannot distinguish success from
             // expiry. Keep every surface frozen until an explicit terminal event/reconnect.
             return .uncertain(
-                // swiftlint:disable:next line_length
-                message: String(localized: "Decision status is unknown. Actions remain locked until OpenClaw reconnects."))
+                message: String(
+                    localized: "Decision status is unknown. Actions remain locked until "
+                        "OpenClaw reconnects."))
         case .failed:
-            // swiftlint:disable:next line_length
-            return .uncertain(message: String(localized: "Decision status is unknown. Actions remain locked until OpenClaw reconnects."))
+            return .uncertain(
+                message: String(
+                    localized: "Decision status is unknown. Actions remain locked until "
+                        "OpenClaw reconnects."))
         }
     }
 

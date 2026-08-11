@@ -529,8 +529,8 @@ final class ScreenRecordService: @unchecked Sendable {
                             if let error = writer.error {
                                 cont.resume(throwing: ScreenRecordError.writeFailed(error.localizedDescription))
                             } else if writer.status != .completed {
-                                // swiftlint:disable:next line_length
-                                cont.resume(throwing: ScreenRecordError.writeFailed(String(localized: "Failed to finalize video")))
+                                cont.resume(
+                throwing: ScreenRecordError.writeFailed(String(localized: "Failed to finalize video")))
                             } else {
                                 cont.resume()
                             }
