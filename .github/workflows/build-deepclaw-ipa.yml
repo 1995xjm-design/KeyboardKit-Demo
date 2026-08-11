@@ -51,8 +51,21 @@ jobs:
           xcodebuild -version
           swift --version
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
+      - name: Install XcodeGen + SwiftFormat
+        run: brew install xcodegen swiftformat
+
+      - name: Auto-format with SwiftFormat (official config)
+        working-directory: OpenClaw/apps/ios
+        run: |
+          # Fix formatting so the official SwiftFormat lint phase (error-level) passes.
+          # Our zh/EdgeTTS edits are wrapped/line-broken here; official lint would otherwise fail.
+          swiftformat --config "$PWD/../../config/swiftformat" \
+            --unexclude "$PWD/Sources" \
+            --filelist "$PWD/SwiftSources.input.xcfilelist" || echo "swiftformat fix had warnings (continuing)"
+          # Verify the files no longer fail lint before archiving
+          swiftformat --lint --config "$PWD/../../config/swiftformat" \
+            --unexclude "$PWD/Sources" \
+            --filelist "$PWD/SwiftSources.input.xcfilelist"
 
       - name: Generate iOS project
         working-directory: OpenClaw/apps/ios
