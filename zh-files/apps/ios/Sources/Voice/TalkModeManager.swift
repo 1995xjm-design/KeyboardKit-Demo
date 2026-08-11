@@ -2001,6 +2001,7 @@ final class TalkModeManager: NSObject {
                 throw NSError(
                     domain: "TalkModeManager",
                     code: 2,
+                    // swiftlint:disable:next line_length
                     userInfo: [NSLocalizedDescriptionKey: String(localized: "Gateway returned a mismatched chat run ID")])
             }
             let normalizedStatus = Self.normalizedChatSendStatus(acknowledgement.status)
@@ -2915,66 +2916,21 @@ final class TalkModeManager: NSObject {
             }
         }
 
-        let languages = self.resolvedSpeechLanguages(directiveLanguage: directive?.language)
         if self.runtimeRoute.usesGatewayTalkSpeak {
-            do {
-                try await self.playGatewayTalkSpeak(
-                    text: cleaned,
-                    directive: directive,
-                    generation: speechGeneration,
-                    gateway: gatewayOverride,
-                    gatewayRoute: gatewayRoute)
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled, self.speechGeneration == speechGeneration else { return }
-                let errorMessage = error.localizedDescription
-                self.logger.error("gateway TTS failed: \(errorMessage, privacy: .public); falling back to system voice")
-                GatewayDiagnostics.log("talk tts: provider=system (gateway error) msg=\(error.localizedDescription)")
-                do {
-                    try await self.playSystemVoice(text: cleaned, language: languages.systemVoice)
-                } catch {
-                    guard !Task.isCancelled, self.speechGeneration == speechGeneration else { return }
-                    let status = String(
-                        format: String(localized: "Speak failed: %@"),
-                        error.localizedDescription)
-                    self.setStatus(
-                        status,
-                        phase: .idle,
-                        watchPresentation: .verbatim(status))
-                    self.logger.error("system voice failed: \(error.localizedDescription, privacy: .public)")
-                }
-            }
+            await self.playGatewayTalkSpeakWithFallback(
+                text: cleaned,
+                directive: directive,
+                generation: speechGeneration,
+                gateway: gatewayOverride,
+                gatewayRoute: gatewayRoute)
             return
         }
 
         if self.runtimeRoute == .localEdgeTTS {
-            do {
-                try await self.playEdgeTTS(
-                    text: cleaned,
-                    directive: directive,
-                    generation: speechGeneration)
-            } catch is CancellationError {
-                return
-            } catch {
-                guard !Task.isCancelled, self.speechGeneration == speechGeneration else { return }
-                let errorMessage = error.localizedDescription
-                self.logger.error("edge tts failed: \(errorMessage, privacy: .public); falling back to system voice")
-                GatewayDiagnostics.log("talk tts: provider=system (edge error) msg=\(error.localizedDescription)")
-                do {
-                    try await self.playSystemVoice(text: cleaned, language: languages.systemVoice)
-                } catch {
-                    guard !Task.isCancelled, self.speechGeneration == speechGeneration else { return }
-                    let status = String(
-                        format: String(localized: "Speak failed: %@"),
-                        error.localizedDescription)
-                    self.setStatus(
-                        status,
-                        phase: .idle,
-                        watchPresentation: .verbatim(status))
-                    self.logger.error("system voice failed: \(error.localizedDescription, privacy: .public)")
-                }
-            }
+            await self.playEdgeTTSWithFallback(
+                text: cleaned,
+                directive: directive,
+                generation: speechGeneration)
             return
         }
 
@@ -3070,6 +3026,78 @@ final class TalkModeManager: NSObject {
                 try await self.playSystemVoice(text: cleaned, language: languages.systemVoice)
             } catch {
                 guard !Task.isCancelled, self.speechGeneration == speechGeneration else { return }
+                let status = String(
+                    format: String(localized: "Speak failed: %@"),
+                    error.localizedDescription)
+                self.setStatus(
+                    status,
+                    phase: .idle,
+                    watchPresentation: .verbatim(status))
+                self.logger.error("system voice failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
+    }
+
+    private func playGatewayTalkSpeakWithFallback(
+        text: String,
+        directive: TalkDirective?,
+        generation: Int,
+        gateway: GatewayNodeSession?,
+        gatewayRoute: GatewayNodeSessionRoute?) async
+    {
+        let languages = self.resolvedSpeechLanguages(directiveLanguage: directive?.language)
+        do {
+            try await self.playGatewayTalkSpeak(
+                text: text,
+                directive: directive,
+                generation: generation,
+                gateway: gateway,
+                gatewayRoute: gatewayRoute)
+        } catch is CancellationError {
+            return
+        } catch {
+            guard !Task.isCancelled, self.speechGeneration == generation else { return }
+            let errorMessage = error.localizedDescription
+            self.logger.error("gateway TTS failed: \(errorMessage, privacy: .public); falling back to system voice")
+            GatewayDiagnostics.log("talk tts: provider=system (gateway error) msg=\(error.localizedDescription)")
+            do {
+                try await self.playSystemVoice(text: text, language: languages.systemVoice)
+            } catch {
+                guard !Task.isCancelled, self.speechGeneration == generation else { return }
+                let status = String(
+                    format: String(localized: "Speak failed: %@"),
+                    error.localizedDescription)
+                self.setStatus(
+                    status,
+                    phase: .idle,
+                    watchPresentation: .verbatim(status))
+                self.logger.error("system voice failed: \(error.localizedDescription, privacy: .public)")
+            }
+        }
+    }
+
+    private func playEdgeTTSWithFallback(
+        text: String,
+        directive: TalkDirective?,
+        generation: Int) async
+    {
+        let languages = self.resolvedSpeechLanguages(directiveLanguage: directive?.language)
+        do {
+            try await self.playEdgeTTS(
+                text: text,
+                directive: directive,
+                generation: generation)
+        } catch is CancellationError {
+            return
+        } catch {
+            guard !Task.isCancelled, self.speechGeneration == generation else { return }
+            let errorMessage = error.localizedDescription
+            self.logger.error("edge tts failed: \(errorMessage, privacy: .public); falling back to system voice")
+            GatewayDiagnostics.log("talk tts: provider=system (edge error) msg=\(error.localizedDescription)")
+            do {
+                try await self.playSystemVoice(text: text, language: languages.systemVoice)
+            } catch {
+                guard !Task.isCancelled, self.speechGeneration == generation else { return }
                 let status = String(
                     format: String(localized: "Speak failed: %@"),
                     error.localizedDescription)

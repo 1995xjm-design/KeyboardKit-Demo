@@ -423,6 +423,7 @@ extension SettingsProTab {
                         Text("This phone has limited Gateway access.")
                             .font(OpenClawType.subheadSemiBold)
                         Text(
+                            // swiftlint:disable:next line_length
                             "Use a secure wss:// or Tailscale Serve Gateway, then scan a full-access setup code from the Control UI or openclaw qr and reconnect to enable settings and upgrades.") // swiftlint:disable:this line_length
                             .font(OpenClawType.caption) // Keep the native localization key contiguous.
                             .foregroundStyle(.secondary)

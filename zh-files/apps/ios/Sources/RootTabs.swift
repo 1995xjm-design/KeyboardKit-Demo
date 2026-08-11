@@ -864,6 +864,7 @@ extension RootTabs {
                 eyebrow: "\(gatewayLabel) online",
                 title: String(localized: "Command center"),
                 subtitle:
+                // swiftlint:disable:next line_length
                 String(localized: "Use Chat for code work or realtime voice, plus gateway tools for approved device actions."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
@@ -871,6 +872,7 @@ extension RootTabs {
                 activeAgentCaption: String(localized: "Routes chat and voice"),
                 agentCount: agents.count,
                 agents: Array(agents.prefix(6)),
+                // swiftlint:disable:next line_length
                 footer: String(localized: "OpenClaw only runs phone-side capabilities while the app is connected and permitted."))
         case .connecting:
             return RootTabsHomeCanvasPayload(
@@ -878,6 +880,7 @@ extension RootTabs {
                 eyebrow: String(localized: "Gateway handshake"),
                 title: "Reconnecting",
                 subtitle:
+                // swiftlint:disable:next line_length
                 String(localized: "Restoring the local node session, agent list, voice config, and device capability state."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
@@ -885,6 +888,7 @@ extension RootTabs {
                 activeAgentCaption: String(localized: "Session in progress"),
                 agentCount: agents.count,
                 agents: Array(agents.prefix(4)),
+                // swiftlint:disable:next line_length
                 footer: String(localized: "If the gateway is reachable, the local node should recover without re-pairing."))
         case .error, .disconnected:
             return RootTabsHomeCanvasPayload(
@@ -892,6 +896,7 @@ extension RootTabs {
                 eyebrow: self.gatewayStatus == .error ? "Gateway needs attention" : "OpenClaw iOS",
                 title: String(localized: "Pair a gateway"),
                 subtitle:
+                // swiftlint:disable:next line_length
                 String(localized: "Connect this phone as a local node for chat, realtime voice, share intake, and approved device tools."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: "Main",
@@ -900,6 +905,7 @@ extension RootTabs {
                 agentCount: agents.count,
                 agents: Array(agents.prefix(4)),
                 footer:
+                // swiftlint:disable:next line_length
                 String(localized: "Use Settings to scan a pairing QR code or paste a setup code from your OpenClaw gateway."))
         }
     }

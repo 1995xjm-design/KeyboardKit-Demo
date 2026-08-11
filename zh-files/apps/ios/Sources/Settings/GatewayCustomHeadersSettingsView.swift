@@ -39,6 +39,7 @@ struct GatewayCustomHeadersSettingsView: View {
                     Text(
                         String(
                             localized:
+                            // swiftlint:disable:next line_length
                             "Sent with foreground app connections to this gateway. Changes apply on the next reconnect; Share extension delivery is not yet supported."))
                         .font(OpenClawType.caption)
                     // swiftlint:enable line_length
