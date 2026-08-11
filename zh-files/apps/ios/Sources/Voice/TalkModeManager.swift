@@ -2507,52 +2507,13 @@ final class TalkModeManager: NSObject {
         model: String?,
         voice: String?) async throws -> TalkRealtimeClientSession
     {
-        // Full capability declaration first; retry without capabilities when a
-        // legacy gateway rejects the field (graceful degradation).
-        do {
-            return try await self.createClientSession(
-                sessionKey: sessionKey,
-                voiceSessionId: voiceSessionId,
-                provider: provider,
-                model: model,
-                voice: voice,
-                capabilities: ["voice-transcript"],
-                gateway: gateway,
-                route: route)
-        } catch {
-            let text = String(describing: error)
-            if text.contains("capabilities") && text.contains("unexpected property") {
-                return try await self.createClientSession(
-                    sessionKey: sessionKey,
-                    voiceSessionId: voiceSessionId,
-                    provider: provider,
-                    model: model,
-                    voice: voice,
-                    capabilities: nil,
-                    gateway: gateway,
-                    route: route)
-            }
-            throw error
-        }
-    }
-
-    private func createClientSession(
-        sessionKey: String,
-        voiceSessionId: String?,
-        provider: String?,
-        model: String?,
-        voice: String?,
-        capabilities: [String]?,
-        gateway: GatewayNodeSession,
-        route: GatewayNodeSessionRoute) async throws -> TalkRealtimeClientSession
-    {
         let params = TalkRealtimeClientCreateParams(
             sessionKey: sessionKey,
             voiceSessionId: voiceSessionId,
             provider: provider,
             model: model,
             voice: voice,
-            capabilities: capabilities)
+            capabilities: ["voice-transcript"])
         let data = try JSONEncoder().encode(params)
         let json = String(data: data, encoding: .utf8)
         let res = try await gateway.request(
