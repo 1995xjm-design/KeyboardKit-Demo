@@ -195,6 +195,7 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
     case gatewayDefault = "gateway"
     case nativeElevenLabs = "elevenlabs"
     case openAIRealtime = "openai-realtime"
+    case edgeTTS = "edge-tts"
 
     static let storageKey = "talk.providerSelection"
 
@@ -210,6 +211,8 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
             "ElevenLabs"
         case .openAIRealtime:
             "Realtime-2 (OpenAI)"
+        case .edgeTTS:
+            "Edge TTS (Free)"
         }
     }
 
@@ -221,6 +224,7 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
 
 enum TalkModeRuntimeRoute: Equatable {
     case localElevenLabs
+    case localEdgeTTS
     case gatewayTalkSpeak
     case realtimeWebRTC
     case realtimeRelay
@@ -235,7 +239,7 @@ enum TalkModeRuntimeRoute: Equatable {
     }
 
     var gatewayOwnsCredentials: Bool {
-        self != .localElevenLabs
+        self != .localElevenLabs && self != .localEdgeTTS
     }
 }
 
@@ -283,6 +287,9 @@ enum TalkModeRoutingResolver {
             // Provider selection can replace provider details, but an explicit Gateway-owned
             // realtime route must remain on the Gateway (for example, Azure-backed OpenAI).
             route = parsed.openAIRequiresGatewayRealtimeTransport ? .realtimeRelay : .realtimeWebRTC
+        case .edgeTTS:
+            activeProvider = "edge-tts"
+            route = .localEdgeTTS
         }
 
         return TalkModeResolvedRouting(
@@ -295,7 +302,7 @@ enum TalkModeRoutingResolver {
 
     private static func executionMode(for route: TalkModeRuntimeRoute) -> TalkModeExecutionMode {
         switch route {
-        case .localElevenLabs, .gatewayTalkSpeak:
+        case .localElevenLabs, .localEdgeTTS, .gatewayTalkSpeak:
             .native
         case .realtimeWebRTC:
             .realtimeWebRTC

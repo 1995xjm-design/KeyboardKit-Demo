@@ -1381,6 +1381,16 @@ extension SettingsProTab {
             })
     }
 
+    private var edgeVoicePickerBinding: Binding<String> {
+        Binding(
+            get: { EdgeTTSVoice.current.id },
+            set: { newValue in
+                if let voice = EdgeTTSVoice(rawValue: newValue) {
+                    EdgeTTSVoice.setCurrent(voice)
+                }
+            })
+    }
+
     var gatewayAdvancedCard: some View {
         Section {
             self.settingsToggle("Auto-connect on launch", isOn: self.$gatewayAutoConnect)
@@ -1478,6 +1488,14 @@ extension SettingsProTab {
                     }
                 }
                 .font(OpenClawType.body)
+                if self.talkProviderSelectionRaw == TalkModeProviderSelection.edgeTTS.rawValue {
+                    Picker("Edge Voice", selection: self.edgeVoicePickerBinding) {
+                        ForEach(EdgeTTSVoice.allCases) { voice in
+                            Text(voice.displayName).font(OpenClawType.body).tag(voice.id)
+                        }
+                    }
+                    .font(OpenClawType.body)
+                }
                 if self.shouldShowRealtimeVoicePicker {
                     Picker("Realtime Voice", selection: self.talkRealtimeVoiceSelectionBinding) {
                         Text("Gateway Default").font(OpenClawType.body).tag("")

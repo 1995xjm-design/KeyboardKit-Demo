@@ -2987,6 +2987,36 @@ final class TalkModeManager: NSObject {
             return
         }
 
+        if self.runtimeRoute == .localEdgeTTS {
+            do {
+                try await self.playEdgeTTS(
+                    text: cleaned,
+                    directive: directive,
+                    generation: speechGeneration)
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled, self.speechGeneration == speechGeneration else { return }
+                let errorMessage = error.localizedDescription
+                self.logger.error("edge tts failed: \(errorMessage, privacy: .public); falling back to system voice")
+                GatewayDiagnostics.log("talk tts: provider=system (edge error) msg=\(error.localizedDescription)")
+                do {
+                    try await self.playSystemVoice(text: cleaned, language: languages.systemVoice)
+                } catch {
+                    guard !Task.isCancelled, self.speechGeneration == speechGeneration else { return }
+                    let status = String(
+                        format: String(localized: "Speak failed: %@"),
+                        error.localizedDescription)
+                    self.setStatus(
+                        status,
+                        phase: .idle,
+                        watchPresentation: .verbatim(status))
+                    self.logger.error("system voice failed: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+            return
+        }
+
         do {
             let started = Date()
             let requestedVoice = directive?.voiceId?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -3167,6 +3197,40 @@ final class TalkModeManager: NSObject {
             throw NSError(domain: "TalkGatewaySpeech", code: 3, userInfo: [
                 NSLocalizedDescriptionKey: String(localized: "Gateway talk.speak audio playback failed"),
             ])
+        }
+    }
+
+    private func playEdgeTTS(
+        text: String,
+        directive: TalkDirective?,
+        generation: Int) async throws
+    {
+        let directiveVoice = directive?.voiceId?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let voiceId = directiveVoice?.isEmpty == false ? directiveVoice : EdgeTTSVoice.current.id
+        applyVoiceModeDescriptor(TalkVoiceModeDescriptorBuilder.build(
+            providerId: "edge-tts",
+            providerLabel: Self.displayName(forProvider: "edge-tts"),
+            modelId: nil,
+            voiceId: voiceId,
+            transport: "native",
+            isRealtime: false))
+        self.startSpeechInterruptionRecognitionIfNeeded()
+        self.setStatus(String(localized: "Speaking…"), phase: .speaking)
+        let audio = try await EdgeTTSSynthesizer.synthesize(
+            text: text,
+            voiceId: voiceId ?? EdgeTTSVoice.current.id)
+        guard generation == self.speechGeneration, self.isSpeaking else { return }
+        self.lastPlaybackWasPCM = false
+        self.bufferedPlayer.setLevelHandler { [weak self] level in
+            self?.playbackLevel = level
+        }
+        let result = await self.bufferedPlayer.play(data: audio)
+        guard generation == self.speechGeneration, self.isSpeaking else { return }
+        GatewayDiagnostics.log(
+            "talk tts: provider=edge-tts voice=\(voiceId ?? "?") finished=\(result.finished)")
+        if !result.finished, let interruptedAt = result.interruptedAt {
+            self.lastInterruptedAtSeconds = interruptedAt
         }
     }
 
@@ -4072,6 +4136,8 @@ extension TalkModeManager {
             "ElevenLabs"
         case "openai":
             "OpenAI"
+        case "edge-tts":
+            String(localized: "Edge TTS")
         case "google":
             "Google"
         case "system":
