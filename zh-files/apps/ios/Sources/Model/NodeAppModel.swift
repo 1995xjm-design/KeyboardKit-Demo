@@ -4426,8 +4426,9 @@ extension NodeAppModel {
             owner: .iphone,
             title: String(localized: "Credential save failed"),
             message: String(
-                localized: "OpenClaw disconnected because it could not securely save the new "
-                    "gateway credential."),
+                localized: "openclaw_disconnected_because_it_could_not_secur",
+                        defaultValue: "OpenClaw disconnected because it could not securely save the new " +
+                            "gateway credential."),
             retryable: true,
             pauseReconnect: true,
             technicalDetails: technicalDetails))
@@ -9297,8 +9298,9 @@ extension NodeAppModel {
             shouldContinue: { true })
         else {
             return .failed(
-                message: String(localized: "The gateway operator route changed before the approval "
-                    "response was applied."))
+                message: String(localized: "the_gateway_operator_route_changed_before_the_ap",
+                        defaultValue: "The gateway operator route changed before the approval " +
+                            "response was applied."))
         }
         if rpcFamily == .legacy {
             guard approvalKind == .exec else {
@@ -9375,8 +9377,9 @@ extension NodeAppModel {
                     self.markExecApprovalResolutionWriteSettled(resolutionAttempt)
                 }
                 return .failed(
-                    message: String(localized: "The gateway operator route changed before the decision "
-                        "was sent."))
+                    message: String(localized: "the_gateway_operator_route_changed_before_the_de_1",
+                            defaultValue: "The gateway operator route changed before the decision " +
+                                "was sent."))
             }
             guard await self.isCurrentGatewaySessionRoute(
                 context,
@@ -9536,8 +9539,9 @@ extension NodeAppModel {
                     self.markExecApprovalResolutionWriteSettled(resolutionAttempt)
                 }
                 return .failed(
-                    message: String(localized: "The gateway operator route changed before the decision "
-                        "was sent."))
+                    message: String(localized: "the_gateway_operator_route_changed_before_the_de_1",
+                            defaultValue: "The gateway operator route changed before the decision " +
+                                "was sent."))
             }
             guard await self.isCurrentGatewaySessionRoute(
                 context,
@@ -9607,21 +9611,24 @@ extension NodeAppModel {
                 await self.publishWatchExecApprovalPrompt(prompt, reason: "resolve_retry")
             }
             return .pendingRetry(
-                message: String(localized: "The previous decision was not recorded. Review and "
-                    "try again."))
+                message: String(localized: "the_previous_decision_was_not_recorded_review_an",
+                        defaultValue: "The previous decision was not recorded. Review and " +
+                            "try again."))
         case .stale:
             // This readback follows a dispatched write whose response was lost or malformed.
             // Legacy get removes committed rows, so not-found cannot distinguish success from
             // expiry. Keep every surface frozen until an explicit terminal event/reconnect.
             return .uncertain(
                 message: String(
-                    localized: "Decision status is unknown. Actions remain locked until "
-                        "OpenClaw reconnects."))
+                    localized: "decision_status_is_unknown_actions_remain_locked_1",
+                            defaultValue: "Decision status is unknown. Actions remain locked until " +
+                                "OpenClaw reconnects."))
         case .failed:
             return .uncertain(
                 message: String(
-                    localized: "Decision status is unknown. Actions remain locked until "
-                        "OpenClaw reconnects."))
+                    localized: "decision_status_is_unknown_actions_remain_locked_1",
+                            defaultValue: "Decision status is unknown. Actions remain locked until " +
+                                "OpenClaw reconnects."))
         }
     }
 

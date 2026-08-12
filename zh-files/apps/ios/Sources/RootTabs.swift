@@ -865,8 +865,9 @@ extension RootTabs {
                 title: String(localized: "Command center"),
                 subtitle:
                 String(
-                    localized: "Use Chat for code work or realtime voice, "
-                        "plus gateway tools for approved device actions."),
+                    localized: "use_chat_for_code_work_or_realtime_voice_plus_ga",
+                            defaultValue: "Use Chat for code work or realtime voice, " +
+                                "plus gateway tools for approved device actions."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
                 activeAgentBadge: agents.first(where: { $0.isActive })?.badge ?? "OC",
@@ -874,8 +875,9 @@ extension RootTabs {
                 agentCount: agents.count,
                 agents: Array(agents.prefix(6)),
                 footer: String(
-                    localized: "OpenClaw only runs phone-side capabilities while the app is "
-                        "connected and permitted."))
+                    localized: "openclaw_only_runs_phone_side_capabilities_while",
+                            defaultValue: "OpenClaw only runs phone-side capabilities while the app is " +
+                                "connected and permitted."))
         case .connecting:
             return RootTabsHomeCanvasPayload(
                 gatewayState: "connecting",
@@ -883,8 +885,9 @@ extension RootTabs {
                 title: "Reconnecting",
                 subtitle:
                 String(
-                    localized: "Restoring the local node session, agent list, voice config, "
-                        "and device capability state."),
+                    localized: "restoring_the_local_node_session_agent_list_voic",
+                            defaultValue: "Restoring the local node session, agent list, voice config, " +
+                                "and device capability state."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
                 activeAgentBadge: "OC",
@@ -892,8 +895,9 @@ extension RootTabs {
                 agentCount: agents.count,
                 agents: Array(agents.prefix(4)),
                 footer: String(
-                    localized: "If the gateway is reachable, the local node should recover "
-                        "without re-pairing."))
+                    localized: "if_the_gateway_is_reachable_the_local_node_shoul",
+                            defaultValue: "If the gateway is reachable, the local node should recover " +
+                                "without re-pairing."))
         case .error, .disconnected:
             return RootTabsHomeCanvasPayload(
                 gatewayState: self.gatewayStatus == .error ? "error" : "offline",
@@ -901,8 +905,9 @@ extension RootTabs {
                 title: String(localized: "Pair a gateway"),
                 subtitle:
                 String(
-                    localized: "Connect this phone as a local node for chat, realtime voice, "
-                        "share intake, and approved device tools."),
+                    localized: "connect_this_phone_as_a_local_node_for_chat_real",
+                            defaultValue: "Connect this phone as a local node for chat, realtime voice, " +
+                                "share intake, and approved device tools."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: "Main",
                 activeAgentBadge: "OC",
@@ -911,8 +916,9 @@ extension RootTabs {
                 agents: Array(agents.prefix(4)),
                 footer:
                 String(
-                    localized: "Use Settings to scan a pairing QR code or paste a setup "
-                        "code from your OpenClaw gateway."))
+                    localized: "use_settings_to_scan_a_pairing_qr_code_or_paste",
+                            defaultValue: "Use Settings to scan a pairing QR code or paste a setup " +
+                                "code from your OpenClaw gateway."))
         }
     }
 

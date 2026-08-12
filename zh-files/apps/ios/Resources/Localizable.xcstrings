@@ -220312,6 +220312,182 @@
           }
         }
       }
+    },
+    "use_chat_for_code_work_or_realtime_voice_plus_ga": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Chat for code work or realtime voice, plus gateway tools for approved device actions."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用聊天进行代码工作或实时语音，并通过 Gateway 工具执行已批准的设备操作。"
+          }
+        }
+      }
+    },
+    "openclaw_only_runs_phone_side_capabilities_while": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw only runs phone-side capabilities while the app is connected and permitted."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 仅在应用已连接并获得授权时运行手机端能力。"
+          }
+        }
+      }
+    },
+    "restoring_the_local_node_session_agent_list_voic": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring the local node session, agent list, voice config, and device capability state."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在恢复本地节点会话、智能体列表、语音配置和设备能力状态。"
+          }
+        }
+      }
+    },
+    "if_the_gateway_is_reachable_the_local_node_shoul": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the gateway is reachable, the local node should recover without re-pairing."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "如果 Gateway 可达，本地节点应无需重新配对即可恢复。"
+          }
+        }
+      }
+    },
+    "connect_this_phone_as_a_local_node_for_chat_real": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect this phone as a local node for chat, realtime voice, share intake, and approved device tools."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将本机作为本地节点连接，用于聊天、实时语音、共享输入和已批准的设备工具。"
+          }
+        }
+      }
+    },
+    "use_settings_to_scan_a_pairing_qr_code_or_paste": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Settings to scan a pairing QR code or paste a setup code from your OpenClaw gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在设置中扫描配对二维码，或粘贴来自 OpenClaw Gateway 的设置代码。"
+          }
+        }
+      }
+    },
+    "openclaw_disconnected_because_it_could_not_secur": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw disconnected because it could not securely save the new gateway credential."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 已断开连接，因为无法安全保存新的 Gateway 凭据。"
+          }
+        }
+      }
+    },
+    "the_gateway_operator_route_changed_before_the_ap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway operator route changed before the approval response was applied."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "审批响应应用前，Gateway 操作路由发生了变化。"
+          }
+        }
+      }
+    },
+    "the_gateway_operator_route_changed_before_the_de_1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway operator route changed before the decision was sent."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "决策发送前，Gateway 操作路由发生了变化。"
+          }
+        }
+      }
+    },
+    "the_previous_decision_was_not_recorded_review_an": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The previous decision was not recorded. Review and try again."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上次决策未被记录，请复查后重试。"
+          }
+        }
+      }
+    },
+    "decision_status_is_unknown_actions_remain_locked_1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decision status is unknown. Actions remain locked until OpenClaw reconnects."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "决策状态未知，操作将保持锁定，直到 OpenClaw 重新连接。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

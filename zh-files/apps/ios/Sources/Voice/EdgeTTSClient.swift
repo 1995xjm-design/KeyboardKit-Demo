@@ -107,10 +107,13 @@ enum EdgeTTSSynthesizer {
             data: Data(configJSON.utf8),
             requestId: requestId)
 
-        // 2. SSML request.
+        // 2. SSML request. A slightly slower rate and lower pitch make the
+        // synthesized speech sound more natural instead of rushed/robotic.
         let ssml =
             "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' " +
-            "xml:lang='zh-CN'><voice name='\(voiceId)'>\(Self.escapeXML(text))</voice></speak>"
+            "xml:lang='zh-CN'><voice name='\(voiceId)'>" +
+            "<prosody rate='-8%' pitch='-3%'>\(Self.escapeXML(text))</prosody>" +
+            "</voice></speak>"
         try await Self.sendTextFrame(
             webSocket,
             path: "ssml",
@@ -187,13 +190,16 @@ enum EdgeTTSSynthesizer {
         try await webSocket.send(.data(frame))
     }
 
-    /// `Sec-MS-GEC`: (unix seconds + 5 min) rounded to 5-minute slots, converted
-    /// to Windows FILETIME 100ns ticks, concatenated with the client token, then
-    /// SHA256 uppercase hex.
+    /// `Sec-MS-GEC`: current Unix time converted to Windows FILETIME 100ns
+    /// ticks, rounded DOWN to the nearest 5-minute slot (Microsoft changed the
+    /// rounding direction in 2026; the old `(t + 300) / 300 * 300` scheme now
+    /// returns 403), concatenated with the client token, then SHA256 uppercase
+    /// hex.
     private static func generateSecMSGEC() -> String {
-        let roundedSeconds = (Int(Date().timeIntervalSince1970) + 300) / 300 * 300
-        let filetimeTicks = (Int64(roundedSeconds) + 11644473600) * 10_000_000
-        let token = "\(filetimeTicks)\(EdgeTTSConfig.trustedClientToken)"
+        var ticks = Date().timeIntervalSince1970 + 11644473600
+        ticks -= ticks.truncatingRemainder(dividingBy: 300)
+        ticks *= 10_000_000
+        let token = "\(Int64(ticks.rounded()))\(EdgeTTSConfig.trustedClientToken)"
         let digest = SHA256.hash(data: Data(token.utf8))
         return digest.map { String(format: "%02X", $0) }.joined()
     }
