@@ -65,18 +65,13 @@ jobs:
           .build/swift-tools/swiftformat --version
           .build/swift-tools/swiftlint version
 
-      - name: Install tsx for native A2UI post-build
+      - name: Install Node dependencies (pnpm) for A2UI post-build
         working-directory: OpenClaw
         run: |
           set -euo pipefail
-          mkdir -p .tool
-          cd .tool
-          npm init -y >/dev/null 2>&1
-          npm install --no-save --no-audit --no-fund --no-package-lock tsx@4.23.1
-          cd ..
-          ln -sfn .tool/node_modules node_modules
+          corepack enable
+          pnpm install --frozen-lockfile
           test -d node_modules/tsx
-          node --import tsx scripts/sync-native-a2ui.mts --check
 
       - name: Auto-format with SwiftFormat (official config)
         working-directory: OpenClaw/apps/ios
