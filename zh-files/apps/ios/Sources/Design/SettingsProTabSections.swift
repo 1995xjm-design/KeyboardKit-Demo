@@ -1,5 +1,8 @@
+import AVFoundation
 import OpenClawKit
 import SwiftUI
+
+private let openClawEdgeTTSProviderRawValue = "edge-tts"
 
 /// iOS Settings-style icon: white glyph on a solid rounded-square, sized for a List row.
 struct SettingsIcon: View {
@@ -161,6 +164,49 @@ private struct AppearanceSettingsScreen: View {
             // leave that destination blank. Apply only after the native pop transition.
             try? await Task.sleep(for: .milliseconds(500))
             self.appearanceModel.select(preference)
+        }
+    }
+}
+
+private struct EdgeTTSVoicePreviewButton: View {
+    @State private var isPreviewing = false
+    @State private var previewPlayer: AVAudioPlayer?
+    @State private var previewErrorMessage: String?
+
+    var body: some View {
+        Button {
+            self.playPreview()
+        } label: {
+            Label(
+                self.isPreviewing ? "试听中…" : "试听",
+                systemImage: self.isPreviewing ? "stop.circle.fill" : "play.circle.fill")
+                .font(OpenClawType.body)
+        }
+        .disabled(self.isPreviewing)
+        .alert("试听失败", isPresented: Binding(
+            get: { self.previewErrorMessage != nil },
+            set: { if !$0 { self.previewErrorMessage = nil } })) {
+            Button("好", role: .cancel) {}
+        } message: {
+            Text(self.previewErrorMessage ?? "")
+        }
+    }
+
+    private func playPreview() {
+        self.isPreviewing = true
+        Task { @MainActor in
+            do {
+                let audio = try await EdgeTTSSynthesizer.synthesize(
+                    text: "你好，这是你的语音预览。",
+                    voiceId: EdgeTTSVoice.current.id)
+                let player = try AVAudioPlayer(data: audio)
+                self.previewPlayer = player
+                player.prepareToPlay()
+                player.play()
+            } catch {
+                self.previewErrorMessage = "试听失败：\(error.localizedDescription)"
+            }
+            self.isPreviewing = false
         }
     }
 }
@@ -1378,7 +1424,18 @@ extension SettingsProTab {
             get: { self.manualGatewayTransport.effectiveTLS },
             set: { enabled in
                 guard !self.manualGatewayTransport.requiresTLS else { return }
+                self.manualGatewayContextPath = nil
                 self.manualGatewayTLS = enabled
+            })
+    }
+
+    private var talkProviderSelectionWithEdgeTTSBinding: Binding<String> {
+        Binding(
+            get: { self.talkProviderSelectionRaw },
+            set: { newValue in
+                self.talkProviderSelectionRaw = newValue
+                guard newValue != openClawEdgeTTSProviderRawValue else { return }
+                self.appModel.setTalkProviderSelection(newValue)
             })
     }
 
@@ -1483,19 +1540,23 @@ extension SettingsProTab {
                 }
             }
             Section("Voice") {
-                Picker("Provider", selection: self.talkProviderSelectionBinding) {
+                Picker("Provider", selection: self.talkProviderSelectionWithEdgeTTSBinding) {
                     ForEach(TalkModeProviderSelection.allCases) { option in
                         Text(option.label).font(OpenClawType.body).tag(option.rawValue)
                     }
+                    Text(String(localized: "Edge TTS (Free)"))
+                        .font(OpenClawType.body)
+                        .tag(openClawEdgeTTSProviderRawValue)
                 }
                 .font(OpenClawType.body)
-                if self.talkProviderSelectionRaw == TalkModeProviderSelection.edgeTTS.rawValue {
+                if self.talkProviderSelectionRaw == openClawEdgeTTSProviderRawValue {
                     Picker("Edge Voice", selection: self.edgeVoicePickerBinding) {
                         ForEach(EdgeTTSVoice.allCases) { voice in
                             Text(voice.displayName).font(OpenClawType.body).tag(voice.id)
                         }
                     }
                     .font(OpenClawType.body)
+                    EdgeTTSVoicePreviewButton()
                 }
                 if self.shouldShowRealtimeVoicePicker {
                     Picker("Realtime Voice", selection: self.talkRealtimeVoiceSelectionBinding) {

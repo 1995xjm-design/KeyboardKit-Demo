@@ -234,7 +234,6 @@ enum TalkModeRuntimeRoute: Equatable {
     }
 
     var usesGatewayTalkSpeak: Bool {
-        // reuses the same play path as gateway talk.speak.
         self == .gatewayTalkSpeak
     }
 

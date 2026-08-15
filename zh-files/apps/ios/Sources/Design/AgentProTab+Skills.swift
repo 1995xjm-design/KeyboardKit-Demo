@@ -146,7 +146,7 @@ extension AgentProTab {
                 if !self.clawHubResults.isEmpty {
                     VStack(spacing: 0) {
                         let results = Array(self.clawHubResults.prefix(8))
-                        ForEach(Array(results.enumerated()), id: \.element.slug) { index, result in
+                        ForEach(Array(results.enumerated()), id: \.element.reference) { index, result in
                             self.clawHubResultRow(result)
                             if index < results.count - 1 {
                                 Divider().padding(.leading, 42)
@@ -160,14 +160,16 @@ extension AgentProTab {
     }
 
     func clawHubResultRow(_ result: ClawHubSearchResultLite) -> some View {
-        let installing = clawHubInstallSlug == result.slug
+        let installing = clawHubInstallSlug == result.reference
         return HStack(alignment: .top, spacing: 10) {
             ProIconBadge(systemName: "sparkles", color: OpenClawBrand.accent)
             VStack(alignment: .leading, spacing: 3) {
                 Text(result.displayName)
                     .font(OpenClawType.subheadSemiBold)
                     .lineLimit(1)
-                Text(result.summary ?? result.slug)
+                // This surface installs directly, so the publisher reference always shows:
+                // same-slug rows are otherwise identical and the button would look ambiguous.
+                Text(result.summary.map { "\($0) · \(result.reference)" } ?? result.reference)
                     .font(OpenClawType.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -229,9 +231,7 @@ extension AgentProTab {
     }
 
     var skillPolicySummary: String {
-        if appModel.isAppleReviewDemoModeEnabled {
-            return String(localized: "Demo mode keeps live skill changes disabled.")
-        }
+        if appModel.isAppleReviewDemoModeEnabled { return String(localized: "Demo mode keeps live skill changes disabled.") }
         guard gatewayConnected else { return String(localized: "Connect a gateway to edit skills.") }
         guard let filter = agentSkillFilter else {
             return String(localized: "All available skills are allowed for this agent.")
@@ -736,19 +736,18 @@ extension AgentProTab {
                 method: "skills.install",
                 params: params,
                 timeoutSeconds: 125)
-            return (try? JSONDecoder().decode(SkillInstallResultLite.self, from: data).message)
-                ?? String(localized: "Installed.")
+            return (try? JSONDecoder().decode(SkillInstallResultLite.self, from: data).message) ?? String(localized: "Installed.")
         }
     }
 
     @MainActor
     func installClawHubSkill(_ result: ClawHubSearchResultLite) async {
         guard liveGatewayConnected else { return }
-        clawHubInstallSlug = result.slug
+        clawHubInstallSlug = result.reference
         clawHubErrorText = nil
         defer { self.clawHubInstallSlug = nil }
         do {
-            let params = ClawHubInstallParams(slug: result.slug)
+            let params = ClawHubInstallParams(slug: result.reference)
             _ = try await self.requestGateway(method: "skills.install", params: params, timeoutSeconds: 125)
             await appModel.refreshGatewayOverviewIfConnected()
             await refreshOverview(force: true)

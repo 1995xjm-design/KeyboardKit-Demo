@@ -56,6 +56,7 @@ struct SettingsProTab: View {
     @State var gatewayPassword = ""
     @State var gatewayCredentialFieldStableID: String?
     @State var manualGatewayPortText = ""
+    @State var manualGatewayContextPath: String?
     @State var setupStatusText: String?
     @State var setupAttemptID: UUID?
     @State var stagedGatewaySetupLink: GatewayConnectDeepLink?
@@ -82,7 +83,7 @@ struct SettingsProTab: View {
     @State var notificationStatus: SettingsNotificationStatus = .checking
     @State var isRequestingNotificationAuthorization = false
     @State var showNotificationRelayDisclosure = false
-    @State var diagnosticsLastRunText = "Not run"
+    @State var diagnosticsLastRunText = String(localized: "Not run")
     @State var diagnosticsIssueCount: Int?
     @State var showTalkIssueDetails = false
     @State var systemAgentChatStore = IOSSystemAgentChatStore()
@@ -253,7 +254,7 @@ struct SettingsProTab: View {
                             onError: { error in
                                 guard self.scannerResultHandoff.isActive(scanID: scanID) else { return }
                                 self.showQRScanner = false
-                                self.setupStatusText = "Scanner error: \(error)"
+                                self.setupStatusText = String(localized: "Scanner error: \(error)")
                                 self.scannerError = error
                             },
                             onDismiss: {

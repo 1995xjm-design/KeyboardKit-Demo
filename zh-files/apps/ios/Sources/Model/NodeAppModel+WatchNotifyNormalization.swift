@@ -50,15 +50,15 @@ extension NodeAppModel {
             return [
                 OpenClawWatchAction(id: "approve", label: "Approve"),
                 OpenClawWatchAction(id: "decline", label: "Decline", style: "destructive"),
-                OpenClawWatchAction(id: "open_phone", label: String(localized: "Open iPhone")),
+                OpenClawWatchAction(id: "open_phone", label: "Open iPhone"),
                 OpenClawWatchAction(id: "escalate", label: "Escalate"),
             ]
         }
 
         return [
             OpenClawWatchAction(id: "done", label: "Done"),
-            OpenClawWatchAction(id: "snooze_10m", label: String(localized: "Snooze 10m")),
-            OpenClawWatchAction(id: "open_phone", label: String(localized: "Open iPhone")),
+            OpenClawWatchAction(id: "snooze_10m", label: "Snooze 10m"),
+            OpenClawWatchAction(id: "open_phone", label: "Open iPhone"),
             OpenClawWatchAction(id: "escalate", label: "Escalate"),
         ]
     }

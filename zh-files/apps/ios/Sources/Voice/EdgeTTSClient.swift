@@ -1,6 +1,7 @@
 import CryptoKit
 import Foundation
 import OSLog
+import AVFoundation
 
 /// Edge TTS (Microsoft free TTS) — no API key required.
 ///
@@ -27,9 +28,9 @@ enum EdgeTTSConfig {
 /// Edge TTS voices surfaced in the settings picker.
 enum EdgeTTSVoice: String, CaseIterable, Identifiable {
     case xiaoxiao = "zh-CN-XiaoxiaoNeural"
-    case xiaoyi = "zh-CN-XiaoyiNeural"
     case yunxi = "zh-CN-YunxiNeural"
     case yunyang = "zh-CN-YunyangNeural"
+    case yunjian = "zh-CN-YunjianNeural"
 
     static let storageKey = "talk.edge.voiceSelection"
 
@@ -39,12 +40,12 @@ enum EdgeTTSVoice: String, CaseIterable, Identifiable {
         switch self {
         case .xiaoxiao:
             "晓晓 (Xiaoxiao)"
-        case .xiaoyi:
-            "小艺 (Xiaoyi)"
         case .yunxi:
             "云希 (Yunxi)"
         case .yunyang:
             "云扬 (Yunyang)"
+        case .yunjian:
+            "云健 (Yunjian)"
         }
     }
 
@@ -69,6 +70,38 @@ private enum EdgeTTSError: LocalizedError {
         case .emptyAudio:
             String(localized: "Edge TTS returned no audio")
         }
+    }
+}
+
+@MainActor
+final class EdgeTTSClient {
+    static let shared = EdgeTTSClient()
+
+    private var previewPlayer: AVAudioPlayer?
+
+    private init() {}
+
+    func speakPreview(text: String, completion: @escaping (Bool) -> Void) {
+        stopPreview()
+        Task { @MainActor in
+            do {
+                let audio = try await EdgeTTSSynthesizer.synthesize(
+                    text: text,
+                    voiceId: EdgeTTSVoice.current.id)
+                let player = try AVAudioPlayer(data: audio)
+                player.prepareToPlay()
+                self.previewPlayer = player
+                completion(player.play())
+            } catch {
+                self.previewPlayer = nil
+                completion(false)
+            }
+        }
+    }
+
+    func stopPreview() {
+        previewPlayer?.stop()
+        previewPlayer = nil
     }
 }
 

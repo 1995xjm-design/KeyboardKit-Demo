@@ -324,7 +324,7 @@ struct RootTabs: View {
         case .overview:
             CommandCenterTab(
                 ownsNavigationStack: false,
-                headerTitle: "Overview",
+                headerTitle: String(localized: "Overview"),
                 headerSidebarAction: self.sidebarHeaderAction,
                 dashboardModel: self.sidebarModel,
                 showsHeaderMark: false,
@@ -352,14 +352,14 @@ struct RootTabs: View {
             AgentProTab(
                 directRoute: .agents,
                 headerSidebarAction: self.sidebarHeaderAction,
-                headerTitle: "Agents",
+                headerTitle: String(localized: "Agents"),
                 openSettings: { self.selectSidebarDestination(.gateway) })
                 .id(self.selectedSidebarDestination.id)
         case .instances:
             AgentProTab(
                 directRoute: .instances,
                 headerSidebarAction: self.sidebarHeaderAction,
-                headerTitle: "Instances",
+                headerTitle: String(localized: "Instances"),
                 openSettings: { self.selectSidebarDestination(.gateway) })
                 .id(self.selectedSidebarDestination.id)
         case .sessions:
@@ -370,30 +370,34 @@ struct RootTabs: View {
             AgentProTab(
                 directRoute: .files,
                 headerSidebarAction: self.sidebarHeaderAction,
-                headerTitle: "Files",
+                headerTitle: String(localized: "Files"),
                 openSettings: { self.selectSidebarDestination(.gateway) })
                 .id(self.selectedSidebarDestination.id)
         case .dreaming:
             AgentProTab(
                 directRoute: .dreaming,
                 headerSidebarAction: self.sidebarHeaderAction,
-                headerTitle: "Dreaming",
+                headerTitle: String(localized: "Dreaming"),
                 openSettings: { self.selectSidebarDestination(.gateway) })
                 .id(self.selectedSidebarDestination.id)
         case .usage:
             AgentProTab(
                 directRoute: .usage,
                 headerSidebarAction: self.sidebarHeaderAction,
-                headerTitle: "Usage",
+                headerTitle: String(localized: "Usage"),
                 openSettings: { self.selectSidebarDestination(.gateway) })
                 .id(self.selectedSidebarDestination.id)
         case .cron:
             AgentProTab(
                 directRoute: .cron,
                 headerSidebarAction: self.sidebarHeaderAction,
-                headerTitle: "Automations",
+                headerTitle: String(localized: "Automations"),
                 openSettings: { self.selectSidebarDestination(.gateway) })
                 .id(self.selectedSidebarDestination.id)
+        case .desktop:
+            DesktopHubScreen(
+                headerSidebarAction: self.sidebarHeaderAction,
+                gatewayAction: { self.selectSidebarDestination(.gateway) })
         case .terminal:
             TerminalHubScreen(
                 headerSidebarAction: self.sidebarHeaderAction,
@@ -864,50 +868,35 @@ extension RootTabs {
                 eyebrow: "\(gatewayLabel) online",
                 title: String(localized: "Command center"),
                 subtitle:
-                String(
-                    localized: "use_chat_for_code_work_or_realtime_voice_plus_ga",
-                            defaultValue: "Use Chat for code work or realtime voice, " +
-                                "plus gateway tools for approved device actions."),
+                String(localized: "Use Chat for code work or realtime voice, plus gateway tools for approved device actions."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
                 activeAgentBadge: agents.first(where: { $0.isActive })?.badge ?? "OC",
                 activeAgentCaption: String(localized: "Routes chat and voice"),
                 agentCount: agents.count,
                 agents: Array(agents.prefix(6)),
-                footer: String(
-                    localized: "openclaw_only_runs_phone_side_capabilities_while",
-                            defaultValue: "OpenClaw only runs phone-side capabilities while the app is " +
-                                "connected and permitted."))
+                footer: String(localized: "OpenClaw only runs phone-side capabilities while the app is connected and permitted."))
         case .connecting:
             return RootTabsHomeCanvasPayload(
                 gatewayState: "connecting",
                 eyebrow: String(localized: "Gateway handshake"),
-                title: "Reconnecting",
+                title: String(localized: "Reconnecting"),
                 subtitle:
-                String(
-                    localized: "restoring_the_local_node_session_agent_list_voic",
-                            defaultValue: "Restoring the local node session, agent list, voice config, " +
-                                "and device capability state."),
+                String(localized: "Restoring the local node session, agent list, voice config, and device capability state."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
                 activeAgentBadge: "OC",
                 activeAgentCaption: String(localized: "Session in progress"),
                 agentCount: agents.count,
                 agents: Array(agents.prefix(4)),
-                footer: String(
-                    localized: "if_the_gateway_is_reachable_the_local_node_shoul",
-                            defaultValue: "If the gateway is reachable, the local node should recover " +
-                                "without re-pairing."))
+                footer: String(localized: "If the gateway is reachable, the local node should recover without re-pairing."))
         case .error, .disconnected:
             return RootTabsHomeCanvasPayload(
                 gatewayState: self.gatewayStatus == .error ? "error" : "offline",
-                eyebrow: self.gatewayStatus == .error ? "Gateway needs attention" : "OpenClaw iOS",
+                eyebrow: self.gatewayStatus == .error ? String(localized: "Gateway needs attention") : String(localized: "OpenClaw iOS"),
                 title: String(localized: "Pair a gateway"),
                 subtitle:
-                String(
-                    localized: "connect_this_phone_as_a_local_node_for_chat_real",
-                            defaultValue: "Connect this phone as a local node for chat, realtime voice, " +
-                                "share intake, and approved device tools."),
+                String(localized: "Connect this phone as a local node for chat, realtime voice, share intake, and approved device tools."),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: "Main",
                 activeAgentBadge: "OC",
@@ -915,10 +904,7 @@ extension RootTabs {
                 agentCount: agents.count,
                 agents: Array(agents.prefix(4)),
                 footer:
-                String(
-                    localized: "use_settings_to_scan_a_pairing_qr_code_or_paste",
-                            defaultValue: "Use Settings to scan a pairing QR code or paste a setup " +
-                                "code from your OpenClaw gateway."))
+                String(localized: "Use Settings to scan a pairing QR code or paste a setup code from your OpenClaw gateway."))
         }
     }
 
@@ -943,7 +929,7 @@ extension RootTabs {
                 id: agent.id,
                 name: self.homeCanvasName(for: agent),
                 badge: self.homeCanvasBadge(for: agent),
-                caption: isActive ? "Routed on this phone" : (isDefault ? "Gateway default" : "Available"),
+                caption: isActive ? String(localized: "Routed on this phone") : (isDefault ? String(localized: "Gateway default") : String(localized: "Available")),
                 isActive: isActive)
         }
 

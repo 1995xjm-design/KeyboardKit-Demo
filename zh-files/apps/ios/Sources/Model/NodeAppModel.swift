@@ -376,6 +376,8 @@ final class NodeAppModel {
         self.operatorConnected
     }
 
+    private(set) var isDesktopObserveAvailable: Bool = false
+
     private(set) var hasOperatorAdminScope: Bool = false
 
     var gatewayServerName: String?
@@ -2567,11 +2569,7 @@ final class NodeAppModel {
                 width: res.width,
                 height: res.height))
             try Task.checkCancellation()
-            updateCameraHUD(
-                ownerID: req.id,
-                text: String(localized: "Photo captured"),
-                kind: .success,
-                autoHideSeconds: 1.6)
+            updateCameraHUD(ownerID: req.id, text: String(localized: "Photo captured"), kind: .success, autoHideSeconds: 1.6)
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
         case OpenClawCameraCommand.clip.rawValue:
             let params = (try? Self.decodeParams(OpenClawCameraClipParams.self, from: req.paramsJSON)) ??
@@ -2601,11 +2599,7 @@ final class NodeAppModel {
                 durationMs: res.durationMs,
                 hasAudio: res.hasAudio))
             try Task.checkCancellation()
-            updateCameraHUD(
-                ownerID: req.id,
-                text: String(localized: "Clip captured"),
-                kind: .success,
-                autoHideSeconds: 1.8)
+            updateCameraHUD(ownerID: req.id, text: String(localized: "Clip captured"), kind: .success, autoHideSeconds: 1.8)
             return BridgeInvokeResponse(id: req.id, ok: true, payloadJSON: payload)
         default:
             return Self.unknownInvokeResponse(req)
@@ -3089,14 +3083,12 @@ final class NodeAppModel {
         // Talk must not reconfigure AVAudioSession while its recorder owns it.
         if self.voiceNoteRecorder.isRecording || self.voiceNoteRecorder.isRequestingPermission {
             throw NSError(domain: "TalkMode", code: 8, userInfo: [
-                NSLocalizedDescriptionKey: String(
-                    localized: "Finish or cancel the active voice note before starting push-to-talk."),
+                NSLocalizedDescriptionKey: String(localized: "Finish or cancel the active voice note before starting push-to-talk."),
             ])
         }
         if self.auxiliaryAudioCapture != nil {
             throw NSError(domain: "TalkMode", code: 8, userInfo: [
-                NSLocalizedDescriptionKey: String(
-                    localized: "Finish the active audio capture before starting push-to-talk."),
+                NSLocalizedDescriptionKey: String(localized: "Finish the active audio capture before starting push-to-talk."),
             ])
         }
     }
@@ -3109,8 +3101,7 @@ final class NodeAppModel {
               !self.voiceNoteRecorder.isRequestingPermission
         else {
             throw NSError(domain: "AudioCapture", code: 1, userInfo: [
-                NSLocalizedDescriptionKey: String(
-                    localized: "Finish the active audio capture before starting another one."),
+                NSLocalizedDescriptionKey: String(localized: "Finish the active audio capture before starting another one."),
             ])
         }
         self.auxiliaryAudioCapture = owner
@@ -3441,8 +3432,7 @@ extension NodeAppModel {
         let status = await watchMessagingService.status()
         guard status.supported, status.paired, status.appInstalled else {
             throw NSError(domain: "WatchDirectSetup", code: 3, userInfo: [
-                NSLocalizedDescriptionKey: String(
-                    localized: "Pair an Apple Watch and install the OpenClaw watch app first."),
+                NSLocalizedDescriptionKey: String(localized: "Pair an Apple Watch and install the OpenClaw watch app first."),
             ])
         }
 
@@ -3653,6 +3643,7 @@ extension NodeAppModel {
             do {
                 try await transport.patchSession(
                     key: sessionKey,
+                    expectedSessionID: nil,
                     label: nil,
                     category: nil,
                     pinned: nil,
@@ -4425,10 +4416,7 @@ extension NodeAppModel {
             kind: .unknown,
             owner: .iphone,
             title: String(localized: "Credential save failed"),
-            message: String(
-                localized: "openclaw_disconnected_because_it_could_not_secur",
-                        defaultValue: "OpenClaw disconnected because it could not securely save the new " +
-                            "gateway credential."),
+            message: String(localized: "OpenClaw disconnected because it could not securely save the new gateway credential."),
             retryable: true,
             pauseReconnect: true,
             technicalDetails: technicalDetails))
@@ -4505,6 +4493,10 @@ extension NodeAppModel {
             }
         }
         self.setOperatorConnected(true)
+        await self.refreshDesktopObserveAvailability(
+            stableID: stableID,
+            routeGeneration: routeGeneration)
+        guard self.isCurrentGatewayRoute(generation: routeGeneration, stableID: stableID) else { return }
         self.clearOperatorGatewayConnectionProblemIfCurrent()
         GatewayDiagnostics.log(
             "operator gateway connected host=\(url.host ?? "?") scheme=\(url.scheme ?? "?")")
@@ -5259,6 +5251,9 @@ extension NodeAppModel {
     func setOperatorConnected(_ connected: Bool) {
         let changed = self.operatorConnected != connected
         self.operatorConnected = connected
+        if !connected {
+            self.isDesktopObserveAvailable = false
+        }
         self.operatorStatusText = connected ? "Connected" : "Offline"
         self.refreshOperatorAdminScopeFromStore()
         guard connected else {
@@ -5288,6 +5283,24 @@ extension NodeAppModel {
             guard changed else { return }
             await self.syncWatchAppSnapshot(reason: "operator_online")
         }
+    }
+
+    private func refreshDesktopObserveAvailability(stableID: String, routeGeneration: UInt64) async {
+        // Advertised methods belong to one admitted operator route. Never let a
+        // reconnect publish support learned from the socket it replaced.
+        guard self.isCurrentGatewayRoute(generation: routeGeneration, stableID: stableID),
+              let route = await self.operatorGateway.currentRoute(ifGatewayID: stableID)
+        else {
+            self.isDesktopObserveAvailable = false
+            return
+        }
+        let supported = await self.operatorGateway.supportsServerMethod(
+            "desktop.observe",
+            ifCurrentRoute: route) == true
+        guard self.isCurrentGatewayRoute(generation: routeGeneration, stableID: stableID),
+              await self.operatorGateway.currentRoute(ifGatewayID: stableID) == route
+        else { return }
+        self.isDesktopObserveAvailable = supported
     }
 
     func refreshOperatorAdminScopeFromStore() {
@@ -9244,7 +9257,6 @@ extension NodeAppModel {
         }
     }
 
-    // swiftlint:disable:next function_body_length
     private func resolveExecApprovalNotificationDecision(
         approvalId: String,
         approvalKind: String?,
@@ -9298,10 +9310,7 @@ extension NodeAppModel {
             session: self.operatorGateway,
             shouldContinue: { true })
         else {
-            return .failed(
-                message: String(localized: "the_gateway_operator_route_changed_before_the_ap",
-                        defaultValue: "The gateway operator route changed before the approval " +
-                            "response was applied."))
+            return .failed(message: String(localized: "The gateway operator route changed before the approval response was applied."))
         }
         if rpcFamily == .legacy {
             guard approvalKind == .exec else {
@@ -9377,10 +9386,7 @@ extension NodeAppModel {
                 if let resolutionAttempt {
                     self.markExecApprovalResolutionWriteSettled(resolutionAttempt)
                 }
-                return .failed(
-                    message: String(localized: "the_gateway_operator_route_changed_before_the_de_1",
-                            defaultValue: "The gateway operator route changed before the decision " +
-                                "was sent."))
+                return .failed(message: String(localized: "The gateway operator route changed before the decision was sent."))
             }
             guard await self.isCurrentGatewaySessionRoute(
                 context,
@@ -9539,10 +9545,7 @@ extension NodeAppModel {
                 if let resolutionAttempt {
                     self.markExecApprovalResolutionWriteSettled(resolutionAttempt)
                 }
-                return .failed(
-                    message: String(localized: "the_gateway_operator_route_changed_before_the_de_1",
-                            defaultValue: "The gateway operator route changed before the decision " +
-                                "was sent."))
+                return .failed(message: String(localized: "The gateway operator route changed before the decision was sent."))
             }
             guard await self.isCurrentGatewaySessionRoute(
                 context,
@@ -9611,25 +9614,15 @@ extension NodeAppModel {
                 self.upsertWatchExecApprovalPrompt(prompt)
                 await self.publishWatchExecApprovalPrompt(prompt, reason: "resolve_retry")
             }
-            return .pendingRetry(
-                message: String(localized: "the_previous_decision_was_not_recorded_review_an",
-                        defaultValue: "The previous decision was not recorded. Review and " +
-                            "try again."))
+            return .pendingRetry(message: String(localized: "The previous decision was not recorded. Review and try again."))
         case .stale:
             // This readback follows a dispatched write whose response was lost or malformed.
             // Legacy get removes committed rows, so not-found cannot distinguish success from
             // expiry. Keep every surface frozen until an explicit terminal event/reconnect.
             return .uncertain(
-                message: String(
-                    localized: "decision_status_is_unknown_actions_remain_locked_1",
-                            defaultValue: "Decision status is unknown. Actions remain locked until " +
-                                "OpenClaw reconnects."))
+                message: String(localized: "Decision status is unknown. Actions remain locked until OpenClaw reconnects."))
         case .failed:
-            return .uncertain(
-                message: String(
-                    localized: "decision_status_is_unknown_actions_remain_locked_1",
-                            defaultValue: "Decision status is unknown. Actions remain locked until " +
-                                "OpenClaw reconnects."))
+            return .uncertain(message: String(localized: "Decision status is unknown. Actions remain locked until OpenClaw reconnects."))
         }
     }
 
