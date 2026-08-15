@@ -9244,6 +9244,7 @@ extension NodeAppModel {
         }
     }
 
+    // swiftlint:disable:next function_body_length
     private func resolveExecApprovalNotificationDecision(
         approvalId: String,
         approvalKind: String?,
