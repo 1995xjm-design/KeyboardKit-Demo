@@ -18,7 +18,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Clone official OpenClaw source
-        run: git clone --depth 1 https://github.com/openclaw/openclaw.git OpenClaw
+        run: |
+          # Pin to 82ba647 (2026-08-11): matches our zh/EdgeTTS patch baseline.
+          # Following latest main breaks the build when upstream shared APIs change.
+          git clone https://github.com/openclaw/openclaw.git OpenClaw
+          cd OpenClaw && git checkout 82ba647 && git log --oneline -1
 
       - name: Generate Version.xcconfig
         working-directory: OpenClaw/apps/ios
