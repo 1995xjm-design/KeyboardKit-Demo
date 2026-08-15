@@ -868,7 +868,7 @@ extension RootTabs {
                 eyebrow: "\(gatewayLabel) online",
                 title: String(localized: "Command center"),
                 subtitle:
-                String(localized: "Use Chat for code work or realtime voice, plus gateway tools for approved device actions."),
+                String(localized: "use_chat_for_code_work_or_realtime_voice_plus_ga"),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
                 activeAgentBadge: agents.first(where: { $0.isActive })?.badge ?? "OC",
@@ -882,7 +882,7 @@ extension RootTabs {
                 eyebrow: String(localized: "Gateway handshake"),
                 title: String(localized: "Reconnecting"),
                 subtitle:
-                String(localized: "Restoring the local node session, agent list, voice config, and device capability state."),
+                String(localized: "restoring_the_local_node_session_agent_list_voic"),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: self.appModel.activeAgentName,
                 activeAgentBadge: "OC",
@@ -896,7 +896,7 @@ extension RootTabs {
                 eyebrow: self.gatewayStatus == .error ? String(localized: "Gateway needs attention") : String(localized: "OpenClaw iOS"),
                 title: String(localized: "Pair a gateway"),
                 subtitle:
-                String(localized: "Connect this phone as a local node for chat, realtime voice, share intake, and approved device tools."),
+                String(localized: "connect_this_phone_as_a_local_node_for_chat_real"),
                 gatewayLabel: gatewayLabel,
                 activeAgentName: "Main",
                 activeAgentBadge: "OC",
@@ -904,7 +904,7 @@ extension RootTabs {
                 agentCount: agents.count,
                 agents: Array(agents.prefix(4)),
                 footer:
-                String(localized: "Use Settings to scan a pairing QR code or paste a setup code from your OpenClaw gateway."))
+                String(localized: "use_settings_to_scan_a_pairing_qr_code_or_paste"))
         }
     }
 

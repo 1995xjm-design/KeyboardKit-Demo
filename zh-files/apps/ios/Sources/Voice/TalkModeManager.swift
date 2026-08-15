@@ -2889,6 +2889,7 @@ final class TalkModeManager: NSObject {
         return nil
     }
 
+    // swiftlint:disable:next function_body_length cyclomatic_complexity
     private func playAssistant(
         text: String,
         gateway gatewayOverride: GatewayNodeSession? = nil,

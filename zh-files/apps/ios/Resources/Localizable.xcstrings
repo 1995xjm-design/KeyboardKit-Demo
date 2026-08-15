@@ -1,6 +1,70 @@
 {
   "sourceLanguage": "en",
   "strings": {
+      "use_chat_for_code_work_or_realtime_voice_plus_ga": {
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Use Chat for code work or realtime voice, plus gateway tools for approved device actions."
+        }
+      },
+      "zh-CN": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "使用聊天进行代码工作或实时语音，并通过 Gateway 工具执行已批准的设备操作。"
+        }
+      }
+    }
+  },
+      "restoring_the_local_node_session_agent_list_voic": {
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Restoring the local node session, agent list, voice config, and device capability state."
+        }
+      },
+      "zh-CN": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "正在恢复本地节点会话、智能体列表、语音��置和设备能力状态。"
+        }
+      }
+    }
+  },
+      "connect_this_phone_as_a_local_node_for_chat_real": {
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Connect this phone as a local node for chat, realtime voice, share intake, and approved device tools."
+        }
+      },
+      "zh-CN": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "将本机作为本地节点连接，用于聊天、实时语音、共享输入和已批准的设备工具。"
+        }
+      }
+    }
+  },
+      "use_settings_to_scan_a_pairing_qr_code_or_paste": {
+    "localizations": {
+      "en": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "Use Settings to scan a pairing QR code or paste a setup code from your OpenClaw gateway."
+        }
+      },
+      "zh-CN": {
+        "stringUnit": {
+          "state": "translated",
+          "value": "在设置中扫描配对二维码，或粘贴来自 OpenClaw Gateway 的设置代码。"
+        }
+      }
+    }
+  },
     " The new certificate is trusted by this device; this is commonly caused by certificate rotation.": {
       "localizations": {
         "en": {
