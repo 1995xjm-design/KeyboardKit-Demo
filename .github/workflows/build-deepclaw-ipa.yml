@@ -65,6 +65,19 @@ jobs:
           .build/swift-tools/swiftformat --version
           .build/swift-tools/swiftlint version
 
+      - name: Install tsx for native A2UI post-build
+        working-directory: OpenClaw
+        run: |
+          set -euo pipefail
+          mkdir -p .tool
+          cd .tool
+          npm init -y >/dev/null 2>&1
+          npm install --no-save --no-audit --no-fund --no-package-lock tsx@4.23.1
+          cd ..
+          ln -sfn .tool/node_modules node_modules
+          test -d node_modules/tsx
+          node --import tsx scripts/sync-native-a2ui.mts --check
+
       - name: Auto-format with SwiftFormat (official config)
         working-directory: OpenClaw/apps/ios
         run: |
@@ -100,11 +113,11 @@ jobs:
           status=$?
           if [ $status -ne 0 ]; then
             echo "=== ERROR LINES ==="
-            grep -E "error:|The following build commands failed|fatal error|Command .* failed" build/xcodebuild.log | head -n 40
+            grep -E "error:|Cannot find|cannot find|The following build commands failed|fatal error|Command .* failed" build/xcodebuild.log | head -n 40
             echo "=== TAIL ==="
             tail -n 50 build/xcodebuild.log
             {
-              grep -E "error:|The following build commands failed|fatal error|Command .* failed" build/xcodebuild.log | head -n 40
+              grep -E "error:|Cannot find|cannot find|The following build commands failed|fatal error|Command .* failed" build/xcodebuild.log | head -n 40
               echo "--- tail ---"
               tail -n 50 build/xcodebuild.log
             } | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g; s/:/%3A/g; s/,/%2C/g' | while IFS= read -r line; do
