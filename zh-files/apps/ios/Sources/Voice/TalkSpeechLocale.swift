@@ -66,8 +66,7 @@ enum TalkSpeechLocale {
         let prefix = languageCode + "-"
         return supportedLocaleIDs
             .filter { $0.lowercased().hasPrefix(prefix.lowercased()) }
-            .sorted()
-            .first
+            .min()
     }
 
     private static func localeIDByDroppingScript(_ id: String) -> String? {
