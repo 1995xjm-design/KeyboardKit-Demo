@@ -26,7 +26,7 @@ enum TalkSpeechLocale {
             .sorted { (lhs: Option, rhs: Option) in
                 lhs.label.localizedCaseInsensitiveCompare(rhs.label) == .orderedAscending
             }
-        return [Option(id: self.automaticID, label: "Automatic")] + dynamic
+        return [Option(id: self.automaticID, label: String(localized: "Automatic"))] + dynamic
     }
 
     static func resolvedLocaleID(
