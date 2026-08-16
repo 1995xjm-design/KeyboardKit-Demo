@@ -1504,7 +1504,6 @@ extension SettingsProTab {
             get: { self.talkProviderSelectionRaw },
             set: { newValue in
                 self.talkProviderSelectionRaw = newValue
-                guard newValue != openClawEdgeTTSProviderRawValue else { return }
                 self.appModel.setTalkProviderSelection(newValue)
             })
     }

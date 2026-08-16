@@ -1125,16 +1125,6 @@ extension SettingsProTab {
         return providerSelection == .openAIRealtime || self.appModel.talkMode.gatewayTalkUsesRealtime
     }
 
-    var talkProviderSelectionBinding: Binding<String> {
-        Binding(
-            get: { self.talkProviderSelectionRaw },
-            set: { newValue in
-                let selection = TalkModeProviderSelection.resolved(newValue)
-                self.talkProviderSelectionRaw = selection.rawValue
-                self.appModel.setTalkProviderSelection(selection.rawValue)
-            })
-    }
-
     var talkRealtimeVoiceSelectionBinding: Binding<String> {
         Binding(
             get: { self.talkRealtimeVoiceSelectionRaw },

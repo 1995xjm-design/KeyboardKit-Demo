@@ -222152,7 +222152,24 @@
           }
         }
       }
+    },
+    "Edge TTS unavailable, using system voice": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS unavailable, using system voice"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS 不可用，已切换系统语音"
+          }
+        }
+      }
     }
+
   },
   "version": "1.0"
 }

@@ -3158,7 +3158,10 @@ final class TalkModeManager: NSObject {
             self.logger.error("edge tts failed: \(errorMessage, privacy: .public); falling back to system voice")
             GatewayDiagnostics.log("talk tts: provider=system (edge error) msg=\(error.localizedDescription)")
             do {
-                try await self.playSystemVoice(text: text, language: languages.systemVoice)
+                try await self.playSystemVoice(
+                    text: text,
+                    language: languages.systemVoice,
+                    statusOverride: String(localized: "Edge TTS unavailable, using system voice"))
             } catch {
                 guard !Task.isCancelled, self.speechGeneration == generation else { return }
                 let status = String(
@@ -3209,7 +3212,11 @@ final class TalkModeManager: NSObject {
         }
     }
 
-    private func playSystemVoice(text: String, language: String?) async throws {
+    private func playSystemVoice(
+        text: String,
+        language: String?,
+        statusOverride: String? = nil) async throws
+    {
         applyVoiceModeDescriptor(TalkVoiceModeDescriptorBuilder.build(
             providerId: "system",
             providerLabel: Self.displayName(forProvider: "system"),
@@ -3218,7 +3225,7 @@ final class TalkModeManager: NSObject {
             transport: "native",
             isRealtime: false))
         self.startSpeechInterruptionRecognitionIfNeeded()
-        self.setStatus(String(localized: "Speaking (System)…"), phase: .speaking)
+        self.setStatus(statusOverride ?? String(localized: "Speaking (System)…"), phase: .speaking)
         try await TalkSystemSpeechSynthesizer.shared.speak(text: text, language: language)
     }
 
