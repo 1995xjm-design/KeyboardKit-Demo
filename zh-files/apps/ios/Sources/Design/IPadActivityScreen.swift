@@ -175,7 +175,7 @@ struct IPadActivityScreen: View {
     private var gatewayStateText: String {
         guard !self.gatewayConnected else { return "Online" }
         let status = self.appModel.gatewayDisplayStatusText.trimmingCharacters(in: .whitespacesAndNewlines)
-        return status.isEmpty ? "Offline" : status
+        return status.isEmpty ? String(localized: "Offline") : status
     }
 
     private var gatewayDetailText: String {

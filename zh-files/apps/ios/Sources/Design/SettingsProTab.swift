@@ -284,21 +284,6 @@ struct SettingsProTab: View {
                     message: self.notificationRelayDisclosureMessage,
                     onContinue: self.acceptNotificationRelayDisclosure)
             }
-            .alert("Reset Onboarding?", isPresented: self.$showResetOnboardingAlert) {
-                Button(role: .destructive) {
-                    Task { await self.resetOnboarding() }
-                } label: {
-                    Text("Reset")
-                        .font(OpenClawType.subheadSemiBold)
-                }
-                Button(role: .cancel) {} label: {
-                    Text("Cancel")
-                        .font(OpenClawType.subheadSemiBold)
-                }
-            } message: {
-                Text("This disconnects, clears saved gateway credentials, and reopens onboarding.")
-                    .font(OpenClawType.subhead)
-            }
             .alert(
                 "QR Scanner Unavailable",
                 isPresented: Binding(

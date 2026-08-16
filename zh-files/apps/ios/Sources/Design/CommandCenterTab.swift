@@ -166,7 +166,7 @@ struct CommandCenterTab: View {
         if approvalCount > 0 || cronCount > 0 {
             CommandPanel(tint: OpenClawBrand.warn, padding: 12) {
                 VStack(alignment: .leading, spacing: 8) {
-                    self.cardHeader(title: String(localized: "Attention"))
+                    self.cardHeader(title: "Attention")
                     if approvalCount > 0 {
                         self.dashboardActionRow(
                             title: String(localized: "Pending approvals"),
@@ -381,7 +381,7 @@ struct CommandCenterTab: View {
         .padding(.horizontal, OpenClawProMetric.pagePadding)
     }
 
-    private func gatewayFact(icon: String, title: String, value: String, color: Color) -> some View {
+    private func gatewayFact(icon: String, title: LocalizedStringKey, value: String, color: Color) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 5) {
                 Image(systemName: icon)
@@ -480,7 +480,7 @@ struct CommandCenterTab: View {
         }
     }
 
-    private func cardHeader(title: String) -> some View {
+    private func cardHeader(title: LocalizedStringKey) -> some View {
         HStack(spacing: 8) {
             Text(title)
                 .font(OpenClawType.subheadSemiBold)

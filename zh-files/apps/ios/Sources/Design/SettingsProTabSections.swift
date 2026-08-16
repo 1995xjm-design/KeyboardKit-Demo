@@ -199,7 +199,9 @@ private struct EdgeTTSVoicePreviewButton: View {
             do {
                 let audio = try await EdgeTTSSynthesizer.synthesize(
                     text: "你好，这是你的语音预览。",
-                    voiceId: EdgeTTSVoice.current.id)
+                    voiceId: EdgeTTSVoice.current.id,
+                    speed: UserDefaults.standard.integer(forKey: "talk.edge.speed"),
+                    pitch: UserDefaults.standard.integer(forKey: "talk.edge.pitch"))
                 let player = try AVAudioPlayer(data: audio)
                 self.previewPlayer = player
                 player.prepareToPlay()
@@ -209,6 +211,58 @@ private struct EdgeTTSVoicePreviewButton: View {
             }
             self.isPreviewing = false
         }
+    }
+}
+
+private struct EdgeTTSSpeedSlider: View {
+    @AppStorage("talk.edge.speed") private var speed = 0
+
+    var body: some View {
+        HStack {
+            Text(String(localized: "Speed"))
+                .frame(width: 44, alignment: .leading)
+            Slider(value: self.speedBinding, in: -50...50, step: 5)
+            Text(self.speedValueText)
+                .frame(width: 44, alignment: .trailing)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var speedBinding: Binding<Double> {
+        Binding(
+            get: { Double(self.speed) },
+            set: { self.speed = Int($0.rounded()) })
+    }
+
+    private var speedValueText: String {
+        self.speed >= 0 ? "+\(self.speed)%" : "\(self.speed)%"
+    }
+}
+
+private struct EdgeTTSPitchSlider: View {
+    @AppStorage("talk.edge.pitch") private var pitch = 0
+
+    var body: some View {
+        HStack {
+            Text(String(localized: "Pitch"))
+                .frame(width: 44, alignment: .leading)
+            Slider(value: self.pitchBinding, in: -10...10, step: 1)
+            Text(self.pitchValueText)
+                .frame(width: 44, alignment: .trailing)
+                .monospacedDigit()
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var pitchBinding: Binding<Double> {
+        Binding(
+            get: { Double(self.pitch) },
+            set: { self.pitch = Int($0.rounded()) })
+    }
+
+    private var pitchValueText: String {
+        self.pitch >= 0 ? "+\(self.pitch)Hz" : "\(self.pitch)Hz"
     }
 }
 
@@ -491,6 +545,21 @@ extension SettingsProTab {
             self.gatewayAdvancedCard
         }
         .font(OpenClawType.body)
+        .alert("Reset Onboarding?", isPresented: self.$showResetOnboardingAlert) {
+            Button(role: .destructive) {
+                Task { await self.resetOnboarding() }
+            } label: {
+                Text("Reset")
+                    .font(OpenClawType.subheadSemiBold)
+            }
+            Button(role: .cancel) {} label: {
+                Text("Cancel")
+                    .font(OpenClawType.subheadSemiBold)
+            }
+        } message: {
+            Text("This disconnects, clears saved gateway credentials, and reopens onboarding.")
+                .font(OpenClawType.subhead)
+        }
     }
 
     private var gatewayStatusCard: some View {
@@ -1545,9 +1614,6 @@ extension SettingsProTab {
                     ForEach(TalkModeProviderSelection.allCases) { option in
                         Text(option.label).font(OpenClawType.body).tag(option.rawValue)
                     }
-                    Text(String(localized: "Edge TTS (Free)"))
-                        .font(OpenClawType.body)
-                        .tag(openClawEdgeTTSProviderRawValue)
                 }
                 .font(OpenClawType.body)
                 if self.talkProviderSelectionRaw == openClawEdgeTTSProviderRawValue {
@@ -1557,6 +1623,8 @@ extension SettingsProTab {
                         }
                     }
                     .font(OpenClawType.body)
+                    EdgeTTSSpeedSlider()
+                    EdgeTTSPitchSlider()
                     EdgeTTSVoicePreviewButton()
                 }
                 if self.shouldShowRealtimeVoicePicker {

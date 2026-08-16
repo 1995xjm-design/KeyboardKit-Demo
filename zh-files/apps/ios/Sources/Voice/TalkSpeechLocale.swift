@@ -6,7 +6,7 @@ import Speech
 enum TalkSpeechLocale {
     static let storageKey = "talk.speechLocale"
     static let automaticID = "auto"
-    static let fallbackLocaleID = "en-US"
+    static let fallbackLocaleID = "zh-CN"
 
     struct Option: Identifiable {
         let id: String
@@ -36,14 +36,48 @@ enum TalkSpeechLocale {
         fallbackLocaleID: String = Self.fallbackLocaleID,
         supportedLocaleIDs: Set<String>) -> String?
     {
-        TalkConfigParsing.resolvedSpeechRecognitionLocaleID(
-            preferredLocaleIDs: [
-                TalkConfigParsing.normalizedExplicitSpeechLocaleID(localSelection),
-                TalkConfigParsing.normalizedExplicitSpeechLocaleID(gatewaySelection),
-                deviceLocaleID,
-            ],
-            fallbackLocaleID: fallbackLocaleID,
-            supportedLocaleIDs: supportedLocaleIDs)
+        let candidates = [
+            TalkConfigParsing.normalizedExplicitSpeechLocaleID(localSelection),
+            TalkConfigParsing.normalizedExplicitSpeechLocaleID(gatewaySelection),
+            self.canonicalID(deviceLocaleID),
+        ]
+        for candidate in candidates {
+            guard let candidate, !candidate.isEmpty else { continue }
+            if let matched = Self.compatibleLocaleID(for: candidate, supportedLocaleIDs: supportedLocaleIDs) {
+                return matched
+            }
+        }
+        return supportedLocaleIDs.contains(fallbackLocaleID) ? fallbackLocaleID : nil
+    }
+
+    /// Best supported ID for `candidate`: exact match, then script-stripped
+    /// (zh-Hans-CN -> zh-CN), then any supported ID sharing the language code.
+    private static func compatibleLocaleID(for candidate: String, supportedLocaleIDs: Set<String>) -> String? {
+        if supportedLocaleIDs.contains(candidate) {
+            return candidate
+        }
+        if let withoutScript = Self.localeIDByDroppingScript(candidate),
+           supportedLocaleIDs.contains(withoutScript) {
+            return withoutScript
+        }
+        guard let languageCode = Locale(identifier: candidate).language.languageCode?.identifier else {
+            return nil
+        }
+        let prefix = languageCode + "-"
+        return supportedLocaleIDs
+            .filter { $0.lowercased().hasPrefix(prefix.lowercased()) }
+            .sorted()
+            .first
+    }
+
+    private static func localeIDByDroppingScript(_ id: String) -> String? {
+        let locale = Locale(identifier: id)
+        guard locale.language.script != nil else { return nil }
+        var components = [locale.language.languageCode?.identifier].compactMap { $0 }
+        if let region = locale.language.region?.identifier {
+            components.append(region)
+        }
+        return components.isEmpty ? nil : components.joined(separator: "-")
     }
 
     static func resolvedSynthesisLocaleID(

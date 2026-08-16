@@ -3192,7 +3192,9 @@ final class TalkModeManager: NSObject {
         self.setStatus(String(localized: "Speaking…"), phase: .speaking)
         let audio = try await EdgeTTSSynthesizer.synthesize(
             text: text,
-            voiceId: voiceId ?? EdgeTTSVoice.current.id)
+            voiceId: voiceId ?? EdgeTTSVoice.current.id,
+            speed: EdgeTTSSynthesizer.savedSpeed(),
+            pitch: EdgeTTSSynthesizer.savedPitch())
         guard generation == self.speechGeneration, self.isSpeaking else { return }
         self.lastPlaybackWasPCM = false
         self.bufferedPlayer.setLevelHandler { [weak self] level in

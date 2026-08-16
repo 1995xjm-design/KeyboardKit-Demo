@@ -13540,7 +13540,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Alerts Off"
+            "value": "提醒已关闭"
           }
         },
         "zh-TW": {
@@ -17076,7 +17076,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Apple Watch"
+            "value": "手表"
           }
         },
         "zh-TW": {
@@ -118396,7 +118396,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Not loaded"
+            "value": "未加载"
           }
         },
         "zh-TW": {
@@ -127508,7 +127508,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Out-of-app approval alerts need notification permission."
+            "value": "应用外审批提醒需要通知权限。"
           }
         },
         "zh-TW": {
@@ -137164,7 +137164,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Reachable"
+            "value": "已连接"
           }
         },
         "zh-TW": {
@@ -171164,7 +171164,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Skills"
+            "value": "技能"
           }
         },
         "zh-TW": {
@@ -221973,6 +221973,182 @@
           "stringUnit": {
             "state": "translated",
             "value": "主要修复：查看详情后重试"
+          }
+        }
+      }
+    },
+    "Info and status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Info and status"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "信息和状态"
+          }
+        }
+      }
+    },
+    "While app is active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While app is active"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App 活跃时"
+          }
+        }
+      }
+    },
+    "System follows this device's appearance setting.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System follows this device's appearance setting."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外观跟随此设备的设置。"
+          }
+        }
+      }
+    },
+    "Sessions in “%@” move back to Ungrouped.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sessions in “%@” move back to Ungrouped."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「%@」中的会话移回未分组。"
+          }
+        }
+      }
+    },
+    "Reconnect to your gateway to continue.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reconnect to your gateway to continue."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新连接网关以继续。"
+          }
+        }
+      }
+    },
+    "Timed out": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timed out"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "超时"
+          }
+        }
+      }
+    },
+    "The gateway took too long to respond.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway took too long to respond."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关响应超时。"
+          }
+        }
+      }
+    },
+    "Something went wrong": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something went wrong"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "出错了"
+          }
+        }
+      }
+    },
+    "Start a Conversation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a Conversation"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开始对话"
+          }
+        }
+      }
+    },
+    "Type a message below to start.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type a message below to start."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在下方输入消息开始。"
+          }
+        }
+      }
+    },
+    "Message your agent to get started.\nReturn sends • Shift-Return adds a line break • / shows commands.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Message your agent to get started.\nReturn sends • Shift-Return adds a line break • / shows commands."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "给您的代理发消息开始。\n回车发送 • Shift-回车换行 • / 显示命令。"
           }
         }
       }

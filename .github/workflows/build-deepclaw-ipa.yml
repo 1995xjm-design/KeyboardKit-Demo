@@ -44,6 +44,9 @@ jobs:
         working-directory: OpenClaw
         run: |
           cp -R ../zh-files/apps/ios/* apps/ios/
+          cp -R ../zh-files/apps/shared/* apps/shared/
+          test -f apps/shared/OpenClawKit/Sources/OpenClawChatUI/ChatView.swift
+          grep -q 'String(localized: "Reconnect to your gateway to continue.")' apps/shared/OpenClawKit/Sources/OpenClawChatUI/ChatView.swift
           test -f apps/ios/Sources/Design/AppLanguagePreference.swift
           grep -q "Restart the app to apply the language change" apps/ios/Sources/Design/SettingsProTabSections.swift
           grep -q "AppLanguagePreference.applySavedPreference" apps/ios/Sources/OpenClawApp.swift
