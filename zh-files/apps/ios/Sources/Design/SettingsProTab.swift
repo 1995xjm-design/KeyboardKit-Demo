@@ -254,7 +254,7 @@ struct SettingsProTab: View {
                             onError: { error in
                                 guard self.scannerResultHandoff.isActive(scanID: scanID) else { return }
                                 self.showQRScanner = false
-                                self.setupStatusText = String(localized: "Scanner error: \(error)")
+                                self.setupStatusText = String(format: String(localized: "Scanner error: %@"), error)
                                 self.scannerError = error
                             },
                             onDismiss: {

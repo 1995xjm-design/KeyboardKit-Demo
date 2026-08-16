@@ -20,9 +20,9 @@ enum AppLanguagePreference: String, CaseIterable, Identifiable {
     /// Display name shown in the settings list, rendered in its own language.
     var displayName: String {
         switch self {
-        case .system: "System"
+        case .system: String(localized: "System")
         case .zhHans: "简体中文"
-        case .english: "English"
+        case .english: String(localized: "English")
         }
     }
 

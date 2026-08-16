@@ -288,7 +288,7 @@ struct OnboardingWizardView: View {
                 onError: { error in
                     guard self.scannerResultHandoff.isActive(scanID: scanID) else { return }
                     self.showQRScanner = false
-                    self.statusLine = "Scanner error: \(error)"
+                    self.statusLine = String(format: String(localized: "Scanner error: %@"), error)
                     self.scannerError = error
                 },
                 onDismiss: {

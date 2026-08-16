@@ -17,7 +17,7 @@ enum OnboardingStep: Int, CaseIterable {
     var manualProgressTitle: String {
         let manualSteps: [OnboardingStep] = [.mode, .connect, .auth, .success]
         guard let idx = manualSteps.firstIndex(of: self) else { return "" }
-        return "Step \(idx + 1) of \(manualSteps.count)"
+        return String(format: String(localized: "Step %@ of %@"), "\(idx + 1)", "\(manualSteps.count)")
     }
 
     var title: LocalizedStringKey {

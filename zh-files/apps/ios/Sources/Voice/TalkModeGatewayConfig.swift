@@ -212,7 +212,7 @@ enum TalkModeProviderSelection: String, CaseIterable, Identifiable {
         case .openAIRealtime:
             "Realtime-2 (OpenAI)"
         case .edgeTTS:
-            "Edge TTS (Free)"
+            String(localized: "Edge TTS (Free)")
         }
     }
 

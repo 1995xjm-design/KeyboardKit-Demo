@@ -1,70 +1,70 @@
 {
   "sourceLanguage": "en",
   "strings": {
-      "use_chat_for_code_work_or_realtime_voice_plus_ga": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Use Chat for code work or realtime voice, plus gateway tools for approved device actions."
-        }
-      },
-      "zh-CN": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "使用聊天进行代码工作或实时语音，并通过 Gateway 工具执行已批准的设备操作。"
-        }
-      }
-    }
-  },
-      "restoring_the_local_node_session_agent_list_voic": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Restoring the local node session, agent list, voice config, and device capability state."
-        }
-      },
-      "zh-CN": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "正在恢复本地节点会话、智能体列表、语音��置和设备能力状态。"
+    "use_chat_for_code_work_or_realtime_voice_plus_ga": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Chat for code work or realtime voice, plus gateway tools for approved device actions."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用聊天进行代码工作或实时语音，并通过 Gateway 工具执行已批准的设备操作。"
+          }
         }
       }
-    }
-  },
-      "connect_this_phone_as_a_local_node_for_chat_real": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Connect this phone as a local node for chat, realtime voice, share intake, and approved device tools."
-        }
-      },
-      "zh-CN": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "将本机作为本地节点连接，用于聊天、实时语音、共享输入和已批准的设备工具。"
-        }
-      }
-    }
-  },
-      "use_settings_to_scan_a_pairing_qr_code_or_paste": {
-    "localizations": {
-      "en": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "Use Settings to scan a pairing QR code or paste a setup code from your OpenClaw gateway."
-        }
-      },
-      "zh-CN": {
-        "stringUnit": {
-          "state": "translated",
-          "value": "在设置中扫描配对二维码，或粘贴来自 OpenClaw Gateway 的设置代码。"
+    },
+    "restoring_the_local_node_session_agent_list_voic": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring the local node session, agent list, voice config, and device capability state."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在恢复本地节点会话、智能体列表、语音配置和设备能力状态。"
+          }
         }
       }
-    }
-  },
+    },
+    "connect_this_phone_as_a_local_node_for_chat_real": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect this phone as a local node for chat, realtime voice, share intake, and approved device tools."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将本机作为本地节点连接，用于聊天、实时语音、共享输入和已批准的设备工具。"
+          }
+        }
+      }
+    },
+    "use_settings_to_scan_a_pairing_qr_code_or_paste": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Settings to scan a pairing QR code or paste a setup code from your OpenClaw gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在设置中扫描配对二维码，或粘贴来自 OpenClaw Gateway 的设置代码。"
+          }
+        }
+      }
+    },
     " The new certificate is trusted by this device; this is commonly caused by certificate rotation.": {
       "localizations": {
         "en": {
@@ -218885,6 +218885,2902 @@
           "stringUnit": {
             "state": "translated",
             "value": "© 2026 OpenClaw Foundation — MIT-licens."
+          }
+        }
+      }
+    },
+    "%@ / %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ / %@"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ / %@"
+          }
+        }
+      }
+    },
+    "%@, %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@、%@"
+          }
+        }
+      }
+    },
+    "%@, %@, %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@, %@, %@"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@、%@、%@"
+          }
+        }
+      }
+    },
+    "%@: %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: %@."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@：%@。"
+          }
+        }
+      }
+    },
+    "Step %@ of %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %@ of %@"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第 %@ 步，共 %@ 步"
+          }
+        }
+      }
+    },
+    "A header with this name already exists.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A header with this name already exists."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已存在同名标头。"
+          }
+        }
+      }
+    },
+    "Agent push-to-talk requires a gateway context": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent push-to-talk requires a gateway context"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent 对讲需要网关上下文"
+          }
+        }
+      }
+    },
+    "All available skills are allowed for this agent.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All available skills are allowed for this agent."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "该 Agent 已允许使用所有可用技能。"
+          }
+        }
+      }
+    },
+    "Approval expired before this decision was applied.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approval expired before this decision was applied."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "审批在应用此决定前已过期。"
+          }
+        }
+      }
+    },
+    "Approval required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approval required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要审批"
+          }
+        }
+      }
+    },
+    "Approval was cancelled before this decision was applied.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approval was cancelled before this decision was applied."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "审批在应用此决定前已被取消。"
+          }
+        }
+      }
+    },
+    "Approval was resolved elsewhere.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approval was resolved elsewhere."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "审批已在其他地方处理。"
+          }
+        }
+      }
+    },
+    "Authentication": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authentication"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "身份验证"
+          }
+        }
+      }
+    },
+    "Background idle": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background idle"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台空闲"
+          }
+        }
+      }
+    },
+    "Camera is not available on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera is not available on this device."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备上无法使用相机。"
+          }
+        }
+      }
+    },
+    "Camera scanning is currently unavailable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camera scanning is currently unavailable."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "相机扫描当前不可用。"
+          }
+        }
+      }
+    },
+    "Cannot add video input": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cannot add video input"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法添加视频输入"
+          }
+        }
+      }
+    },
+    "Cards unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cards unavailable"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "卡片不可用"
+          }
+        }
+      }
+    },
+    "Certificate review required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certificate review required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要审核证书"
+          }
+        }
+      }
+    },
+    "Check Gateway status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check Gateway status"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看网关状态"
+          }
+        }
+      }
+    },
+    "Check the gateway connection, then refresh.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the gateway connection, then refresh."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请检查网关连接，然后刷新。"
+          }
+        }
+      }
+    },
+    "Clip captured": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clip captured"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已捕获片段"
+          }
+        }
+      }
+    },
+    "Command center": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Command center"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "命令中心"
+          }
+        }
+      }
+    },
+    "Configure this channel on the gateway.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configure this channel on the gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在网关上配置此渠道。"
+          }
+        }
+      }
+    },
+    "Connect a gateway to edit skills.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect a gateway to edit skills."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接网关以编辑技能。"
+          }
+        }
+      }
+    },
+    "Connect a live gateway to edit agent skills.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect a live gateway to edit agent skills."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接在线网关以编辑 Agent 技能。"
+          }
+        }
+      }
+    },
+    "Connect the iPhone to a Gateway first.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect the iPhone to a Gateway first."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先将 iPhone 连接到网关。"
+          }
+        }
+      }
+    },
+    "Connect to load your agents": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect to load your agents"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接以加载你的 Agent"
+          }
+        }
+      }
+    },
+    "Connect to the gateway to load Skill Workshop proposals.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect to the gateway to load Skill Workshop proposals."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接到网关以加载技能工作坊提案。"
+          }
+        }
+      }
+    },
+    "Connected.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已连接。"
+          }
+        }
+      }
+    },
+    "Copied command": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied command"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已复制命令"
+          }
+        }
+      }
+    },
+    "Copied diagnostics": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied diagnostics"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已复制诊断信息"
+          }
+        }
+      }
+    },
+    "Copied request ID": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied request ID"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已复制请求 ID"
+          }
+        }
+      }
+    },
+    "Could not access device identity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not access device identity"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法访问设备身份"
+          }
+        }
+      }
+    },
+    "Could not access share device identity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not access share device identity"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法访问共享设备身份"
+          }
+        }
+      }
+    },
+    "Could not load the selected image.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load the selected image."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法加载所选图片。"
+          }
+        }
+      }
+    },
+    "Could not load this folder.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load this folder."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法加载此文件夹。"
+          }
+        }
+      }
+    },
+    "Could not remove offline data for this gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not remove offline data for this gateway"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法删除此网关的离线数据"
+          }
+        }
+      }
+    },
+    "Could not safely replace the gateway's offline data. Try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not safely replace the gateway's offline data. Try again."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法安全替换网关的离线数据。请重试。"
+          }
+        }
+      }
+    },
+    "Could not save gateway certificate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save gateway certificate"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存网关证书"
+          }
+        }
+      }
+    },
+    "Could not save paired gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save paired gateway"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存已配对的网关"
+          }
+        }
+      }
+    },
+    "Could not save the active gateway selection.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save the active gateway selection."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存当前网关选择。"
+          }
+        }
+      }
+    },
+    "Could not save the paired gateway.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save the paired gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存已配对的网关。"
+          }
+        }
+      }
+    },
+    "Could not start QR scanner.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not start QR scanner."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法启动二维码扫描器。"
+          }
+        }
+      }
+    },
+    "Could not update gateway certificate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not update gateway certificate"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法更新网关证书"
+          }
+        }
+      }
+    },
+    "Create and edit images from a clear visual brief.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create and edit images from a clear visual brief."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "根据清晰的视觉需求创建和编辑图片。"
+          }
+        }
+      }
+    },
+    "Credential save failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Credential save failed"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "凭据保存失败"
+          }
+        }
+      }
+    },
+    "Decision status is unknown after the gateway operator route changed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decision status is unknown after the gateway operator route changed."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关操作者路由变更后，决定状态未知。"
+          }
+        }
+      }
+    },
+    "Decision status is unknown. Actions remain locked until OpenClaw reconnects.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decision status is unknown. Actions remain locked until OpenClaw reconnects."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "决定状态未知。在 OpenClaw 重新连接前操作保持锁定。"
+          }
+        }
+      }
+    },
+    "Deep link cancelled.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deep link cancelled."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深链已取消。"
+          }
+        }
+      }
+    },
+    "Demo mode is active.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Demo mode is active."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演示模式已开启。"
+          }
+        }
+      }
+    },
+    "Demo mode keeps live skill changes disabled.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Demo mode keeps live skill changes disabled."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "演示模式下技能实时更改保持禁用。"
+          }
+        }
+      }
+    },
+    "Desktop automation bridge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desktop automation bridge"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "桌面自动化桥接"
+          }
+        }
+      }
+    },
+    "Edge TTS": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS"
+          }
+        }
+      }
+    },
+    "Edge TTS (Free)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS (Free)"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS（免费）"
+          }
+        }
+      }
+    },
+    "Edge TTS returned no audio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS returned no audio"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS 未返回音频"
+          }
+        }
+      }
+    },
+    "Edge TTS synthesis timed out": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS synthesis timed out"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge TTS 合成超时"
+          }
+        }
+      }
+    },
+    "Edge Voice": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge Voice"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge 音色"
+          }
+        }
+      }
+    },
+    "Expected a millisecond timestamp or ISO-8601 date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expected a millisecond timestamp or ISO-8601 date"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要毫秒时间戳或 ISO-8601 日期"
+          }
+        }
+      }
+    },
+    "Failed to build TLS URL for trust verification.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to build TLS URL for trust verification."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法构建用于信任验证的 TLS URL。"
+          }
+        }
+      }
+    },
+    "Failed to build discovered gateway URL.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to build discovered gateway URL."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法构建发现的网关 URL。"
+          }
+        }
+      }
+    },
+    "Failed to create export session": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to create export session"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "创建导出会话失败"
+          }
+        }
+      }
+    },
+    "Failed to finalize video": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to finalize video"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成视频失败"
+          }
+        }
+      }
+    },
+    "Failed to resolve the discovered gateway endpoint.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to resolve the discovered gateway endpoint."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法解析发现的网关端点。"
+          }
+        }
+      }
+    },
+    "Failed to start writer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Failed to start writer"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启动写入器失败"
+          }
+        }
+      }
+    },
+    "Finish or cancel the active voice note before starting push-to-talk.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish or cancel the active voice note before starting push-to-talk."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开始对讲前请先结束或取消当前语音便签。"
+          }
+        }
+      }
+    },
+    "Finish the active audio capture before starting another one.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish the active audio capture before starting another one."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开始新的音频采集前请先结束当前采集。"
+          }
+        }
+      }
+    },
+    "Finish the active audio capture before starting push-to-talk.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish the active audio capture before starting push-to-talk."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开始对讲前请先结束当前音频采集。"
+          }
+        }
+      }
+    },
+    "Finish the active audio capture first": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish the active audio capture first"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先结束当前音频采集"
+          }
+        }
+      }
+    },
+    "For secure gateways behind an authenticating proxy, for example Cloudflare Access ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For secure gateways behind an authenticating proxy, for example Cloudflare Access "
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对于位于身份验证代理（例如 Cloudflare Access）后面的安全网关 "
+          }
+        }
+      }
+    },
+    "GPT Realtime 2.0": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GPT Realtime 2.0"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GPT Realtime 2.0"
+          }
+        }
+      }
+    },
+    "Gateway Approval": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway Approval"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关审批"
+          }
+        }
+      }
+    },
+    "Gateway Status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway Status"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关状态"
+          }
+        }
+      }
+    },
+    "Gateway certificate trust instructions": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway certificate trust instructions"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关证书信任说明"
+          }
+        }
+      }
+    },
+    "Gateway did not return a realtime relay session": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway did not return a realtime relay session"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关未返回实时中继会话"
+          }
+        }
+      }
+    },
+    "Gateway did not return a realtime voice session": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway did not return a realtime voice session"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关未返回实时语音会话"
+          }
+        }
+      }
+    },
+    "Gateway handshake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway handshake"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关握手"
+          }
+        }
+      }
+    },
+    "Gateway returned a conflicting realtime voice session": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway returned a conflicting realtime voice session"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关返回了冲突的实时语音会话"
+          }
+        }
+      }
+    },
+    "Gateway returned a mismatched chat run ID": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway returned a mismatched chat run ID"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关返回了不匹配的聊天运行 ID"
+          }
+        }
+      }
+    },
+    "Gateway talk.speak audio playback failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway talk.speak audio playback failed"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关 talk.speak 音频播放失败"
+          }
+        }
+      }
+    },
+    "Gateway talk.speak returned empty audio": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway talk.speak returned empty audio"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关 talk.speak 返回空音频"
+          }
+        }
+      }
+    },
+    "Health data is unavailable on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Health data is unavailable on this device."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备上无法获取健康数据。"
+          }
+        }
+      }
+    },
+    "If the gateway is reachable, the local node should recover without re-pairing.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the gateway is reachable, the local node should recover without re-pairing."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "如果网关可达，本地节点应无需重新配对即可恢复。"
+          }
+        }
+      }
+    },
+    "Installed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安装。"
+          }
+        }
+      }
+    },
+    "Invalid approval request.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid approval request."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无效的审批请求。"
+          }
+        }
+      }
+    },
+    "Invalid audio input format": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid audio input format"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无效的音频输入格式"
+          }
+        }
+      }
+    },
+    "Invalid realtime audio input format": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid realtime audio input format"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无效的实时音频输入格式"
+          }
+        }
+      }
+    },
+    "iPad audit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad audit"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad 审计"
+          }
+        }
+      }
+    },
+    "iPad kanban": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad kanban"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPad 看板"
+          }
+        }
+      }
+    },
+    "Language": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "语言"
+          }
+        }
+      }
+    },
+    "Live overview could not load yet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live overview could not load yet."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时概览暂时无法加载。"
+          }
+        }
+      }
+    },
+    "Loading cards": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading cards"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在加载卡片"
+          }
+        }
+      }
+    },
+    "Managed Room": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Managed Room"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "受管房间"
+          }
+        }
+      }
+    },
+    "Manual QA runbook": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual QA runbook"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动 QA 手册"
+          }
+        }
+      }
+    },
+    "Message routing client": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Message routing client"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "消息路由客户端"
+          }
+        }
+      }
+    },
+    "Missing image buffer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Missing image buffer"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缺少图像缓冲区"
+          }
+        }
+      }
+    },
+    "No Background Tasks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Background Tasks"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无后台任务"
+          }
+        }
+      }
+    },
+    "No connection to retry. Check the gateway host and port.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connection to retry. Check the gateway host and port."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有可重试的连接。请检查网关主机和端口。"
+          }
+        }
+      }
+    },
+    "No frames captured": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No frames captured"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未捕获到帧"
+          }
+        }
+      }
+    },
+    "No gateway connection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No gateway connection"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无网关连接"
+          }
+        }
+      }
+    },
+    "No Licenses Bundled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Licenses Bundled"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未捆绑许可证"
+          }
+        }
+      }
+    },
+    "No share events yet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No share events yet."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂无共享事件。"
+          }
+        }
+      }
+    },
+    "No skills are allowed for this agent.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No skills are allowed for this agent."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 Agent 未允许任何技能。"
+          }
+        }
+      }
+    },
+    "No valid QR code found in the selected image.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No valid QR code found in the selected image."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选图片中未找到有效的二维码。"
+          }
+        }
+      }
+    },
+    "Not available": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not available"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不可用"
+          }
+        }
+      }
+    },
+    "Not run": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not run"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未运行"
+          }
+        }
+      }
+    },
+    "OpenAI Realtime": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenAI Realtime"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenAI Realtime"
+          }
+        }
+      }
+    },
+    "OpenClaw": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw"
+          }
+        }
+      }
+    },
+    "OpenClaw Gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw Gateway"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 网关"
+          }
+        }
+      }
+    },
+    "OpenClaw Mac App": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw Mac App"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw Mac 应用"
+          }
+        }
+      }
+    },
+    "OpenClaw Ops": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw Ops"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 运维"
+          }
+        }
+      }
+    },
+    "OpenClaw Share Self-Test": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw Share Self-Test"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 共享自检"
+          }
+        }
+      }
+    },
+    "OpenClaw couldn't connect to the gateway operator session.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw couldn't connect to the gateway operator session."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 无法连接到网关操作者会话。"
+          }
+        }
+      }
+    },
+    "OpenClaw disconnected because it could not securely save the new gateway credential.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw disconnected because it could not securely save the new gateway credential."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 因无法安全保存新网关凭据而断开连接。"
+          }
+        }
+      }
+    },
+    "OpenClaw finished with no text.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw finished with no text."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 未输出任何文本。"
+          }
+        }
+      }
+    },
+    "OpenClaw is connected to your gateway.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw is connected to your gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 已连接到你的网关。"
+          }
+        }
+      }
+    },
+    "OpenClaw only runs phone-side capabilities while the app is connected and permitted.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw only runs phone-side capabilities while the app is connected and permitted."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 仅在应用已连接并获得许可时运行手机端能力。"
+          }
+        }
+      }
+    },
+    "OpenClaw tool call failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw tool call failed"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw 工具调用失败"
+          }
+        }
+      }
+    },
+    "Pair a gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pair a gateway"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配对网关"
+          }
+        }
+      }
+    },
+    "Pair an Apple Watch and install the OpenClaw watch app first.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pair an Apple Watch and install the OpenClaw watch app first."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先配对 Apple Watch 并安装 OpenClaw 手表应用。"
+          }
+        }
+      }
+    },
+    "Pairing required.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pairing required."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要配对。"
+          }
+        }
+      }
+    },
+    "Phone proposals": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phone proposals"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手机提案"
+          }
+        }
+      }
+    },
+    "Phone queue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Phone queue"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手机队列"
+          }
+        }
+      }
+    },
+    "Photo captured": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo captured"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已拍照"
+          }
+        }
+      }
+    },
+    "Plan meetings and turn your schedule into focused daily briefs.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan meetings and turn your schedule into focused daily briefs."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "规划会议并将你的日程转化为聚焦的每日简报。"
+          }
+        }
+      }
+    },
+    "Preparing Chat": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing Chat"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在准备聊天"
+          }
+        }
+      }
+    },
+    "Provider WebSocket": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Provider WebSocket"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WebSocket 提供方"
+          }
+        }
+      }
+    },
+    "QR scanning is not supported on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "QR scanning is not supported on this device."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备不支持二维码扫描。"
+          }
+        }
+      }
+    },
+    "Quick setup gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick setup gateway"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "快速设置网关"
+          }
+        }
+      }
+    },
+    "Quick setup searching": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quick setup searching"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在搜索快速设置"
+          }
+        }
+      }
+    },
+    "Ready to pair": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready to pair"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "准备配对"
+          }
+        }
+      }
+    },
+    "Realtime closed before it became ready.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Realtime closed before it became ready."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时会话在就绪前已关闭。"
+          }
+        }
+      }
+    },
+    "Realtime did not become ready in time.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Realtime did not become ready in time."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时会话未及时就绪。"
+          }
+        }
+      }
+    },
+    "Realtime disconnected repeatedly.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Realtime disconnected repeatedly."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时会话反复断开。"
+          }
+        }
+      }
+    },
+    "Realtime failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Realtime failed"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时会话失败"
+          }
+        }
+      }
+    },
+    "Realtime tool call did not return a run id": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Realtime tool call did not return a run id"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实时工具调用未返回运行 ID"
+          }
+        }
+      }
+    },
+    "Refreshing the workboard from the gateway.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refreshing the workboard from the gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在从网关刷新工作台。"
+          }
+        }
+      }
+    },
+    "Release briefing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Release briefing"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "发布简报"
+          }
+        }
+      }
+    },
+    "Requesting Talk approval": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requesting Talk approval"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在请求 Talk 审批"
+          }
+        }
+      }
+    },
+    "Reset onboarding": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset onboarding"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重置新手引导"
+          }
+        }
+      }
+    },
+    "Restart required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要重启"
+          }
+        }
+      }
+    },
+    "Restart the app to apply the language change.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart the app to apply the language change."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重启应用以应用语言更改。"
+          }
+        }
+      }
+    },
+    "Retry connection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry connection"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重试连接"
+          }
+        }
+      }
+    },
+    "Review adaptive shell": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review adaptive shell"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "审查自适应外壳"
+          }
+        }
+      }
+    },
+    "Review pairing diagnostics": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review pairing diagnostics"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看配对诊断"
+          }
+        }
+      }
+    },
+    "Review pull requests, issues, checks, and repository activity.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review pull requests, issues, checks, and repository activity."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看拉取请求、问题、检查与仓库动态。"
+          }
+        }
+      }
+    },
+    "Routes chat and voice": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Routes chat and voice"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "路由聊天与语音"
+          }
+        }
+      }
+    },
+    "Scan a fresh setup QR code from this gateway.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan a fresh setup QR code from this gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请扫描此网关的新的设置二维码。"
+          }
+        }
+      }
+    },
+    "Scan QR again": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan QR again"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新扫码"
+          }
+        }
+      }
+    },
+    "Session in progress": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Session in progress"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会话进行中"
+          }
+        }
+      }
+    },
+    "Setup link cleared.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setup link cleared."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置链接已清除。"
+          }
+        }
+      }
+    },
+    "Setup link has an invalid gateway endpoint.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setup link has an invalid gateway endpoint."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置链接包含无效的网关端点。"
+          }
+        }
+      }
+    },
+    "Speech recognition permission denied": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speech recognition permission denied"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "语音识别权限被拒绝"
+          }
+        }
+      }
+    },
+    "Studio Gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Studio Gateway"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作室网关"
+          }
+        }
+      }
+    },
+    "Summarize channel health": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summarize channel health"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "汇总渠道健康状况"
+          }
+        }
+      }
+    },
+    "Summarize mobile release readiness and open risks.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Summarize mobile release readiness and open risks."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "汇总移动端发布就绪情况与未解决风险。"
+          }
+        }
+      }
+    },
+    "Talk mode is not supported on the iOS simulator": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Talk mode is not supported on the iOS simulator"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iOS 模拟器不支持 Talk 模式"
+          }
+        }
+      }
+    },
+    "Tap for detail, swipe or long-press for card actions.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap for detail, swipe or long-press for card actions."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点击查看详情，滑动或长按进行卡片操作。"
+          }
+        }
+      }
+    },
+    "Tap for detail, swipe or long-press for proposal actions.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap for detail, swipe or long-press for proposal actions."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点击查看详情，滑动或长按进行提案操作。"
+          }
+        }
+      }
+    },
+    "The approval kind changed during resolution.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The approval kind changed during resolution."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "审批类型在处理过程中发生了变化。"
+          }
+        }
+      }
+    },
+    "The gateway operator route changed before the approval response was applied.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway operator route changed before the approval response was applied."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "审批响应应用前网关操作者路由发生了变化。"
+          }
+        }
+      }
+    },
+    "The gateway operator route changed before the decision was sent.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway operator route changed before the decision was sent."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "决定发送前网关操作者路由发生了变化。"
+          }
+        }
+      }
+    },
+    "The iPhone connection needs operator.admin access.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The iPhone connection needs operator.admin access."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 连接需要 operator.admin 权限。"
+          }
+        }
+      }
+    },
+    "The previous decision was not recorded. Review and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The previous decision was not recorded. Review and try again."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "之前的决定未被记录。请检查后重试。"
+          }
+        }
+      }
+    },
+    "This agent already inherits the default skill policy.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This agent already inherits the default skill policy."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 Agent 已继承默认技能策略。"
+          }
+        }
+      }
+    },
+    "This approval belongs to a different gateway.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This approval belongs to a different gateway."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此审批属于另一个网关。"
+          }
+        }
+      }
+    },
+    "This approval is no longer available.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This approval is no longer available."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此审批不再可用。"
+          }
+        }
+      }
+    },
+    "This file cannot be previewed. It may be binary or too large.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This file cannot be previewed. It may be binary or too large."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此文件无法预览，可能是二进制文件或过大。"
+          }
+        }
+      }
+    },
+    "This gateway connection cannot edit config yet. Reconnect with admin scope.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This gateway connection cannot edit config yet. Reconnect with admin scope."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此网关连接目前无法编辑配置。请使用管理员范围重新连接。"
+          }
+        }
+      }
+    },
+    "This gateway does not advertise a complete approval API.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This gateway does not advertise a complete approval API."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此网关未提供完整的审批 API。"
+          }
+        }
+      }
+    },
+    "This header is managed by the connection and cannot be overridden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This header is managed by the connection and cannot be overridden."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此标头由连接管理，无法覆盖。"
+          }
+        }
+      }
+    },
+    "This paired gateway has an invalid saved endpoint.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This paired gateway has an invalid saved endpoint."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此已配对网关保存的端点无效。"
+          }
+        }
+      }
+    },
+    "This paired gateway is no longer available.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This paired gateway is no longer available."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此已配对网关不再可用。"
+          }
+        }
+      }
+    },
+    "Ungrouped": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ungrouped"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未分组"
+          }
+        }
+      }
+    },
+    "Verify gateway TLS fingerprint": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verify gateway TLS fingerprint"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "验证网关 TLS 指纹"
+          }
+        }
+      }
+    },
+    "Voice session close failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voice session close failed"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "语音会话关闭失败"
+          }
+        }
+      }
+    },
+    "Weekly project review": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly project review"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每周项目回顾"
+          }
+        }
+      }
+    },
+    "Wide layout with populated, empty, held, and custom proposal lanes.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wide layout with populated, empty, held, and custom proposal lanes."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "宽布局，包含已填充、空置、保留和自定义提案泳道。"
+          }
+        }
+      }
+    },
+    "Workshop offline": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Workshop offline"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作坊离线"
+          }
+        }
+      }
+    },
+    "English": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "English"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "英语"
+          }
+        }
+      }
+    },
+    "Scanner error: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scanner error: %@"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扫描器错误：%@"
           }
         }
       }
