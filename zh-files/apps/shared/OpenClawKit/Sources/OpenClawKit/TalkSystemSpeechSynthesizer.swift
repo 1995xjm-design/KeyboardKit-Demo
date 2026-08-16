@@ -44,9 +44,7 @@ public final class TalkSystemSpeechSynthesizer: NSObject {
         self.didStartCallback = onStart
 
         let utterance = AVSpeechUtterance(string: trimmed)
-        if let language {
-            utterance.voice = Self.preferredVoice(for: language)
-        }
+        utterance.voice = nil
         self.currentUtterance = utterance
 
         let watchdogTimeout = Self.watchdogTimeoutSeconds(
@@ -112,20 +110,6 @@ public final class TalkSystemSpeechSynthesizer: NSObject {
         }
         let estimatedSeconds = max(minSeconds, min(300.0, Double(text.count) * perCharSeconds))
         return estimatedSeconds * 3.0
-    }
-
-    /// Picks the device's configured voice for `language` when it can be
-    /// determined: prefer the highest-quality installed voice for the language
-    /// (Settings > Accessibility > Spoken Content > Voices), falling back to
-    /// the API default voice for the language.
-    private static func preferredVoice(for language: String) -> AVSpeechSynthesisVoice? {
-        let matching = AVSpeechSynthesisVoice.speechVoices().filter {
-            $0.language.caseInsensitiveCompare(language) == .orderedSame
-        }
-        guard let best = matching.max(by: { $0.quality.rawValue < $1.quality.rawValue }) else {
-            return AVSpeechSynthesisVoice(language: language)
-        }
-        return best
     }
 
     private func matchesCurrentUtterance(_ utteranceID: ObjectIdentifier) -> Bool {

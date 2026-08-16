@@ -647,6 +647,7 @@ final class TalkModeManager: NSObject {
         let shouldRestart = self.isEnabled
         if shouldRestart {
             self.stop()
+            self.gatewayTalkConfigLoaded = false
             self.isEnabled = true
             Task { await self.start() }
         } else {

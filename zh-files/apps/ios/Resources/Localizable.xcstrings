@@ -222168,8 +222168,759 @@
           }
         }
       }
+    },
+    "Tailscale identity check failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tailscale identity check failed"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tailscale 身份校验失败"
+          }
+        }
+      }
+    },
+    "Turn on Tailscale": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on Tailscale"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开启 Tailscale"
+          }
+        }
+      }
+    },
+    "Review Tailscale setup": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review Tailscale setup"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "检查 Tailscale 设置"
+          }
+        }
+      }
+    },
+    "Too many failed attempts": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too many failed attempts"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尝试次数过多"
+          }
+        }
+      }
+    },
+    "Wait and retry": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wait and retry"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请稍后重试"
+          }
+        }
+      }
+    },
+    "Gateway rejected the connection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway rejected the connection"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 拒绝了连接"
+          }
+        }
+      }
+    },
+    "Gateway token required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway token required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要 Gateway 令牌"
+          }
+        }
+      }
+    },
+    "Gateway token is out of date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway token is out of date"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 令牌已过期"
+          }
+        }
+      }
+    },
+    "Gateway token is not configured": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway token is not configured"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未配置 Gateway 令牌"
+          }
+        }
+      }
+    },
+    "Gateway password required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway password required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要 Gateway 密码"
+          }
+        }
+      }
+    },
+    "Gateway password is out of date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway password is out of date"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 密码已过期"
+          }
+        }
+      }
+    },
+    "Update password": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update password"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新密码"
+          }
+        }
+      }
+    },
+    "Gateway password is not configured": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway password is not configured"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未配置 Gateway 密码"
+          }
+        }
+      }
+    },
+    "Setup code expired": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setup code expired"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置代码已过期"
+          }
+        }
+      }
+    },
+    "This device's saved device token is no longer valid": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device's saved device token is no longer valid"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备保存的设备令牌已失效"
+          }
+        }
+      }
+    },
+    "Repair pairing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repair pairing"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新配对"
+          }
+        }
+      }
+    },
+    "Device permissions need approval": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device permissions need approval"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备权限需要审批"
+          }
+        }
+      }
+    },
+    "Review pairing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review pairing"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看配对"
+          }
+        }
+      }
+    },
+    "Secure device identity is required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secure device identity is required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要安全设备身份"
+          }
+        }
+      }
+    },
+    "Retry from the app": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry from the app"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "从应用重试"
+          }
+        }
+      }
+    },
+    "Secure handshake expired": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secure handshake expired"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全握手已过期"
+          }
+        }
+      }
+    },
+    "The device signature is too old to use.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The device signature is too old to use."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备签名太旧，无法使用。"
+          }
+        }
+      }
+    },
+    "Check device time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check device time"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "检查设备时间"
+          }
+        }
+      }
+    },
+    "Secure handshake is incomplete": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secure handshake is incomplete"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全握手未完成"
+          }
+        }
+      }
+    },
+    "Secure handshake did not match": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secure handshake did not match"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全握手不匹配"
+          }
+        }
+      }
+    },
+    "The challenge response was stale or mismatched.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The challenge response was stale or mismatched."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "质询响应已过期或不匹配。"
+          }
+        }
+      }
+    },
+    "This device identity could not be verified": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device identity could not be verified"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法验证此设备身份"
+          }
+        }
+      }
+    },
+    "Re-pair this device": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Re-pair this device"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新配对此设备"
+          }
+        }
+      }
+    },
+    "Connection timed out": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection timed out"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接超时"
+          }
+        }
+      }
+    },
+    "The gateway did not respond before the connection timed out.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway did not respond before the connection timed out."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 在连接超时前未作出响应。"
+          }
+        }
+      }
+    },
+    "Gateway refused the connection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway refused the connection"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 拒绝了连接"
+          }
+        }
+      }
+    },
+    "The gateway host was reachable, but it refused the connection.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway host was reachable, but it refused the connection."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网关主机可达，但拒绝了连接。"
+          }
+        }
+      }
+    },
+    "Gateway is not reachable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway is not reachable"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法连接 Gateway"
+          }
+        }
+      }
+    },
+    "OpenClaw could not reach the gateway over the current network.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OpenClaw could not reach the gateway over the current network."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前网络下无法连接到 Gateway。"
+          }
+        }
+      }
+    },
+    "Connection interrupted": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection interrupted"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接中断"
+          }
+        }
+      }
+    },
+    "The connection to the gateway was interrupted before setup completed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The connection to the gateway was interrupted before setup completed."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接在设置完成前被中断。"
+          }
+        }
+      }
+    },
+    "Additional approval required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Additional approval required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要额外审批"
+          }
+        }
+      }
+    },
+    "This device is already paired, but it is requesting a new role that was not previously approved.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device is already paired, but it is requesting a new role that was not previously approved."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备已配对，但正在申请先前未获批准的新角色。"
+          }
+        }
+      }
+    },
+    "Additional permissions required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Additional permissions required"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要额外权限"
+          }
+        }
+      }
+    },
+    "This device is already paired, but it is requesting new permissions that require approval.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device is already paired, but it is requesting new permissions that require approval."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备已配对，但正在申请需要批准的新权限。"
+          }
+        }
+      }
+    },
+    "Device approval needs refresh": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device approval needs refresh"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设备审批需要更新"
+          }
+        }
+      }
+    },
+    "The gateway detected a change in this device's approved identity metadata and requires re-approval.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway detected a change in this device's approved identity metadata and requires re-approval."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 检测到该设备已批准身份信息变更，需要重新批准。"
+          }
+        }
+      }
+    },
+    "This device is not approved yet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This device is not approved yet"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此设备尚未获得批准"
+          }
+        }
+      }
+    },
+    "The gateway received the connection request, but this device must be approved first.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gateway received the connection request, but this device must be approved first."
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 已收到连接请求，但此设备需先获得批准。"
+          }
+        }
+      }
+    },
+    "Approve on gateway": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approve on gateway"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在 Gateway 上批准"
+          }
+        }
+      }
+    },
+    "Gateway certificate changed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway certificate changed"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gateway 证书已变更"
+          }
+        }
+      }
+    },
+    "Review certificate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review certificate"
+          }
+        },
+        "zh-CN": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看证书"
+          }
+        }
+      }
     }
-
   },
   "version": "1.0"
 }
