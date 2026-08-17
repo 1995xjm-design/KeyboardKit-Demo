@@ -1661,7 +1661,9 @@ extension SettingsProTab {
             Text(
                 String(
                     localized:
-                    "DeepSeek Direct is the fallback channel for the voice assistant card when the gateway is offline or the computer is off. Replies go straight to api.deepseek.com from this device with your own API key."))
+                    "DeepSeek Direct is the fallback channel for the voice assistant card when the gateway "
+                        + "is offline or the computer is off. Replies go straight to api.deepseek.com from "
+                        + "this device with your own API key."))
                 .font(OpenClawType.caption)
         }
     }
