@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// 按住说话按钮：按住 0.3 秒进入录音（回调 onHoldBegan），松开回调 onHoldEnded。
-/// 视觉：录音中脉冲环随 audioLevel 缩放；转写中显示等待态。记录/记账两卡共用。
+/// 点击录音按钮：空闲时点击立即开始录音（回调 onHoldBegan），录音中点击立即停止（回调 onHoldEnded）。
+/// 视觉：录音中环形渐变频谱随 audioLevel 跳动；转写中显示等待态。记录/记账两卡共用。
 struct HoldToTalkButton: View {
     let phase: HomeSpeechRecorder.Phase
     let audioLevel: Float
@@ -10,25 +10,20 @@ struct HoldToTalkButton: View {
     var onHoldBegan: () -> Void = {}
     var onHoldEnded: () -> Void = {}
 
-    @State private var controller = HoldTalkController()
+    @State private var isPressed = false
+    @State private var didHandlePress = false
 
     private var recordButtonSize: CGFloat { compact ? 56 : 72 }
     private var ringPadding: CGFloat { compact ? 18 : 30 }
+    private var ringRadius: CGFloat { (recordButtonSize + ringPadding) / 2 }
+    private let spectrumBarCount = 22
 
     var body: some View {
         ZStack {
             if phase == .recording {
-                Circle()
-                    .stroke(Color.white.opacity(0.35), lineWidth: 4)
-                    .frame(width: recordButtonSize + ringPadding, height: recordButtonSize + ringPadding)
-                    .scaleEffect(CGFloat(1 + audioLevel * 1.2))
-                    .animation(.easeOut(duration: 0.12), value: audioLevel)
+                recordingSpectrum
             }
-            Circle()
-                .fill(buttonColor)
-                .frame(width: recordButtonSize, height: recordButtonSize)
-                .scaleEffect(controller.isPressed && !controller.isActive ? 0.94 : 1)
-                .animation(.easeOut(duration: 0.1), value: controller.isPressed)
+            buttonBody
             Image(systemName: buttonIcon)
                 .font(.system(size: compact ? 20 : 26, weight: .semibold))
                 .foregroundStyle(.white)
@@ -37,23 +32,99 @@ struct HoldToTalkButton: View {
         .contentShape(Circle())
         .gesture(
             DragGesture(minimumDistance: 0)
-                .onChanged { _ in controller.press() }
-                .onEnded { _ in controller.release() }
+                .onChanged { _ in pressAction() }
+                .onEnded { _ in releaseAction() }
         )
-        .onAppear {
-            controller.onHoldBegan = { onHoldBegan() }
-            controller.onHoldEnded = { onHoldEnded() }
+        .onDisappear {
+            isPressed = false
+            didHandlePress = false
         }
-        .onDisappear { controller.reset() }
         .accessibilityLabel(accessibilityLabel)
     }
 
-    private var buttonColor: Color {
-        switch phase {
-        case .recording: return tint
-        case .transcribing: return OpenClawBrand.textSecondary
-        case .idle: return tint
+    private var recordingSpectrum: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+            let time = timeline.date.timeIntervalSinceReferenceDate
+            ZStack {
+                ForEach(0..<spectrumBarCount, id: \.self) { index in
+                    let length = spectrumLength(time: time, index: index)
+                    RoundedRectangle(cornerRadius: 1)
+                        .fill(spectrumGradient)
+                        .frame(width: 2, height: length)
+                        .offset(y: -ringRadius)
+                        .rotationEffect(.degrees(Double(index) * 360.0 / Double(spectrumBarCount)))
+                }
+            }
+            .frame(width: recordButtonSize + ringPadding, height: recordButtonSize + ringPadding)
         }
+    }
+
+    private var buttonBody: some View {
+        Group {
+            switch phase {
+            case .recording:
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [tint, tint.opacity(0.55)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            case .transcribing:
+                Circle().fill(OpenClawBrand.textSecondary)
+            case .idle:
+                Circle().fill(tint)
+            }
+        }
+        .frame(width: recordButtonSize, height: recordButtonSize)
+        .scaleEffect(buttonScale)
+        .animation(.easeOut(duration: 0.12), value: audioLevel)
+        .animation(.easeOut(duration: 0.1), value: isPressed)
+    }
+
+    private var buttonScale: CGFloat {
+        if phase == .recording {
+            return CGFloat(1 + Double(audioLevel) * 0.08)
+        }
+        return isPressed ? 0.94 : 1
+    }
+
+    private var spectrumGradient: LinearGradient {
+        LinearGradient(
+            colors: [tint, tint.opacity(0.25)],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
+
+    private func spectrumLength(time: TimeInterval, index: Int) -> CGFloat {
+        let phase = time * 2 + Double(index) * 0.6
+        let value = 6 + sin(phase) * 8 + Double(audioLevel) * 22
+        return CGFloat(max(2, value))
+    }
+
+    private func pressAction() {
+        guard !didHandlePress else { return }
+        switch phase {
+        case .idle:
+            didHandlePress = true
+            isPressed = true
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            onHoldBegan()
+        case .recording:
+            didHandlePress = true
+            isPressed = true
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            onHoldEnded()
+        case .transcribing:
+            break
+        }
+    }
+
+    private func releaseAction() {
+        isPressed = false
+        didHandlePress = false
     }
 
     private var buttonIcon: String {
@@ -70,46 +141,5 @@ struct HoldToTalkButton: View {
         case .transcribing: return String(localized: "Record.Accessibility.Transcribing")
         case .idle: return String(localized: "Record.Accessibility.HoldToTalk")
         }
-    }
-}
-
-/// 按住说话手势状态机：0.3 秒阈值后才触发 onHoldBegan；未达阈值松开不触发 onHoldEnded。
-/// @MainActor 隔离，保证 Swift 6 严格并发下从视图手势闭包调用安全。
-@MainActor
-final class HoldTalkController {
-    private(set) var isPressed = false
-    private(set) var isActive = false
-
-    var onHoldBegan: (() -> Void)?
-    var onHoldEnded: (() -> Void)?
-
-    private var holdTask: Task<Void, Never>?
-    private let holdThreshold: UInt64 = 300_000_000
-
-    func press() {
-        guard !isPressed else { return }
-        isPressed = true
-        let threshold = holdThreshold
-        holdTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: threshold)
-            guard !Task.isCancelled, let self else { return }
-            self.isActive = true
-            self.onHoldBegan?()
-        }
-    }
-
-    func release() {
-        isPressed = false
-        holdTask?.cancel()
-        holdTask = nil
-        guard isActive else { return }
-        isActive = false
-        onHoldEnded?()
-    }
-
-    func reset() {
-        release()
-        onHoldBegan = nil
-        onHoldEnded = nil
     }
 }

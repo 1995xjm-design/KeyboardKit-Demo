@@ -4,7 +4,8 @@ import SwiftUI
 
 /// App 根容器视图（A-root）：
 /// 首屏 = 「语音助手」主页（ClawTalk 卡片墙，由 B-home 的 HomeTabView 呈现），
-/// OPEN CLAW 卡点击后以全屏 Sheet 推入 OpenClaw 现有界面（RootTabs），顶部提供「← 返回」按钮。
+/// OPEN CLAW is presented as a full-screen overlay (not a sheet): swipe right from
+/// the home left edge to pull it in, swipe left from the OpenClaw root right edge to return.
 ///
 /// 环境对象注入链说明：OpenClawApp 在 WindowGroup 中对本视图统一注入
 /// appearanceModel / appModel / voiceWake / gatewayController（保持原有链不动），
@@ -32,41 +33,110 @@ struct HomeRootContainer: View {
     @State private var didEvaluateOnboarding: Bool = false
     @State private var didRequestLocalNetworkAccessOnLaunch: Bool = false
 
+    /// Live drag offset of the OpenClaw full-screen transition (clamped to [-width, 0]).
+    @State private var openClawDragOffset: CGFloat = 0
+    /// True while pulling OpenClaw in with the left-edge gesture (disables entry animation).
+    @State private var isOpenClawDragActive = false
+
     var body: some View {
-        HomeTabView()
-            .environmentObject(self.router)
-            .task {
-                self.router.startObservingGatewayStatus(appModel: self.appModel)
-            }
-            .onAppear {
-                self.evaluateOnboardingPresentation(force: false)
-            }
-            .onChange(of: self.onboardingRequestID) { _, _ in
-                self.evaluateOnboardingPresentation(force: true)
-            }
-            .fullScreenCover(isPresented: self.$showOnboarding) {
-                OnboardingWizardView(
-                    allowSkip: self.onboardingAllowSkip,
-                    onRequestLocalNetworkAccess: { reason in
-                        self.gatewayController.requestLocalNetworkAccess(reason: reason)
-                    },
-                    onClose: {
-                        self.showOnboarding = false
-                        self.router.isOpenClawPresented = false
-                    },
-                    onComplete: {
-                        self.showOnboarding = false
-                        self.router.isOpenClawPresented = false
-                    })
-                    .environment(self.appModel)
-                    .environment(self.appModel.voiceWake)
-                    .environment(self.gatewayController)
-            }
-            .sheet(isPresented: self.$router.isOpenClawPresented) {
-                OpenClawFullScreenHost(router: self.router)
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.hidden)
+        GeometryReader { proxy in
+            ZStack {
+                HomeTabView()
+                    .environmentObject(self.router)
+                    .task {
+                        self.router.startObservingGatewayStatus(appModel: self.appModel)
+                    }
+                    .onAppear {
+                        self.evaluateOnboardingPresentation(force: false)
+                    }
+                    .onChange(of: self.onboardingRequestID) { _, _ in
+                        self.evaluateOnboardingPresentation(force: true)
+                    }
+                    .fullScreenCover(isPresented: self.$showOnboarding) {
+                        OnboardingWizardView(
+                            allowSkip: self.onboardingAllowSkip,
+                            onRequestLocalNetworkAccess: { reason in
+                                self.gatewayController.requestLocalNetworkAccess(reason: reason)
+                            },
+                            onClose: {
+                                self.showOnboarding = false
+                                self.router.isOpenClawPresented = false
+                            },
+                            onComplete: {
+                                self.showOnboarding = false
+                                self.router.isOpenClawPresented = false
+                            })
+                            .environment(self.appModel)
+                            .environment(self.appModel.voiceWake)
+                            .environment(self.gatewayController)
+                    }
+                self.openClawEnterEdge(width: proxy.size.width)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .ignoresSafeArea()
+                    .zIndex(1)
+                    .allowsHitTesting(!self.router.isOpenClawPresented)
+                if self.router.isOpenClawPresented {
+                    OpenClawFullScreenHost(
+                        router: self.router,
+                        dragOffset: self.$openClawDragOffset)
+                        .transition(.move(edge: .leading))
+                        .ignoresSafeArea()
+                        .zIndex(2)
+                }
+            }
+            .animation(
+                self.isOpenClawDragActive ? nil : .easeOut(duration: 0.3),
+                value: self.router.isOpenClawPresented)
+            .onChange(of: self.router.isOpenClawPresented) { _, presented in
+                if !presented {
+                    self.openClawDragOffset = 0
+                }
+            }
+        }
+    }
+
+    // MARK: - OpenClaw edge-swipe transitions
+
+    /// Home left-edge 36pt strip: drag right to pull OpenClaw in from the left edge.
+    private func openClawEnterEdge(width: CGFloat) -> some View {
+        Color.clear
+            .frame(width: 36)
+            .contentShape(Rectangle())
+            .highPriorityGesture(self.enterOpenClawGesture(width: width))
+    }
+
+    private func enterOpenClawGesture(width: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 12)
+            .onChanged { value in
+                self.isOpenClawDragActive = true
+                guard value.translation.width > 0 else { return }
+                if !self.router.isOpenClawPresented {
+                    // 复位上次齿轮入口残留的目的地，保证拖动进入从官方默认（聊天）开始。
+                    self.router.openOpenClaw()
+                }
+                let proposed = -width + value.translation.width
+                self.openClawDragOffset = max(-width, min(0, proposed))
+            }
+            .onEnded { value in
+                self.isOpenClawDragActive = false
+                let shouldEnter = value.translation.width > 80
+                    || value.predictedEndTranslation.width > 240
+                if shouldEnter {
+                    self.router.openOpenClaw()
+                    withAnimation(.easeOut(duration: 0.28)) {
+                        self.openClawDragOffset = 0
+                    }
+                } else if self.router.isOpenClawPresented {
+                    withAnimation(.easeOut(duration: 0.28)) {
+                        self.openClawDragOffset = -width
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        guard !self.isOpenClawDragActive else { return }
+                        self.router.closeOpenClaw()
+                    }
+                } else {
+                    self.openClawDragOffset = 0
+                }
             }
     }
 
@@ -114,15 +184,21 @@ struct HomeRootContainer: View {
     }
 }
 
-/// OpenClaw 全屏宿主：仅将 OpenClaw 现有 RootTabs() 包一层（不修改其内部逻辑/布局），
-/// 顶部叠加「← 返回」悬浮按钮；按钮避开安全区、半透明背景，只在根页（未进入子页）时显示。
+/// OpenClaw full-screen host: wraps the existing RootTabs() unchanged.
+/// Full-screen overlay with left/right edge-swipe transitions; a subtle shadow on
+/// the right side of the OpenClaw content appears while dragging.
 private struct OpenClawFullScreenHost: View {
     private let router: HomeRouterModel
-    /// 当前是否位于 OpenClaw 根页（侧边栏根页可见且未进入设置子页），只在根页显示「← 返回」。
+    @Binding private var dragOffset: CGFloat
+    /// True while on the OpenClaw root page (sidebar root visible, no subpage);
+    /// the back-swipe gesture is only enabled there.
     @State private var isRootPageVisible = false
+    /// True while the return-settle animation runs; a new drag cancels the pending close.
+    @State private var isReturnDismissPending = false
 
-    init(router: HomeRouterModel) {
+    init(router: HomeRouterModel, dragOffset: Binding<CGFloat>) {
         self.router = router
+        self._dragOffset = dragOffset
     }
 
     var body: some View {
@@ -134,35 +210,58 @@ private struct OpenClawFullScreenHost: View {
                 onRootVisibilityChange: { visible in
                     self.isRootPageVisible = visible
                 })
-                .overlay(alignment: .topLeading) {
+                .overlay(alignment: .trailing) {
                     if self.isRootPageVisible {
-                        self.backButton
-                            .padding(.leading, 12)
-                            .padding(.top, proxy.safeAreaInsets.top + 8)
+                        self.returnGestureEdge(width: proxy.size.width)
                     }
                 }
+                .shadow(
+                    color: .black.opacity(self.returnShadowOpacity(width: proxy.size.width)),
+                    radius: 14,
+                    x: 6)
         }
+        .offset(x: self.dragOffset)
     }
 
-    private var backButton: some View {
-        Button {
-            self.router.closeOpenClaw()
-        } label: {
-            HStack(spacing: 6) {
-                Image(systemName: "chevron.left")
-                Text(String(localized: "Back"))
+    /// OpenClaw root-page right-edge 36pt strip: drag left to follow, release past the threshold to return home.
+    private func returnGestureEdge(width: CGFloat) -> some View {
+        Color.clear
+            .frame(width: 36)
+            .contentShape(Rectangle())
+            .highPriorityGesture(self.returnDragGesture(width: width))
+    }
+
+    private func returnDragGesture(width: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 12)
+            .onChanged { value in
+                guard self.isRootPageVisible else { return }
+                self.isReturnDismissPending = false
+                self.dragOffset = max(-width, min(0, value.translation.width))
             }
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(Color.white)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(Color.black.opacity(0.35), in: Capsule())
-            .overlay {
-                Capsule().strokeBorder(Color.white.opacity(0.3), lineWidth: 1)
+            .onEnded { value in
+                guard self.isRootPageVisible else { return }
+                let shouldDismiss = value.translation.width < -80
+                    || value.predictedEndTranslation.width < -240
+                if shouldDismiss {
+                    self.isReturnDismissPending = true
+                    withAnimation(.easeOut(duration: 0.28)) {
+                        self.dragOffset = -width
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        guard self.isReturnDismissPending else { return }
+                        self.router.closeOpenClaw()
+                    }
+                } else {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        self.dragOffset = 0
+                    }
+                }
             }
-            .shadow(color: .black.opacity(0.2), radius: 8, y: 2)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(String(localized: "Back"))
+    }
+
+    /// Shadow opacity following the drag progress (0 = idle, 0.25 = fully revealed).
+    private func returnShadowOpacity(width: CGFloat) -> Double {
+        let progress = Double(-self.dragOffset / max(width, 1))
+        return 0.25 * max(0, min(1, progress))
     }
 }

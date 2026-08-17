@@ -83,6 +83,7 @@ struct VoiceAssistantCardView: View {
     @State private var activeTask: Task<Void, Never>?
     @State private var realtimeTask: Task<Void, Never>?
     @State private var isBreathing = false
+    @State private var recordingStartedAt: Date?
 
     private static let cardHeight: CGFloat = 250
 
@@ -227,6 +228,11 @@ struct VoiceAssistantCardView: View {
                     x: 0,
                     y: 8)
 
+            if self.isPulsingIcon {
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(self.theme.accent.opacity(0.16))
+            }
+
             VStack(spacing: 6) {
                 self.topBar
                 self.modeCapsule
@@ -367,10 +373,21 @@ struct VoiceAssistantCardView: View {
                     .font(.system(size: 34, weight: .semibold))
                     .foregroundStyle(.white)
                     .shadow(color: .black.opacity(0.25), radius: 3, x: 0, y: 1)
+                    .symbolEffect(.pulse, options: .repeating, isActive: self.isPulsingIcon)
                     .scaleEffect(self.isPulsingIcon ? 1.12 : 1.0)
                     .animation(
                         .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
                         value: self.isPulsingIcon)
+
+                if self.isPulsingIcon {
+                    VoiceAssistantSpectrumBars(
+                        theme: self.theme,
+                        phase: self.themePhase,
+                        micLevel: self.talkMode.micLevel,
+                        width: 100,
+                        height: 38)
+                        .frame(width: 118, height: 76, alignment: .bottom)
+                }
             }
             .frame(height: 76)
 
@@ -380,6 +397,15 @@ struct VoiceAssistantCardView: View {
                 .lineLimit(self.isLongStatusText ? 3 : 2)
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
+
+            if self.displayPhase == .capturing, let startedAt = self.recordingStartedAt {
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    let elapsed = max(0, Int(context.date.timeIntervalSince(startedAt)))
+                    Text(String(format: "%02d:%02d", elapsed / 60, elapsed % 60))
+                        .font(OpenClawType.caption.monospacedDigit())
+                        .foregroundStyle(Color.white.opacity(0.85))
+                }
+            }
 
             if self.displayPhase == .thinking && !self.transcriptText.isEmpty {
                 Text(self.transcriptText)
@@ -457,6 +483,7 @@ struct VoiceAssistantCardView: View {
                     "Gateway offline: OpenClaw Talk is unavailable right now. Switch to DeepSeek Direct to keep talking."))
                 return
             }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             self.runTalkChannel()
         case .deepSeek:
             guard self.deepSeekConfigured else {
@@ -464,6 +491,7 @@ struct VoiceAssistantCardView: View {
                     "DeepSeek Direct is not configured. Turn it on and add your API key in Settings → Voice."))
                 return
             }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             self.runDeepSeekChannel()
         case .auto:
             break
@@ -527,8 +555,9 @@ struct VoiceAssistantCardView: View {
     private func runTalkChannel() {
         self.isBusy = true
         self.phase = .capturing
+        self.recordingStartedAt = Date()
         self.activeTask = Task { @MainActor in
-            defer { self.isBusy = false }
+            defer { self.isBusy = false; self.recordingStartedAt = nil }
             do {
                 let start = try await self.talkMode.beginPushToTalkOnce(transcriptionOnly: false)
                 switch start {
@@ -538,6 +567,7 @@ struct VoiceAssistantCardView: View {
                         : .idle
                 case .started:
                     let payload = await self.talkMode.awaitPushToTalkOnce(start)
+                    self.recordingStartedAt = nil
                     switch payload.status {
                     case "queued":
                         // 网关接管回复与 TTS；本卡观察 isSpeaking 过渡到播报态。
@@ -562,8 +592,9 @@ struct VoiceAssistantCardView: View {
     private func runDeepSeekChannel() {
         self.isBusy = true
         self.phase = .capturing
+        self.recordingStartedAt = Date()
         self.activeTask = Task { @MainActor in
-            defer { self.isBusy = false }
+            defer { self.isBusy = false; self.recordingStartedAt = nil }
             do {
                 let start = try await self.talkMode.beginPushToTalkOnce(transcriptionOnly: true)
                 switch start {
@@ -573,6 +604,7 @@ struct VoiceAssistantCardView: View {
                         : .idle
                 case .started:
                     let payload = await self.talkMode.awaitPushToTalkOnce(start)
+                    self.recordingStartedAt = nil
                     guard payload.status == "transcribed",
                           let transcript = payload.transcript,
                           !transcript.isEmpty
@@ -637,9 +669,11 @@ struct VoiceAssistantCardView: View {
         _ = self.talkMode.cancelPushToTalk()
         self.phase = .idle
         self.transcriptText = ""
+        self.recordingStartedAt = nil
     }
 
     private func teardown() {
+        self.recordingStartedAt = nil
         self.activeTask?.cancel()
         self.activeTask = nil
         self.realtimeTask?.cancel()

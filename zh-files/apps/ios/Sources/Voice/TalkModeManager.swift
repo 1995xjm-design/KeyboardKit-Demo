@@ -1166,7 +1166,14 @@ final class TalkModeManager: NSObject {
         // Finishing owns shared chat/TTS state after microphone capture ends.
         // Publish it first so a replacement cannot overlap old finalizer cleanup.
         guard let gatewayContext = activePushToTalk.gatewayContext else {
-            preconditionFailure(String(localized: "Agent push-to-talk requires a gateway context"))
+            GatewayDiagnostics.log("talk ptt: gateway context missing, returning offline")
+            let payload = OpenClawTalkPTTStopPayload(
+                captureId: captureId,
+                transcript: transcript,
+                status: "offline")
+            self.finishPTTOnce(payload)
+            self.finishActivePushToTalk(captureId)
+            return payload
         }
         self.startFinishingPushToTalk(
             captureId: captureId,
@@ -1185,6 +1192,9 @@ final class TalkModeManager: NSObject {
         canStartCapture: @MainActor () -> Bool = { true },
         onCaptureReserved: @MainActor (String) -> Void = { _ in }) async throws -> TalkPushToTalkOnceStart
     {
+        GatewayDiagnostics.log(
+            "talk ptt: begin capture=\(activePTTCaptureId ?? finishingPushToTalk?.captureId ?? "nil") "
+                + "transcriptionOnly=\(transcriptionOnly) gatewayConnected=\(self.gatewayConnected)")
         if let captureId = activePTTCaptureId ?? finishingPushToTalk?.captureId {
             return .busy(OpenClawTalkPTTStopPayload(
                 captureId: captureId,
@@ -1380,7 +1390,10 @@ final class TalkModeManager: NSObject {
     }
 
     private func transferActivePushToTalkToFinalizer(_ captureId: String) {
-        precondition(self.clearActivePushToTalk(captureId))
+        if !self.clearActivePushToTalk(captureId) {
+            GatewayDiagnostics.log("talk ptt: transfer finalizer skipped, active ptt mismatch")
+            return
+        }
     }
 
     private func startFinishingPushToTalk(
@@ -1388,7 +1401,10 @@ final class TalkModeManager: NSObject {
         transcript: String,
         gatewayContext: PushToTalkGatewayContext)
     {
-        precondition(self.finishingPushToTalk == nil)
+        if self.finishingPushToTalk != nil {
+            GatewayDiagnostics.log("talk ptt: finalizer already running, ignoring")
+            return
+        }
         let generation = self.beginTranscriptProcessing()
         self.setStatus(String(localized: "Thinking…"), phase: .thinking)
 
@@ -1874,6 +1890,7 @@ final class TalkModeManager: NSObject {
     }
 
     private func finishPTTOnce(_ payload: OpenClawTalkPTTStopPayload) {
+        GatewayDiagnostics.log("talk ptt: finished status=\(payload.status)")
         self.pttOnceOperations[payload.captureId]?.finish(payload)
     }
 

@@ -424,6 +424,66 @@ private struct ThemeWaveScanView: View {
     }
 }
 
+// MARK: - 录音频谱条（仿 ClawTalk）
+
+/// 中心区小尺寸频谱条：22 条竖条，主题渐变着色，半透明黑底圆角胶囊。
+/// 与 VoiceAssistantThemeLayer 的各主题元素相互独立，录音/说话态叠加使用。
+struct VoiceAssistantSpectrumBars: View {
+    let theme: VoiceAssistantTheme
+    let phase: VoiceAssistantThemePhase
+    let micLevel: Double
+    let width: CGFloat
+    let height: CGFloat
+
+    private static let barCount = 22
+    private static let barWidth: CGFloat = 3
+    private static let barSpacing: CGFloat = 1.5
+    private static let baseHeight: CGFloat = 6
+    private static let waveAmplitude: CGFloat = 10
+    private static let micBoostScale: Double = 22
+
+    private var intensity: Double {
+        switch self.phase {
+        case .listening: return 1.0
+        case .speaking: return 0.85
+        default: return 0.55
+        }
+    }
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { context in
+            let time = context.date.timeIntervalSinceReferenceDate
+            ZStack(alignment: .bottom) {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(Color.black.opacity(0.32))
+                    .frame(width: self.width, height: self.height)
+
+                HStack(alignment: .bottom, spacing: Self.barSpacing) {
+                    ForEach(0..<Self.barCount, id: \.self) { index in
+                        let wave = sin(time * 2.8 + Double(index) * 0.6)
+                        let boost = self.micLevel * Self.micBoostScale
+                        let barHeight = Self.baseHeight
+                            + CGFloat(wave) * Self.waveAmplitude * CGFloat(self.intensity)
+                            + CGFloat(boost)
+                        Capsule()
+                            .fill(
+                                LinearGradient(
+                                    colors: self.theme.gradient,
+                                    startPoint: .top,
+                                    endPoint: .bottom))
+                            .frame(
+                                width: Self.barWidth,
+                                height: max(Self.baseHeight, barHeight))
+                            .opacity(0.6 + 0.4 * self.intensity)
+                    }
+                }
+            }
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
+        }
+    }
+}
+
 // MARK: - 主题选择器
 
 /// 主题选择 sheet：5 卡片预览，点选立即生效。

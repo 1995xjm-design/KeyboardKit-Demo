@@ -129,6 +129,7 @@ struct MeetingRecorderView: View {
     let store: MeetingStore
 
     @State private var recorder = HomeSpeechRecorder()
+    @State private var recordingStartedAt: Date?
     @State private var transcript = ""
     @State private var participantsText = ""
     @State private var organizedNote: MeetingNote?
@@ -141,14 +142,18 @@ struct MeetingRecorderView: View {
                 recorderBody
             }
         }
-        .onDisappear { recorder.cancel() }
+        .onDisappear { recorder.cancel(); recordingStartedAt = nil }
     }
 
     private var recorderBody: some View {
         VStack(spacing: 0) {
             List {
                 Section(String(localized: "Record.Meeting.Participants")) {
-                    TextField(String(localized: "Record.Meeting.ParticipantsPlaceholder"), text: $participantsText, axis: .vertical)
+                    TextField(
+                        String(localized: "Record.Meeting.ParticipantsPlaceholder"),
+                        text: $participantsText,
+                        axis: .vertical
+                    )
                         .lineLimit(1...3)
                 }
                 Section(String(localized: "Record.Meeting.Transcript")) {
@@ -203,26 +208,34 @@ struct MeetingRecorderView: View {
     }
 
     private var statusLabel: some View {
-        let text: String
-        switch recorder.phase {
-        case .idle: text = String(localized: "Record.Hint.HoldToTalk")
-        case .recording: text = String(localized: "Record.Hint.Recording")
-        case .transcribing: text = String(localized: "Record.Hint.Transcribing")
+        Group {
+            switch recorder.phase {
+            case .idle:
+                Text(String(localized: "Record.Hint.HoldToTalk"))
+            case .recording:
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    let seconds = Int(Date().timeIntervalSince(recordingStartedAt ?? Date()))
+                    Text("录音中 " + String(format: "%02d:%02d", seconds / 60, seconds % 60))
+                }
+            case .transcribing:
+                Text(String(localized: "Record.Hint.Transcribing"))
+            }
         }
-        return Text(text)
-            .font(OpenClawType.footnote)
-            .foregroundStyle(.secondary)
+        .font(OpenClawType.footnote)
+        .foregroundStyle(.secondary)
     }
 
     private func handleHoldBegan() {
         guard recorder.phase == .idle else { return }
         Task { @MainActor in
             guard await recorder.requestAuthorization(), recorder.start() else { return }
+            recordingStartedAt = Date()
         }
     }
 
     private func handleHoldEnded() {
         guard recorder.phase == .recording else { return }
+        recordingStartedAt = nil
         Task { @MainActor in
             guard let text = await recorder.finish() else { return }
             transcript = text
@@ -291,7 +304,11 @@ struct MeetingEditorView: View {
                 }
             }
             Section(String(localized: "Record.Meeting.Participants")) {
-                TextField(String(localized: "Record.Meeting.ParticipantsPlaceholder"), text: $participantsText, axis: .vertical)
+                TextField(
+                    String(localized: "Record.Meeting.ParticipantsPlaceholder"),
+                    text: $participantsText,
+                    axis: .vertical
+                )
                     .lineLimit(1...4)
             }
             Section(String(localized: "Record.Meeting.Summary")) {

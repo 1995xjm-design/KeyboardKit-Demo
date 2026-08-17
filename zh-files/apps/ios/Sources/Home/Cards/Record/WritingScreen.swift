@@ -112,6 +112,7 @@ struct WritingEditorView: View {
     @State private var tone: ArticleTone
     @State private var outline: [String]
     @State private var recorder = HomeSpeechRecorder()
+    @State private var recordingStartedAt: Date?
     @State private var notice: String?
 
     init(store: WritingStore, draft: ArticleDraft? = nil) {
@@ -184,7 +185,9 @@ struct WritingEditorView: View {
                     }
                 }
             }
-            .navigationTitle(draft == nil ? String(localized: "Record.Note.New") : String(localized: "Record.Note.Edit"))
+            .navigationTitle(
+                draft == nil ? String(localized: "Record.Note.New") : String(localized: "Record.Note.Edit")
+            )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -198,7 +201,7 @@ struct WritingEditorView: View {
             .safeAreaInset(edge: .bottom) {
                 voiceDock
             }
-            .onDisappear { recorder.cancel() }
+            .onDisappear { recorder.cancel(); recordingStartedAt = nil }
         }
     }
 
@@ -219,9 +222,18 @@ struct WritingEditorView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             HStack(spacing: 12) {
-                Text(String(localized: "Record.Note.VoiceAddPoint"))
-                    .font(OpenClawType.footnote)
-                    .foregroundStyle(.secondary)
+                Group {
+                    if recorder.phase == .recording {
+                        TimelineView(.periodic(from: .now, by: 1)) { _ in
+                            let seconds = Int(Date().timeIntervalSince(recordingStartedAt ?? Date()))
+                            Text("录音中 " + String(format: "%02d:%02d", seconds / 60, seconds % 60))
+                        }
+                    } else {
+                        Text(String(localized: "Record.Note.VoiceAddPoint"))
+                    }
+                }
+                .font(OpenClawType.footnote)
+                .foregroundStyle(.secondary)
                 Spacer()
                 HoldToTalkButton(
                     phase: recorder.phase,
@@ -253,11 +265,13 @@ struct WritingEditorView: View {
         guard recorder.phase == .idle else { return }
         Task { @MainActor in
             guard await recorder.requestAuthorization(), recorder.start() else { return }
+            recordingStartedAt = Date()
         }
     }
 
     private func handleHoldEnded() {
         guard recorder.phase == .recording else { return }
+        recordingStartedAt = nil
         Task { @MainActor in
             guard let text = await recorder.finish() else { return }
             outline.append(text)

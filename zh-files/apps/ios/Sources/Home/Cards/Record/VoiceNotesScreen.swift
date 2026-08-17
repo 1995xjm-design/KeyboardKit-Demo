@@ -7,6 +7,7 @@ import SwiftUI
 struct VoiceNotesScreen: View {
     @State private var store = VoiceNotesStore()
     @State private var recorder = HomeSpeechRecorder()
+    @State private var recordingStartedAt: Date?
     @State private var editingEntry: VoiceNoteEntry?
     @State private var showNewNote = false
 
@@ -43,7 +44,7 @@ struct VoiceNotesScreen: View {
         .sheet(item: $editingEntry) { entry in
             VoiceNoteEditorView(store: store, entry: entry)
         }
-        .onDisappear { recorder.cancel() }
+        .onDisappear { recorder.cancel(); recordingStartedAt = nil }
     }
 
     // MARK: - 列表（按日期分组）
@@ -112,15 +113,21 @@ struct VoiceNotesScreen: View {
     }
 
     private var statusLabel: some View {
-        let text: String
-        switch recorder.phase {
-        case .idle: text = String(localized: "Record.Hint.HoldToTalk")
-        case .recording: text = String(localized: "Record.Hint.Recording")
-        case .transcribing: text = String(localized: "Record.Hint.Transcribing")
+        Group {
+            switch recorder.phase {
+            case .idle:
+                Text(String(localized: "Record.Hint.HoldToTalk"))
+            case .recording:
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    let seconds = Int(Date().timeIntervalSince(recordingStartedAt ?? Date()))
+                    Text("录音中 " + String(format: "%02d:%02d", seconds / 60, seconds % 60))
+                }
+            case .transcribing:
+                Text(String(localized: "Record.Hint.Transcribing"))
+            }
         }
-        return Text(text)
-            .font(OpenClawType.footnote)
-            .foregroundStyle(.secondary)
+        .font(OpenClawType.footnote)
+        .foregroundStyle(.secondary)
     }
 
     private var emptyState: some View {
@@ -146,11 +153,13 @@ struct VoiceNotesScreen: View {
         guard recorder.phase == .idle else { return }
         Task { @MainActor in
             guard await recorder.requestAuthorization(), recorder.start() else { return }
+            recordingStartedAt = Date()
         }
     }
 
     private func handleHoldEnded() {
         guard recorder.phase == .recording else { return }
+        recordingStartedAt = nil
         Task { @MainActor in
             guard let text = await recorder.finish() else { return }
             store.add(VoiceNoteEntry(date: Date(), text: text, category: VoiceNoteCategory.classify(text)))
@@ -246,7 +255,9 @@ struct VoiceNoteEditorView: View {
                     }
                 }
             }
-            .navigationTitle(entry == nil ? String(localized: "Record.Note.New") : String(localized: "Record.Note.Edit"))
+            .navigationTitle(
+                entry == nil ? String(localized: "Record.Note.New") : String(localized: "Record.Note.Edit")
+            )
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

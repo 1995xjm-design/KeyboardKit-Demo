@@ -7,6 +7,7 @@ import SwiftUI
 struct ExpenseHomeView: View {
     @State private var store = ExpenseStore()
     @State private var recorder = HomeSpeechRecorder()
+    @State private var recordingStartedAt: Date?
     @State private var showNewEntry = false
     @State private var editingEntry: ExpenseEntry?
     @State private var showStats = false
@@ -72,7 +73,7 @@ struct ExpenseHomeView: View {
         } message: {
             Text(String(localized: "Expense.Home.NoDraftsMessage"))
         }
-        .onDisappear { recorder.cancel() }
+        .onDisappear { recorder.cancel(); recordingStartedAt = nil }
     }
 
     // MARK: - 列表（月摘要 + 按日分组）
@@ -178,15 +179,21 @@ struct ExpenseHomeView: View {
     }
 
     private var statusLabel: some View {
-        let text: String
-        switch recorder.phase {
-        case .idle: text = String(localized: "Expense.Hint.HoldToTalk")
-        case .recording: text = String(localized: "Expense.Hint.Recording")
-        case .transcribing: text = String(localized: "Expense.Hint.Transcribing")
+        Group {
+            switch recorder.phase {
+            case .idle:
+                Text(String(localized: "Expense.Hint.HoldToTalk"))
+            case .recording:
+                TimelineView(.periodic(from: .now, by: 1)) { _ in
+                    let seconds = Int(Date().timeIntervalSince(recordingStartedAt ?? Date()))
+                    Text("录音中 " + String(format: "%02d:%02d", seconds / 60, seconds % 60))
+                }
+            case .transcribing:
+                Text(String(localized: "Expense.Hint.Transcribing"))
+            }
         }
-        return Text(text)
-            .font(OpenClawType.footnote)
-            .foregroundStyle(.secondary)
+        .font(OpenClawType.footnote)
+        .foregroundStyle(.secondary)
     }
 
     private var emptyState: some View {
@@ -212,11 +219,13 @@ struct ExpenseHomeView: View {
         guard recorder.phase == .idle else { return }
         Task { @MainActor in
             guard await recorder.requestAuthorization(), recorder.start() else { return }
+            recordingStartedAt = Date()
         }
     }
 
     private func handleHoldEnded() {
         guard recorder.phase == .recording else { return }
+        recordingStartedAt = nil
         Task { @MainActor in
             guard let text = await recorder.finish() else { return }
             let parsed = ExpenseVoiceParser.parseAll(text)
