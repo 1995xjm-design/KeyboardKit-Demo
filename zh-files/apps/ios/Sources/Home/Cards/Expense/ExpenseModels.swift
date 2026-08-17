@@ -29,7 +29,7 @@ struct ExpenseEntry: Identifiable, Codable, Equatable {
     /// 记账日期（按日分组用；语音记账取录音开始时间，手动添加默认今天）
     var date: Date
     /// 金额（元，>0；语音解析/手动填写均校验）
-    let amount: Double
+    var amount: Double
     /// 收入 / 支出
     var type: ExpenseType
     /// 类别

@@ -20,7 +20,7 @@ struct HoldToTalkButton: View {
                 Circle()
                     .stroke(OpenClawBrand.accent.opacity(0.28), lineWidth: 4)
                     .frame(width: recordButtonSize + ringPadding, height: recordButtonSize + ringPadding)
-                    .scaleEffect(1 + audioLevel * 0.22)
+                    .scaleEffect(CGFloat(1 + audioLevel * 0.22))
                     .animation(.easeOut(duration: 0.12), value: audioLevel)
             }
             Circle()
@@ -88,8 +88,9 @@ final class HoldTalkController {
     func press() {
         guard !isPressed else { return }
         isPressed = true
+        let threshold = holdThreshold
         holdTask = Task { [weak self] in
-            try? await Task.sleep(nanoseconds: holdThreshold)
+            try? await Task.sleep(nanoseconds: threshold)
             guard !Task.isCancelled, let self else { return }
             self.isActive = true
             self.onHoldBegan?()

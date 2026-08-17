@@ -131,14 +131,14 @@ struct HomeMarkdownText: View {
             inlineText(text, font: headingFont(level), color: .primary)
                 .padding(.top, level == 1 ? 2 : 0)
         case .paragraph(let text):
-            inlineText(text, font: OpenClawType.body)
+            inlineText(text, font: OpenClawType.body, color: .primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
         case .bullet(let text):
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text("•")
                     .font(OpenClawType.body)
                     .foregroundStyle(OpenClawBrand.accent)
-                inlineText(text, font: OpenClawType.body)
+                inlineText(text, font: OpenClawType.body, color: .primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         case .numbered(let index, let text):
@@ -146,7 +146,7 @@ struct HomeMarkdownText: View {
                 Text(verbatim: "\(index).")
                     .font(OpenClawType.body)
                     .foregroundStyle(.secondary)
-                inlineText(text, font: OpenClawType.body)
+                inlineText(text, font: OpenClawType.body, color: .primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         case .code(let lines):
@@ -160,7 +160,7 @@ struct HomeMarkdownText: View {
                     in: RoundedRectangle(cornerRadius: 8, style: .continuous)
                 )
         case .quote(let text):
-            inlineText(text, font: OpenClawType.body)
+            inlineText(text, font: OpenClawType.body, color: .secondary)
                 .foregroundStyle(.secondary)
                 .italic()
                 .padding(.leading, 10)

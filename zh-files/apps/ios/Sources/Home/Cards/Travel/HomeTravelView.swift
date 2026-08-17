@@ -621,13 +621,24 @@ final class HomeParkingLocationFetcher: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            finish(returning: location)
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let location = locations.last
+        Task { @MainActor in
+            if let location {
+                self.finish(returning: location)
+            }
         }
     }
-
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        let nsError = error as NSError
+        Task { @MainActor in
+            if nsError.domain == kCLErrorDomain && nsError.code == CLError.denied.rawValue {
+                self.finish(throwing: HomeParkingLocationError.denied)
+            } else {
+                self.finish(throwing: nsError)
+            }
+        }
+    }
         let nsError = error as NSError
         if nsError.domain == kCLErrorDomain && nsError.code == CLError.denied.rawValue {
             finish(throwing: HomeParkingLocationError.denied)

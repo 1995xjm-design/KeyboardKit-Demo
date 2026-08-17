@@ -101,7 +101,7 @@ final class DeepSeekDirectClient {
     func complete(
         messages: [DeepSeekChatMessage],
         system: String? = nil,
-        model: String = Self.defaultModel
+        model: String = DeepSeekDirectClient.defaultModel
     ) async throws -> String {
         var all = ""
         for try await delta in stream(messages: messages, system: system, model: model) {
@@ -116,7 +116,7 @@ final class DeepSeekDirectClient {
     func stream(
         messages: [DeepSeekChatMessage],
         system: String? = nil,
-        model: String = Self.defaultModel
+        model: String = DeepSeekDirectClient.defaultModel
     ) -> AsyncThrowingStream<String, Error> {
         AsyncThrowingStream { continuation in
             let task = Task {

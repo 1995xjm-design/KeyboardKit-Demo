@@ -6,7 +6,7 @@ import SwiftUI
 /// - 顶部语音助手大卡固定（C-voice 实现，不进本枚举）；
 /// - OPEN CLAW 卡固定第一张（A-root 路由，不进本枚举、不参与 enabled 存储与排序）；
 /// - 本枚举 = 12 张可配置卡（已删除 ClawTalk 的 keyboard / emergency）。
-enum HomeCardKind: String, CaseIterable, Identifiable, Hashable, Codable {
+enum HomeCardKind: String, CaseIterable, Identifiable, Hashable, Codable, Sendable {
     case memory
     case cloneTalk
     case record

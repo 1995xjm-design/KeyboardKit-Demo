@@ -185,7 +185,7 @@ struct HomeMemoryView: View {
                 }
             }
         } header: {
-            if let diary {
+            if let diary = store.diary {
                 SectionHeaderWithCount(
                     title: String(localized: "Dream Diary"),
                     count: store.diaryDays.count,
