@@ -162,6 +162,7 @@ struct ExpenseHomeView: View {
             HoldToTalkButton(
                 phase: recorder.phase,
                 audioLevel: recorder.audioLevel,
+                tint: Color.mint,
                 onHoldBegan: handleHoldBegan,
                 onHoldEnded: handleHoldEnded
             )
@@ -174,7 +175,6 @@ struct ExpenseHomeView: View {
         }
         .padding(.vertical, 10)
         .padding(.horizontal, OpenClawProMetric.pagePadding)
-        .background(Color(uiColor: .secondarySystemGroupedBackground))
     }
 
     private var statusLabel: some View {

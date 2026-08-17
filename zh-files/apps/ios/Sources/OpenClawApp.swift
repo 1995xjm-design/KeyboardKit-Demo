@@ -805,6 +805,28 @@ extension OpenClawApp {
             for line in exception.callStackSymbols {
                 NSLog("  %@", line)
             }
+
+            // Mirror to the gateway cache log (Caches/openclaw-gateway.log) so the Settings
+            // log viewer can share crash context. Best-effort: this handler runs outside any
+            // Swift actor and must not capture state.
+            var text = "[uncaught] \(exception.name.rawValue) \(reason)\n"
+            for line in exception.callStackSymbols {
+                text += "  \(line)\n"
+            }
+            guard let data = text.data(using: .utf8),
+                  let url = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
+                      .first?
+                      .appendingPathComponent("openclaw-gateway.log")
+            else { return }
+
+            if FileManager.default.fileExists(atPath: url.path) {
+                guard let handle = try? FileHandle(forWritingTo: url) else { return }
+                defer { try? handle.close() }
+                try? handle.seekToEnd()
+                try? handle.write(contentsOf: data)
+            } else {
+                try? data.write(to: url, options: .atomic)
+            }
         }
     }
 }

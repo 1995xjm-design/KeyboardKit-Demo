@@ -4,12 +4,12 @@ import SwiftUI
 
 /// App 根容器视图（A-root）：
 /// 首屏 = 「语音助手」主页（ClawTalk 卡片墙，由 B-home 的 HomeTabView 呈现），
-/// OPEN CLAW 卡点击后全屏推入 OpenClaw 现有界面（RootTabs），顶部提供「← 返回」按钮。
+/// OPEN CLAW 卡点击后以全屏 Sheet 推入 OpenClaw 现有界面（RootTabs），顶部提供「← 返回」按钮。
 ///
 /// 环境对象注入链说明：OpenClawApp 在 WindowGroup 中对本视图统一注入
 /// appearanceModel / appModel / voiceWake / gatewayController（保持原有链不动），
 /// 本视图再通过 environmentObject 注入 HomeRouterModel 给主页使用；
-/// 全屏推入的 RootTabs() 从本视图继承同一环境，RootTabs 内部逻辑/布局零改动。
+/// 推入的 RootTabs() 从本视图继承同一环境，RootTabs 内部逻辑/布局零改动。
 ///
 /// 首次启动引导：官方 OnboardingWizardView 原本由 RootTabs 评估与呈现；根替换为本容器后，
 /// 由本容器沿用官方同判定逻辑（RootTabsNavigation.startupPresentationRoute +
@@ -52,16 +52,21 @@ struct HomeRootContainer: View {
                     },
                     onClose: {
                         self.showOnboarding = false
+                        self.router.isOpenClawPresented = false
                     },
                     onComplete: {
                         self.showOnboarding = false
+                        self.router.isOpenClawPresented = false
                     })
                     .environment(self.appModel)
                     .environment(self.appModel.voiceWake)
                     .environment(self.gatewayController)
             }
-            .fullScreenCover(isPresented: self.$router.isOpenClawPresented) {
+            .sheet(isPresented: self.$router.isOpenClawPresented) {
                 OpenClawFullScreenHost(router: self.router)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.hidden)
+                    .ignoresSafeArea()
             }
     }
 
@@ -110,9 +115,11 @@ struct HomeRootContainer: View {
 }
 
 /// OpenClaw 全屏宿主：仅将 OpenClaw 现有 RootTabs() 包一层（不修改其内部逻辑/布局），
-/// 顶部叠加「← 返回」悬浮按钮；按钮避开安全区、半透明背景，在任何 OpenClaw 页面上均可见。
+/// 顶部叠加「← 返回」悬浮按钮；按钮避开安全区、半透明背景，只在根页（未进入子页）时显示。
 private struct OpenClawFullScreenHost: View {
     private let router: HomeRouterModel
+    /// 当前是否位于 OpenClaw 根页（侧边栏根页可见且未进入设置子页），只在根页显示「← 返回」。
+    @State private var isRootPageVisible = false
 
     init(router: HomeRouterModel) {
         self.router = router
@@ -120,11 +127,19 @@ private struct OpenClawFullScreenHost: View {
 
     var body: some View {
         GeometryReader { proxy in
-            RootTabs()
+            RootTabs(
+                initialSidebarDestination: self.router.initialDestination,
+                initialSettingsRoute: self.router.initialSettingsRoute,
+                hostedByHome: true,
+                onRootVisibilityChange: { visible in
+                    self.isRootPageVisible = visible
+                })
                 .overlay(alignment: .topLeading) {
-                    self.backButton
-                        .padding(.leading, 12)
-                        .padding(.top, proxy.safeAreaInsets.top + 8)
+                    if self.isRootPageVisible {
+                        self.backButton
+                            .padding(.leading, 12)
+                            .padding(.top, proxy.safeAreaInsets.top + 8)
+                    }
                 }
         }
     }

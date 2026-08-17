@@ -87,8 +87,8 @@ struct HomeTabView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 0)
-                NavigationLink {
-                    SettingsProTab(ownsNavigationStack: false)
+                Button {
+                    router.openOpenClaw(initialDestination: .settings, initialRoute: .gateway)
                 } label: {
                     Image(systemName: "gearshape")
                         .font(OpenClawType.subheadSemiBold)
@@ -142,7 +142,7 @@ struct HomeTabView: View {
     }
 
     /// OPEN CLAW 固定卡：永远第一张，不参与 enabled 存储/排序/管理；
-    /// 角标 = 网关状态（router.gatewayStateText，数据订阅 OpenClaw 网关状态服务），点击全屏推入。
+    /// 角标 = 网关状态（router.gatewayStateText，数据订阅 OpenClaw 网关状态服务），点击以全屏 Sheet 推入。
     private var openClawCard: some View {
         Button {
             router.openOpenClaw()

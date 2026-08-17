@@ -69,7 +69,7 @@ struct IPadActivityScreen: View {
             VStack(spacing: 0) {
                 ProPanelHeader(
                     title: "Recent activity",
-                    value: self.isLoading ? "Loading" : nil,
+                    value: self.isLoading ? String(localized: "Loading") : nil,
                     actionTitle: "Refresh",
                     action: {
                         Task { await self.refreshSessions() }
@@ -173,7 +173,7 @@ struct IPadActivityScreen: View {
     }
 
     private var gatewayStateText: String {
-        guard !self.gatewayConnected else { return "Online" }
+        guard !self.gatewayConnected else { return String(localized: "Online") }
         let status = self.appModel.gatewayDisplayStatusText.trimmingCharacters(in: .whitespacesAndNewlines)
         return status.isEmpty ? String(localized: "Offline") : status
     }
@@ -225,7 +225,7 @@ struct IPadActivityScreen: View {
             await self.appModel.storeCachedChatSessions(response.sessions)
         } catch {
             self.sessions = await self.appModel.loadCachedChatSessions()
-            self.loadErrorText = self.sessions.isEmpty ? "Try again after the gateway reconnects." : nil
+            self.loadErrorText = self.sessions.isEmpty ? String(localized: "Try again after the gateway reconnects.") : nil
         }
     }
 

@@ -310,6 +310,8 @@ final class TalkModeManager: NSObject {
     var pcmPlayer: PCMStreamingAudioPlaying = PCMStreamingAudioPlayer.shared
     var mp3Player: StreamingAudioPlaying = StreamingAudioPlayer.shared
     var bufferedPlayer: TalkBufferedAudioPlaying = TalkBufferedAudioPlayer.shared
+    /// Edge TTS 播放器（playEdgeTTS 与试听一致：AVAudioPlayer(data:) 直接播放）。
+    private var edgeAudioPlayer: AVAudioPlayer?
 
     /// Meters PCM speech bytes on their way into the streaming player so the
     /// speaking waveform tracks the audible envelope, not network arrival.
@@ -3146,23 +3148,34 @@ final class TalkModeManager: NSObject {
         generation: Int) async
     {
         let languages = self.resolvedSpeechLanguages(directiveLanguage: directive?.language)
+        GatewayDiagnostics.log(
+            "talk tts: providerSelection=\(self.talkProviderSelection.rawValue) "
+                + "runtimeRoute=\(self.runtimeRoute) edge=start")
         do {
             try await self.playEdgeTTS(
                 text: text,
                 directive: directive,
                 generation: generation)
+            GatewayDiagnostics.log(
+                "talk tts: providerSelection=\(self.talkProviderSelection.rawValue) "
+                    + "runtimeRoute=\(self.runtimeRoute) edge=succeeded")
         } catch is CancellationError {
             return
         } catch {
             guard !Task.isCancelled, self.speechGeneration == generation else { return }
             let errorMessage = error.localizedDescription
             self.logger.error("edge tts failed: \(errorMessage, privacy: .public); falling back to system voice")
-            GatewayDiagnostics.log("talk tts: provider=system (edge error) msg=\(error.localizedDescription)")
+            GatewayDiagnostics.log(
+                "talk tts: providerSelection=\(self.talkProviderSelection.rawValue) "
+                    + "runtimeRoute=\(self.runtimeRoute) edge=failed reason=\(errorMessage) fallback=system")
             do {
                 try await self.playSystemVoice(
                     text: text,
                     language: languages.systemVoice,
                     statusOverride: String(localized: "Edge TTS unavailable, using system voice"))
+                GatewayDiagnostics.log(
+                    "talk tts: providerSelection=\(self.talkProviderSelection.rawValue) "
+                        + "runtimeRoute=\(self.runtimeRoute) edge=fallbackSystem=succeeded")
             } catch {
                 guard !Task.isCancelled, self.speechGeneration == generation else { return }
                 let status = String(
@@ -3173,6 +3186,9 @@ final class TalkModeManager: NSObject {
                     phase: .idle,
                     watchPresentation: .verbatim(status))
                 self.logger.error("system voice failed: \(error.localizedDescription, privacy: .public)")
+                GatewayDiagnostics.log(
+                    "talk tts: providerSelection=\(self.talkProviderSelection.rawValue) "
+                        + "runtimeRoute=\(self.runtimeRoute) edge=fallbackSystem=failed reason=\(error.localizedDescription)")
             }
         }
     }
@@ -3200,17 +3216,28 @@ final class TalkModeManager: NSObject {
             speed: EdgeTTSSynthesizer.savedSpeed(),
             pitch: EdgeTTSSynthesizer.savedPitch())
         guard generation == self.speechGeneration, self.isSpeaking else { return }
+        // 与试听一致：EdgeTTSSynthesizer.synthesize → AVAudioPlayer(data:) 播放。
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+        try? AVAudioSession.sharedInstance().setActive(true)
+        self.audioSessionIsActive = true
         self.lastPlaybackWasPCM = false
-        self.bufferedPlayer.setLevelHandler { [weak self] level in
-            self?.playbackLevel = level
+        let player = try AVAudioPlayer(data: audio)
+        player.prepareToPlay()
+        self.edgeAudioPlayer = player
+        guard player.play() else {
+            self.edgeAudioPlayer = nil
+            throw NSError(domain: "TalkMode", code: 11, userInfo: [
+                NSLocalizedDescriptionKey: String(localized: "Edge TTS playback failed"),
+            ])
         }
-        let result = await self.bufferedPlayer.play(data: audio)
-        guard generation == self.speechGeneration, self.isSpeaking else { return }
+        // 播放轮询：播放完成、被打断（stopSpeaking）或任务取消时退出。
+        while self.edgeAudioPlayer === player && player.isPlaying && !Task.isCancelled {
+            try? await Task.sleep(for: .seconds(0.1))
+        }
+        self.edgeAudioPlayer = nil
+        guard !Task.isCancelled, generation == self.speechGeneration, self.isSpeaking else { return }
         GatewayDiagnostics.log(
-            "talk tts: provider=edge-tts voice=\(voiceId ?? "?") finished=\(result.finished)")
-        if !result.finished, let interruptedAt = result.interruptedAt {
-            self.lastInterruptedAtSeconds = interruptedAt
-        }
+            "talk tts: provider=edge-tts voice=\(voiceId ?? "?") finished=true")
     }
 
     private func playSystemVoice(
@@ -3306,6 +3333,8 @@ final class TalkModeManager: NSObject {
             } else {
                 _ = self.bufferedPlayer.stop()
             }
+            self.edgeAudioPlayer?.stop()
+            self.edgeAudioPlayer = nil
             _ = self.lastPlaybackWasPCM
                 ? self.mp3Player.stop()
                 : self.pcmPlayer.stop()

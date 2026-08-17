@@ -16,6 +16,14 @@ struct CloneTalkChatView: View {
     @State private var viewModel: OpenClawChatViewModel?
     @State private var personaInjectionTask: Task<Void, Never>?
     @State private var showsPersonaEditor = false
+    @State private var showsAssistantTrace = false
+    @State private var transcriptShareItem: TranscriptShareItem?
+    @State private var showsTranscriptExportError = false
+
+    private struct TranscriptShareItem: Identifiable {
+        let id = UUID()
+        let fileURL: URL
+    }
 
     private static let dedicatedSessionKey = "clone-talk"
     private static let personaInjectionKey = "openclaw_home_clone_talk_persona_injected_v1"
@@ -27,12 +35,12 @@ struct CloneTalkChatView: View {
                     viewModel: viewModel,
                     drawsBackground: true,
                     showsSessionSwitcher: false,
-                    userAccent: OpenClawBrand.carapaceCoral,
-                    showsAssistantTrace: false,
+                    userAccent: OpenClawBrand.accent,
+                    showsAssistantTrace: showsAssistantTrace,
                     assistantName: personaStore.persona.name,
                     assistantAvatarText: avatarText,
                     assistantAvatarTint: OpenClawBrand.carapaceCoral,
-                    showsAssistantAvatars: false,
+                    showsAssistantAvatars: true,
                     composerChrome: .clean,
                     isComposerEnabled: appModel.isOperatorGatewayConnected,
                     isAttachmentInputEnabled: false,
@@ -54,12 +62,58 @@ struct CloneTalkChatView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showsPersonaEditor = true
+                Menu {
+                    Button {
+                        showsPersonaEditor = true
+                    } label: {
+                        Label(String(localized: "Edit Persona"), systemImage: "person.crop.circle.badge.gearshape")
+                            .font(OpenClawType.body)
+                    }
+
+                    Button {
+                        resetPersona()
+                    } label: {
+                        Label(String(localized: "Reset Persona"), systemImage: "arrow.counterclockwise")
+                            .font(OpenClawType.body)
+                    }
+                    .disabled(viewModel == nil || !appModel.isOperatorGatewayConnected)
+
+                    Divider()
+
+                    Button {
+                        Task { await startNewChat() }
+                    } label: {
+                        Label(String(localized: "New Chat"), systemImage: "plus.bubble")
+                            .font(OpenClawType.body)
+                    }
+                    .disabled(viewModel == nil || !appModel.isOperatorGatewayConnected)
+
+                    Button {
+                        clearConversation()
+                    } label: {
+                        Label(String(localized: "Clear Conversation"), systemImage: "trash")
+                            .font(OpenClawType.body)
+                    }
+                    .disabled(viewModel == nil || !appModel.isOperatorGatewayConnected)
+
+                    Divider()
+
+                    Button {
+                        exportTranscript()
+                    } label: {
+                        Label(String(localized: "Export Conversation"), systemImage: "square.and.arrow.up")
+                            .font(OpenClawType.body)
+                    }
+                    .disabled(viewModel == nil)
+
+                    Toggle(isOn: $showsAssistantTrace) {
+                        Label(String(localized: "Show reasoning & tool activity"), systemImage: "brain.head.profile")
+                            .font(OpenClawType.body)
+                    }
                 } label: {
-                    Image(systemName: "person.crop.circle.badge.gearshape")
+                    Image(systemName: "ellipsis.circle")
                 }
-                .accessibilityLabel(String(localized: "Edit Persona"))
+                .accessibilityLabel(String(localized: "Clone chat actions"))
             }
         }
         .task {
@@ -81,10 +135,71 @@ struct CloneTalkChatView: View {
         .sheet(isPresented: $showsPersonaEditor) {
             CloneTalkPersonaEditorView(store: personaStore)
         }
+        .sheet(item: $transcriptShareItem) { item in
+            ChatTranscriptShareSheet(fileURL: item.fileURL)
+        }
+        .alert(
+            String(localized: "Unable to Export Transcript"),
+            isPresented: $showsTranscriptExportError)
+        {
+            Button(role: .cancel) {} label: {
+                Text(String(localized: "OK"))
+                    .font(OpenClawType.body)
+            }
+        } message: {
+            Text(String(localized: "OpenClaw could not prepare the Markdown file."))
+                .font(OpenClawType.body)
+        }
     }
 
     private var avatarText: String {
         personaStore.persona.avatarEmoji.isEmpty ? "🤖" : String(personaStore.persona.avatarEmoji.prefix(2))
+    }
+
+    // MARK: - 场景菜单动作
+
+    /// 重置人设：清除「已注入」标记后复用注入流程，向当前会话重发人设消息。
+    private func resetPersona() {
+        guard let viewModel else { return }
+        Self.clearPersonaInjectionMarker()
+        startPersonaInjectionIfNeeded(viewModel: viewModel)
+    }
+
+    /// 新对话：网关建新会话后清掉注入标记，让新会话重新注入人设。
+    private func startNewChat() async {
+        guard let viewModel else { return }
+        await viewModel.startNewSession()
+        Self.clearPersonaInjectionMarker()
+        startPersonaInjectionIfNeeded(viewModel: viewModel)
+    }
+
+    /// 清除对话：网关没有公开的「仅清空消息」API，用 sessions.reset（保留专属 key、清空会话后重引导），
+    /// 再重注入人设，让分身继续按人设对话。
+    private func clearConversation() {
+        guard let viewModel else { return }
+        viewModel.requestSessionReset()
+        Self.clearPersonaInjectionMarker()
+        startPersonaInjectionIfNeeded(viewModel: viewModel)
+    }
+
+    /// 导出对话：复用 ChatTranscriptShareSheet 做文本分享。
+    private func exportTranscript() {
+        guard let viewModel else { return }
+        let title = viewModel.sessions.first { $0.key == viewModel.sessionKey }?.displayName
+        let filename = ChatTranscriptExporter.filename(
+            sessionTitle: title,
+            sessionKey: viewModel.sessionKey)
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("OpenClawTranscripts", isDirectory: true)
+        let fileURL = directory.appendingPathComponent(filename, isDirectory: false)
+
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try viewModel.exportTranscriptMarkdown().write(to: fileURL, atomically: true, encoding: .utf8)
+            transcriptShareItem = TranscriptShareItem(fileURL: fileURL)
+        } catch {
+            showsTranscriptExportError = true
+        }
     }
 
     // MARK: - 组装
@@ -169,5 +284,10 @@ struct CloneTalkChatView: View {
 
     private static func markPersonaInjected(revision: Int) {
         UserDefaults.standard.set(revision, forKey: personaInjectionKey)
+    }
+
+    /// 清除「已注入」标记：让 startPersonaInjectionIfNeeded 重新注入人设。
+    private static func clearPersonaInjectionMarker() {
+        UserDefaults.standard.removeObject(forKey: personaInjectionKey)
     }
 }

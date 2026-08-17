@@ -59,7 +59,25 @@ struct RootTabs: View {
     @State private var gatewaySetupRequest: GatewaySetupRequest?
     @State private var suppressedExecApprovalForNotificationSettings: NodeAppModel.ExecApprovalInboxKey?
 
-    init(initialSidebarVisibility: Bool? = nil) {
+    /// 由主页（HomeRootContainer）作为宿主呈现时为 true：跳过自身 onboarding / quick-setup 逻辑。
+    private let hostedByHome: Bool
+    /// 侧边栏根页可见性变化回调（根页 = isSidebarDetailRootVisible && 路径为空），用于宿主控制返回按钮。
+    private let onRootVisibilityChange: ((Bool) -> Void)?
+
+    init(
+        initialSidebarDestination: SidebarDestination? = nil,
+        initialSettingsRoute: SettingsRoute? = nil,
+        initialSidebarVisibility: Bool? = nil,
+        hostedByHome: Bool = false,
+        onRootVisibilityChange: ((Bool) -> Void)? = nil)
+    {
+        self.hostedByHome = hostedByHome
+        self.onRootVisibilityChange = onRootVisibilityChange
+        let resolvedDestination = initialSidebarDestination ?? Self.initialSidebarDestination
+        let resolvedSettingsRoute = initialSettingsRoute ?? Self.initialSettingsRoute ?? resolvedDestination.settingsRoute
+        _selectedSidebarDestination = State(initialValue: resolvedDestination)
+        _selectedSettingsRoute = State(initialValue: resolvedSettingsRoute)
+        _activeSettingsRoute = State(initialValue: resolvedSettingsRoute)
         let resolvedVisibility = initialSidebarVisibility ?? Self.initialSidebarVisibility
         _isSidebarVisible = State(initialValue: resolvedVisibility ?? false)
         _sidebarVisibilityUserOverridden = State(initialValue: resolvedVisibility != nil)
@@ -279,10 +297,12 @@ struct RootTabs: View {
             .onAppear {
                 guard self.sidebarDetailShellID == shellID else { return }
                 self.isSidebarDetailRootVisible = true
+                self.notifyRootVisibilityChange()
             }
             .onDisappear {
                 guard self.sidebarDetailShellID == shellID else { return }
                 self.isSidebarDetailRootVisible = false
+                self.notifyRootVisibilityChange()
             }
     }
 
@@ -447,6 +467,7 @@ struct RootTabs: View {
         }
         .onChange(of: self.sidebarNavigationPath) { _, navigationPath in
             self.handleSidebarSettingsNavigationPathChange(navigationPath)
+            self.notifyRootVisibilityChange()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
@@ -1018,6 +1039,12 @@ extension RootTabs {
         self.handleSettingsRouteChange(route)
     }
 
+    /// 宿主（主页）需要知道当前是否处于根页（= 侧边栏根页可见且导航路径为空），
+    /// 用于只在根页显示「← 返回」胶囊。
+    private func notifyRootVisibilityChange() {
+        self.onRootVisibilityChange?(self.isSidebarDetailRootVisible && self.sidebarNavigationPath.isEmpty)
+    }
+
     private func showSidebar() {
         self.sidebarVisibilityUserOverridden = true
         withAnimation(self.sidebarAnimation) {
@@ -1103,6 +1130,7 @@ extension RootTabs {
     }
 
     private func evaluateOnboardingPresentation(force: Bool) {
+        guard !self.hostedByHome else { return }
         if force {
             self.onboardingAllowSkip = true
             self.showOnboarding = true
@@ -1142,6 +1170,7 @@ extension RootTabs {
     }
 
     private func maybeAutoOpenSettings() {
+        guard !self.hostedByHome else { return }
         guard !self.didAutoOpenSettings else { return }
         guard !self.showOnboarding else { return }
         let route = Self.startupPresentationRoute(
@@ -1195,6 +1224,7 @@ extension RootTabs {
     }
 
     private func maybeShowQuickSetup() {
+        guard !self.hostedByHome else { return }
         let shouldPresent = Self.shouldPresentQuickSetup(
             quickSetupDismissed: self.quickSetupDismissed,
             showOnboarding: self.showOnboarding,

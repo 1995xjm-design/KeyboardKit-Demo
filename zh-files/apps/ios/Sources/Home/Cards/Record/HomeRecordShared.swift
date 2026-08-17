@@ -5,6 +5,7 @@ import SwiftUI
 struct HoldToTalkButton: View {
     let phase: HomeSpeechRecorder.Phase
     let audioLevel: Float
+    var tint: Color = OpenClawBrand.accent
     var compact = false
     var onHoldBegan: () -> Void = {}
     var onHoldEnded: () -> Void = {}
@@ -18,9 +19,9 @@ struct HoldToTalkButton: View {
         ZStack {
             if phase == .recording {
                 Circle()
-                    .stroke(OpenClawBrand.accent.opacity(0.28), lineWidth: 4)
+                    .stroke(Color.white.opacity(0.35), lineWidth: 4)
                     .frame(width: recordButtonSize + ringPadding, height: recordButtonSize + ringPadding)
-                    .scaleEffect(CGFloat(1 + audioLevel * 0.22))
+                    .scaleEffect(CGFloat(1 + audioLevel * 1.2))
                     .animation(.easeOut(duration: 0.12), value: audioLevel)
             }
             Circle()
@@ -49,9 +50,9 @@ struct HoldToTalkButton: View {
 
     private var buttonColor: Color {
         switch phase {
-        case .recording: return OpenClawBrand.accentHot
+        case .recording: return tint
         case .transcribing: return OpenClawBrand.textSecondary
-        case .idle: return OpenClawBrand.accent
+        case .idle: return tint
         }
     }
 

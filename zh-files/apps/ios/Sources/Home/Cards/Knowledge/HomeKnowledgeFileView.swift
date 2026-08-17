@@ -25,6 +25,9 @@ struct HomeKnowledgeFileView: View {
     @State private var askError: String?
     @State private var answers: [HomeKnowledgeQA] = []
     @State private var noticeMessage: String?
+    @State private var summary: String?
+    @State private var isSummarizing = false
+    @State private var summaryError: String?
 
     /// 预览展示上限（超出截断并标注，避免长文件拖垮列表）。
     private static let previewCharacterLimit = 120_000
@@ -32,6 +35,7 @@ struct HomeKnowledgeFileView: View {
     var body: some View {
         List {
             contentSection
+            summarySection
             askSection
         }
         .listStyle(.insetGrouped)
@@ -98,6 +102,59 @@ struct HomeKnowledgeFileView: View {
                     .foregroundStyle(.secondary)
             }
         }
+    }
+
+    // MARK: - 摘要区
+
+    @ViewBuilder
+    private var summarySection: some View {
+        Section {
+            if let file, Self.isBinary(file) {
+                Text(String(localized: "This file cannot be previewed. It may be binary or too large."))
+                    .font(OpenClawType.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                Button {
+                    Task { await summarize() }
+                } label: {
+                    HStack(spacing: 8) {
+                        if isSummarizing {
+                            ProgressView()
+                        }
+                        Text(
+                            isSummarizing
+                                ? String(localized: "Summarizing…")
+                                : String(localized: "Generate Summary")
+                        )
+                        .font(OpenClawType.subheadMedium)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(OpenClawBrand.accent)
+                .disabled(isSummarizing || !canSummarize)
+
+                if let summaryError {
+                    Text(summaryError)
+                        .font(OpenClawType.footnote)
+                        .foregroundStyle(OpenClawBrand.warn)
+                }
+
+                if let summary {
+                    HomeMarkdownText(markdown: summary)
+                        .padding(.vertical, 4)
+                }
+            }
+        } header: {
+            Text(String(localized: "Summary"))
+        } footer: {
+            Text(String(localized: "The agent writes a Chinese summary of this file."))
+        }
+    }
+
+    private var canSummarize: Bool {
+        guard let file, !Self.isBinary(file) else { return false }
+        return !file.content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     // MARK: - 提问区
@@ -227,5 +284,21 @@ struct HomeKnowledgeFileView: View {
             askError = error.localizedDescription
         }
     }
-}
 
+    @MainActor
+    private func summarize() async {
+        guard let file, !Self.isBinary(file) else { return }
+        isSummarizing = true
+        summaryError = nil
+        defer { isSummarizing = false }
+        do {
+            summary = try await HomeKnowledgeAskSupport.summarize(
+                appModel: appModel,
+                fileName: name,
+                fileContent: file.content)
+        } catch {
+            summaryError = error.localizedDescription
+        }
+    }
+
+}

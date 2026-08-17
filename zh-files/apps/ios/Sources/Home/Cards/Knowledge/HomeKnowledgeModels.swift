@@ -67,4 +67,36 @@ enum HomeKnowledgeAskSupport {
             prompt: prompt,
             sessionBaseKey: "knowledge")
     }
+
+    /// 生成文件中文摘要：把文件内容发给 Agent，输出中文摘要。
+    /// 内容过长时截断（与带文件上下文提问一致），截断后如实告知 Agent。
+    static func summarize(
+        appModel: NodeAppModel,
+        fileName: String,
+        fileContent: String,
+        maxContextCharacters: Int = 8000
+    ) async throws -> String {
+        let context: String
+        let truncationNote: String
+        if fileContent.count > maxContextCharacters {
+            context = String(fileContent.prefix(maxContextCharacters))
+            truncationNote = "\n（文件内容过长，已截断到前 \(maxContextCharacters) 个字符）"
+        } else {
+            context = fileContent
+            truncationNote = ""
+        }
+        let prompt = """
+        请阅读下面这份文件（名称：\(fileName)），用中文写一份简洁摘要，概括文件的主要内容和关键信息。\(truncationNote)
+
+        文件内容：
+        ```
+        \(context)
+        ```
+        """
+        return try await HomeAgentPromptClient.prompt(
+            appModel: appModel,
+            prompt: prompt,
+            sessionBaseKey: "knowledge")
+    }
+
 }

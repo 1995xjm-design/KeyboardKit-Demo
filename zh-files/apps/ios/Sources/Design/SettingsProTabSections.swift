@@ -685,9 +685,9 @@ extension SettingsProTab {
                     .font(OpenClawType.footnote)
             }
 
-            Section("Direct node features") {
-                SettingsDetailRow("Device", value: "Info and status")
-                SettingsDetailRow("Notifications", value: "While app is active")
+            Section(String(localized: "Direct node features")) {
+                SettingsDetailRow("Device", value: .verbatim(String(localized: "Info and status")))
+                SettingsDetailRow("Notifications", value: .verbatim(String(localized: "While app is active")))
             }
         }
     }
@@ -1763,6 +1763,13 @@ extension SettingsProTab {
                 SettingsDetailRow(
                     "Discovery Logs",
                     value: .verbatim(self.gatewayController.discoveryStatusText))
+            }
+            NavigationLink {
+                SettingsLogView()
+            } label: {
+                SettingsDetailRow(
+                    "Gateway Log",
+                    value: .verbatim(String(localized: "View log")))
             }
         }
     }

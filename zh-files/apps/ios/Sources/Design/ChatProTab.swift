@@ -198,11 +198,11 @@ struct ChatProTab: View {
                 isPresented: self.$showsTranscriptExportError)
             {
                 Button(role: .cancel) {} label: {
-                    Text("OK")
+                    Text(String(localized: "OK"))
                         .font(OpenClawType.body)
                 }
             } message: {
-                Text("OpenClaw could not prepare the Markdown file.")
+                Text(String(localized: "OpenClaw could not prepare the Markdown file."))
                     .font(OpenClawType.body)
             }
     }
@@ -249,7 +249,7 @@ struct ChatProTab: View {
             ContentUnavailableView(
                 String(localized: "Preparing Chat"),
                 systemImage: "bubble.left.and.bubble.right",
-                description: Text("The session attaches once the gateway is ready.")
+                description: Text(String(localized: "The session attaches once the gateway is ready."))
                     .font(OpenClawType.body))
         }
     }
@@ -370,7 +370,7 @@ struct ChatProTab: View {
     }
 
     private var headerAgentAccessibilityLabel: String {
-        "\(self.voiceAvatarAccessibilityLabel). \(self.gatewayAccessibilityLabel)"
+        String(localized: "\(self.voiceAvatarAccessibilityLabel). \(self.gatewayAccessibilityLabel)")
     }
 
     private func handleHeaderAgentIdentityTap() {
@@ -431,7 +431,7 @@ struct ChatProTab: View {
         let state = self.appModel.talkMode.isEnabled
             ? self.appModel.talkMode.statusText
             : String(localized: "Voice off")
-        return "\(self.agentDisplayName), \(state)"
+        return String(localized: "\(self.agentDisplayName), \(state)")
     }
 
     private func syncChatViewModel() {
@@ -600,7 +600,7 @@ struct ChatProTab: View {
                 Task { await self.viewModel?.startNewSession() }
             } label: {
                 Label {
-                    Text("New Chat")
+                    Text(String(localized: "New Chat"))
                         .font(OpenClawType.body)
                 } icon: {
                     Image(systemName: "plus.bubble")
@@ -613,7 +613,7 @@ struct ChatProTab: View {
                     Task { await self.viewModel?.startNewSession(worktree: true) }
                 } label: {
                     Label {
-                        Text("New Chat in Worktree")
+                        Text(String(localized: "New Chat in Worktree"))
                             .font(OpenClawType.body)
                     } icon: {
                         Image(systemName: "arrow.triangle.branch")
@@ -626,7 +626,7 @@ struct ChatProTab: View {
                 self.showsNewSessionOptions = true
             } label: {
                 Label {
-                    Text("New Session Options…")
+                    Text(String(localized: "New Session Options…"))
                         .font(OpenClawType.body)
                 } icon: {
                     Image(systemName: "slider.horizontal.3")
@@ -650,7 +650,7 @@ struct ChatProTab: View {
                 self.sessionDashboardPresentation = SessionDashboardPresentation(sessionKey: sessionKey)
             } label: {
                 Label {
-                    Text("Dashboard")
+                    Text(String(localized: "Dashboard"))
                         .font(OpenClawType.body)
                 } icon: {
                     Image(systemName: "rectangle.grid.2x2")
@@ -669,7 +669,7 @@ struct ChatProTab: View {
                 self.showsBackgroundTasks = true
             } label: {
                 Label {
-                    Text("Background Tasks")
+                    Text(String(localized: "Background Tasks"))
                         .font(OpenClawType.body)
                 } icon: {
                     Image(systemName: "clock.arrow.circlepath")
@@ -681,7 +681,7 @@ struct ChatProTab: View {
                 self.exportTranscript()
             } label: {
                 Label {
-                    Text("Export Transcript")
+                    Text(String(localized: "Export Transcript"))
                         .font(OpenClawType.body)
                 } icon: {
                     Image(systemName: "square.and.arrow.up")
@@ -694,7 +694,7 @@ struct ChatProTab: View {
 
                 Button(action: openSettings) {
                     Label {
-                        Text("Gateway Settings")
+                        Text(String(localized: "Gateway Settings"))
                             .font(OpenClawType.body)
                     } icon: {
                         Image(systemName: "network")
@@ -714,7 +714,7 @@ struct ChatProTab: View {
         } label: {
             Image(systemName: "ellipsis.circle")
         }
-        .accessibilityLabel("Chat actions")
+        .accessibilityLabel(String(localized: "Chat actions"))
     }
 
     private func exportTranscript() {
@@ -772,7 +772,7 @@ struct ChatProTab: View {
     }
 
     private var gatewayAccessibilityLabel: String {
-        "Gateway: \(Self.gatewayStatusTitle(state: self.gatewayDisplayState, isGatewayUsable: self.gatewayConnected))"
+        String(localized: "Gateway: \(Self.gatewayStatusTitle(state: self.gatewayDisplayState, isGatewayUsable: self.gatewayConnected))")
     }
 
     private var gatewayStatusColor: Color {

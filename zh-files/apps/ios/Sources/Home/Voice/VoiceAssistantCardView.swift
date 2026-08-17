@@ -34,6 +34,21 @@ enum VoiceAssistantCardPhase: Equatable {
     case error(String)
 }
 
+/// 大卡交互模式：点按说话（PTT）与实时通话互斥切换，默认点按说话。
+enum VoiceAssistantCardMode: String, CaseIterable, Identifiable {
+    case pushToTalk
+    case realtime
+
+    var id: String { self.rawValue }
+
+    var displayName: String {
+        switch self {
+        case .pushToTalk: return String(localized: "Push to talk")
+        case .realtime: return String(localized: "Realtime call")
+        }
+    }
+}
+
 // MARK: - 大卡视图
 
 /// 主页顶部「语音助手」大卡（完整可用视图）。
@@ -44,6 +59,11 @@ enum VoiceAssistantCardPhase: Equatable {
 /// - DeepSeek 直连：TalkModeManager「仅转写」PTT 拿文本 → DeepSeekDirectClient 回复 →
 ///   OpenClaw 现有 Edge TTS 播报。
 ///
+/// 交互模式（顶部胶囊切换，互斥）：
+/// - 点按说话（默认）：点击大卡一次对讲。
+/// - 实时通话：talkMode.setEnabled(true) + await talkMode.start()，网关 Realtime 优先、
+///   连续识别兜底一直可聊；退出 stop()。状态由 isListening/isSpeaking/statusText 驱动。
+///
 /// 不重造 OpenClaw 已有语音能力：录音 / 转写 / 网关回复 / 播报全部复用现有接口，
 /// 本视图只做通道编排与 UI 状态。
 struct VoiceAssistantCardView: View {
@@ -52,13 +72,19 @@ struct VoiceAssistantCardView: View {
     @AppStorage(VoiceAssistantChannel.storageKey) private var channelRaw =
         VoiceAssistantChannel.auto.rawValue
 
+    @AppStorage(VoiceAssistantTheme.storageKey) private var themeRaw =
+        VoiceAssistantTheme.pulse.rawValue
+
     @State private var phase: VoiceAssistantCardPhase = .idle
+    @State private var isRealtimeMode = false
+    @State private var showsThemePicker = false
     @State private var transcriptText = ""
     @State private var isBusy = false
     @State private var activeTask: Task<Void, Never>?
+    @State private var realtimeTask: Task<Void, Never>?
     @State private var isBreathing = false
 
-    private static let cardHeight: CGFloat = 224
+    private static let cardHeight: CGFloat = 250
 
     init(appModel: NodeAppModel) {
         self.appModel = appModel
@@ -95,8 +121,35 @@ struct VoiceAssistantCardView: View {
         self.isGatewayOnline ? OpenClawBrand.ok : OpenClawBrand.danger
     }
 
+    private var theme: VoiceAssistantTheme {
+        VoiceAssistantTheme(rawValue: self.themeRaw) ?? .pulse
+    }
+
+    /// 实时模式下由 TalkMode 状态驱动；PTT 模式用本地 phase。
+    private var displayPhase: VoiceAssistantCardPhase {
+        if self.isRealtimeMode {
+            if self.talkMode.isSpeaking { return .speaking }
+            if self.talkMode.isListening { return .capturing }
+            return .idle
+        }
+        return self.phase
+    }
+
+    private var themePhase: VoiceAssistantThemePhase {
+        switch self.displayPhase {
+        case .capturing: return .listening
+        case .thinking: return .thinking
+        case .speaking: return .speaking
+        default: return .idle
+        }
+    }
+
+    private var isPulsingIcon: Bool {
+        self.displayPhase == .capturing || self.displayPhase == .speaking
+    }
+
     private var centerIcon: String {
-        switch self.phase {
+        switch self.displayPhase {
         case .capturing: return "mic.fill"
         case .thinking: return "ellipsis.circle"
         case .speaking: return "speaker.wave.2.fill"
@@ -105,7 +158,19 @@ struct VoiceAssistantCardView: View {
         }
     }
 
+    private var modeSubtitle: String {
+        self.isRealtimeMode
+            ? String(localized: "Realtime call · always available")
+            : String(localized: "Point-to-talk · DeepSeek fallback")
+    }
+
     private var statusCaption: String {
+        if self.isRealtimeMode {
+            return self.talkMode.statusText
+        }
+        if let hint = self.statusHint {
+            return hint
+        }
         switch self.phase {
         case .idle:
             if !self.isGatewayOnline {
@@ -123,10 +188,25 @@ struct VoiceAssistantCardView: View {
         }
     }
 
+    /// 兜底/失败提示（如 "Edge TTS unavailable, using system voice"、网关降级摘要）显示到卡片。
+    private var statusHint: String? {
+        if let issue = self.talkMode.gatewayTalkLastIssueText, !issue.isEmpty {
+            return issue
+        }
+        // PTT 播报中 TalkMode 可能降级到系统语音并改写 statusText，浮出到卡片。
+        if self.phase == .speaking,
+           self.talkMode.statusText != String(localized: "Speaking…"),
+           self.talkMode.statusText != String(localized: "Speaking (System)…")
+        {
+            return self.talkMode.statusText
+        }
+        return nil
+    }
+
     private var isLongStatusText: Bool {
         if case .finished = self.phase { return true }
         if case .error = self.phase { return true }
-        return false
+        return self.statusCaption.count > 24
     }
 
     var body: some View {
@@ -134,7 +214,7 @@ struct VoiceAssistantCardView: View {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [OpenClawBrand.accentHot, Self.deepRed],
+                        colors: self.theme.gradient,
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing))
                 .overlay {
@@ -142,20 +222,21 @@ struct VoiceAssistantCardView: View {
                         .stroke(Color.white.opacity(0.18), lineWidth: 1)
                 }
                 .shadow(
-                    color: OpenClawBrand.accent.opacity(self.isBreathing ? 0.45 : 0.25),
+                    color: self.theme.accent.opacity(self.isBreathing ? 0.45 : 0.25),
                     radius: self.isBreathing ? 14 : 8,
                     x: 0,
                     y: 8)
 
-            VStack(spacing: 10) {
+            VStack(spacing: 6) {
                 self.topBar
-                Spacer(minLength: 2)
+                self.modeCapsule
+                Spacer(minLength: 0)
                 self.centerStatus
-                Spacer(minLength: 2)
+                Spacer(minLength: 0)
                 self.bottomBar
             }
             .padding(.horizontal, 18)
-            .padding(.vertical, 14)
+            .padding(.vertical, 12)
         }
         .frame(maxWidth: .infinity)
         .frame(height: Self.cardHeight)
@@ -167,9 +248,21 @@ struct VoiceAssistantCardView: View {
             withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) {
                 self.isBreathing = true
             }
+            if self.isRealtimeMode {
+                self.startRealtimeSession()
+            }
         }
         .onDisappear { self.teardown() }
         .animation(.easeInOut(duration: 0.3), value: self.phase)
+        .animation(.easeInOut(duration: 0.3), value: self.isRealtimeMode)
+        .animation(.easeInOut(duration: 0.3), value: self.theme)
+        .sheet(isPresented: self.$showsThemePicker) {
+            VoiceAssistantThemePickerView(selected: self.theme) { theme in
+                self.themeRaw = theme.rawValue
+            }
+            .presentationDetents([.height(520), .large])
+            .presentationDragIndicator(.visible)
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(String(localized: "Voice assistant"))
         .accessibilityValue(self.statusCaption)
@@ -187,12 +280,25 @@ struct VoiceAssistantCardView: View {
                 Text("Voice Assistant")
                     .font(OpenClawType.title3SemiBold)
                     .foregroundStyle(.white)
-                Text("Point-to-talk · DeepSeek fallback")
+                Text(self.modeSubtitle)
                     .font(OpenClawType.caption)
                     .foregroundStyle(Color.white.opacity(0.8))
+                    .lineLimit(1)
             }
 
             Spacer(minLength: 8)
+
+            Button {
+                self.showsThemePicker = true
+            } label: {
+                Image(systemName: "paintpalette.fill")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 28, height: 28)
+                    .background(Circle().fill(Color.white.opacity(0.16)))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(String(localized: "Choose voice theme"))
 
             HStack(spacing: 6) {
                 Circle()
@@ -205,15 +311,68 @@ struct VoiceAssistantCardView: View {
         }
     }
 
+    /// 顶部胶囊：点按说话 / 实时通话（互斥切换）。
+    private var modeCapsule: some View {
+        HStack(spacing: 3) {
+            self.modeCapsuleItem(
+                title: VoiceAssistantCardMode.pushToTalk.displayName,
+                icon: "record.circle",
+                selected: !self.isRealtimeMode) {
+                    self.setRealtimeMode(false)
+                }
+            self.modeCapsuleItem(
+                title: VoiceAssistantCardMode.realtime.displayName,
+                icon: "phone.fill",
+                selected: self.isRealtimeMode) {
+                    self.setRealtimeMode(true)
+                }
+        }
+        .padding(3)
+        .background(Capsule().fill(Color.black.opacity(0.25)))
+    }
+
+    private func modeCapsuleItem(
+        title: String,
+        icon: String,
+        selected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 10, weight: .semibold))
+                Text(title)
+                    .font(OpenClawType.caption2SemiBold)
+            }
+            .foregroundStyle(selected ? Color.black.opacity(0.78) : Color.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(Capsule().fill(selected ? Color.white : Color.clear))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(selected ? .isSelected : [])
+    }
+
     private var centerStatus: some View {
-        VStack(spacing: 8) {
-            Image(systemName: self.centerIcon)
-                .font(.system(size: 42, weight: .semibold))
-                .foregroundStyle(.white)
-                .scaleEffect(self.phase == .capturing || self.phase == .speaking ? 1.1 : 1.0)
-                .animation(
-                    .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
-                    value: self.phase == .capturing || self.phase == .speaking)
+        VStack(spacing: 6) {
+            ZStack {
+                VoiceAssistantThemeLayer(
+                    theme: self.theme,
+                    phase: self.themePhase,
+                    micLevel: self.talkMode.micLevel)
+                    .frame(width: 118, height: 76)
+
+                Image(systemName: self.centerIcon)
+                    .font(.system(size: 34, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.25), radius: 3, x: 0, y: 1)
+                    .scaleEffect(self.isPulsingIcon ? 1.12 : 1.0)
+                    .animation(
+                        .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
+                        value: self.isPulsingIcon)
+            }
+            .frame(height: 76)
 
             Text(self.statusCaption)
                 .font(OpenClawType.subheadSemiBold)
@@ -222,7 +381,7 @@ struct VoiceAssistantCardView: View {
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
 
-            if self.phase == .thinking && !self.transcriptText.isEmpty {
+            if self.displayPhase == .thinking && !self.transcriptText.isEmpty {
                 Text(self.transcriptText)
                     .font(OpenClawType.caption)
                     .foregroundStyle(Color.white.opacity(0.75))
@@ -283,6 +442,10 @@ struct VoiceAssistantCardView: View {
     // MARK: - 交互
 
     private func handleTap() {
+        if self.isRealtimeMode {
+            // 实时通话中：点按说话与实时互斥，忽略点按。
+            return
+        }
         if self.isBusy {
             self.cancelConversation()
             return
@@ -311,6 +474,12 @@ struct VoiceAssistantCardView: View {
         self.activeTask?.cancel()
         self.activeTask = nil
         VoiceAssistantSpeechPlayer.shared.stop()
+        if self.isRealtimeMode {
+            self.realtimeTask?.cancel()
+            self.realtimeTask = nil
+            self.talkMode.stop()
+            self.isRealtimeMode = false
+        }
         switch self.effectiveChannel {
         case .talk:
             self.channelRaw = VoiceAssistantChannel.deepSeek.rawValue
@@ -321,6 +490,37 @@ struct VoiceAssistantCardView: View {
         }
         self.phase = .idle
         self.transcriptText = ""
+    }
+
+    /// 切换点按说话 / 实时通话（互斥）。
+    private func setRealtimeMode(_ enabled: Bool) {
+        guard enabled != self.isRealtimeMode else { return }
+        self.activeTask?.cancel()
+        self.activeTask = nil
+        VoiceAssistantSpeechPlayer.shared.stop()
+        _ = self.talkMode.cancelPushToTalk()
+        if enabled {
+            self.isRealtimeMode = true
+            self.phase = .idle
+            self.transcriptText = ""
+            self.startRealtimeSession()
+        } else {
+            self.isRealtimeMode = false
+            self.realtimeTask?.cancel()
+            self.realtimeTask = nil
+            self.talkMode.stop()
+            self.phase = .idle
+            self.transcriptText = ""
+        }
+    }
+
+    /// 实时通话：setEnabled(true) + start()（网关 Realtime 优先、连续识别兜底一直可聊）。
+    private func startRealtimeSession() {
+        self.realtimeTask?.cancel()
+        self.realtimeTask = Task { @MainActor in
+            self.talkMode.setEnabled(true)
+            await self.talkMode.start()
+        }
     }
 
     /// OpenClaw Talk 通道：一次对讲（非仅转写），网关负责回复与 TTS。
@@ -442,10 +642,14 @@ struct VoiceAssistantCardView: View {
     private func teardown() {
         self.activeTask?.cancel()
         self.activeTask = nil
+        self.realtimeTask?.cancel()
+        self.realtimeTask = nil
         VoiceAssistantSpeechPlayer.shared.stop()
+        // 主题选择 sheet 弹出也会触发 onDisappear，不能因此打断实时通话。
+        if self.isRealtimeMode && !self.showsThemePicker {
+            self.talkMode.stop()
+        }
     }
-
-    private static let deepRed = Color(red: 122 / 255.0, green: 26 / 255.0, blue: 24 / 255.0)
 }
 
 // MARK: - 错误文案
