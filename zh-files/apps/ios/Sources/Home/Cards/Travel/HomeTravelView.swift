@@ -639,13 +639,6 @@ final class HomeParkingLocationFetcher: NSObject, CLLocationManagerDelegate {
             }
         }
     }
-        let nsError = error as NSError
-        if nsError.domain == kCLErrorDomain && nsError.code == CLError.denied.rawValue {
-            finish(throwing: HomeParkingLocationError.denied)
-        } else {
-            finish(throwing: error)
-        }
-    }
 
     private func finish(returning location: CLLocation) {
         guard let continuation else { return }
