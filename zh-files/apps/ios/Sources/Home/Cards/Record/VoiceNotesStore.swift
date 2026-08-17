@@ -40,7 +40,7 @@ final class VoiceNotesStore {
     }
 
     /// 删除单条
-    func delete(_ id: UUID) {
+    func delete(id: UUID) {
         entries.removeAll { $0.id == id }
         persist()
     }

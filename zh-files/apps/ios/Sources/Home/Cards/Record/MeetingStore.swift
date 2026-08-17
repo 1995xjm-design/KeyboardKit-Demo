@@ -40,7 +40,7 @@ final class MeetingStore {
     }
 
     /// 删除单条
-    func delete(_ id: UUID) {
+    func delete(id: UUID) {
         notes.removeAll { $0.id == id }
         persist()
     }

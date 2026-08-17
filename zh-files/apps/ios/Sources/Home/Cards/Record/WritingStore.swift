@@ -37,7 +37,7 @@ final class WritingStore {
     }
 
     /// 删除单篇
-    func delete(_ id: UUID) {
+    func delete(id: UUID) {
         drafts.removeAll { $0.id == id }
         persist()
     }
