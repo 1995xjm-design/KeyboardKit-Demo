@@ -713,7 +713,7 @@ struct OpenClawApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootTabs()
+            HomeRootContainer()
                 .tint(OpenClawBrand.accent)
                 .font(OpenClawType.body)
                 .environment(self.appearanceModel)

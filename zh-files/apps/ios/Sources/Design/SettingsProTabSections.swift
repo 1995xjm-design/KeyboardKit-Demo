@@ -868,6 +868,7 @@ extension SettingsProTab {
 
             self.voiceFeatureCard
             self.talkVoiceSettingsCard
+            self.deepSeekDirectCard
             self.shareSettingsCard
         }
     }
@@ -1648,6 +1649,69 @@ extension SettingsProTab {
                     "Transport",
                     value: .localized(self.appModel.talkMode.gatewayTalkTransportLabel))
                 SettingsDetailRow("API Key", value: .verbatim(self.talkApiKeyStatus))
+            }
+        }
+    }
+
+    var deepSeekDirectCard: some View {
+        Section {
+            self.settingsToggle("DeepSeek Direct", isOn: self.deepSeekDirectEnabledBinding)
+            DeepSeekDirectAPIKeyField()
+        } footer: {
+            Text(
+                String(
+                    localized:
+                    "DeepSeek Direct is the fallback channel for the voice assistant card when the gateway is offline or the computer is off. Replies go straight to api.deepseek.com from this device with your own API key."))
+                .font(OpenClawType.caption)
+        }
+    }
+
+    private var deepSeekDirectEnabledBinding: Binding<Bool> {
+        Binding(
+            get: { UserDefaults.standard.bool(forKey: DeepSeekDirectClient.enabledDefaultsKey) },
+            set: { UserDefaults.standard.set($0, forKey: DeepSeekDirectClient.enabledDefaultsKey) })
+    }
+
+    private struct DeepSeekDirectAPIKeyField: View {
+        @State private var apiKey = ""
+        @State private var saved = false
+
+        var body: some View {
+            HStack(spacing: 8) {
+                SecureField("DeepSeek API Key", text: self.$apiKey)
+                    .font(OpenClawType.subhead)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+                    .submitLabel(.done)
+                    .onSubmit { self.save() }
+                if self.saved {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(OpenClawBrand.ok)
+                }
+            }
+            .onAppear {
+                self.apiKey = KeychainStore.loadString(
+                    service: DeepSeekDirectClient.keychainService,
+                    account: DeepSeekDirectClient.apiKeyAccount) ?? ""
+            }
+        }
+
+        private func save() {
+            let trimmed = self.apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
+            if trimmed.isEmpty {
+                _ = KeychainStore.delete(
+                    service: DeepSeekDirectClient.keychainService,
+                    account: DeepSeekDirectClient.apiKeyAccount)
+            } else {
+                _ = KeychainStore.saveString(
+                    trimmed,
+                    service: DeepSeekDirectClient.keychainService,
+                    account: DeepSeekDirectClient.apiKeyAccount)
+            }
+            self.saved = true
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(2))
+                self.saved = false
             }
         }
     }
