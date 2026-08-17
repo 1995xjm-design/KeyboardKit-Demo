@@ -2003,7 +2003,9 @@ final class TalkModeManager: NSObject {
                 throw NSError(
                     domain: "TalkModeManager",
                     code: 2,
-                    userInfo: [NSLocalizedDescriptionKey: String(localized: "Gateway returned a mismatched chat run ID")])
+                    userInfo: [
+                        NSLocalizedDescriptionKey: String(localized: "Gateway returned a mismatched chat run ID")
+                    ])
             }
             let normalizedStatus = Self.normalizedChatSendStatus(acknowledgement.status)
             self.logger.info(
@@ -3188,7 +3190,8 @@ final class TalkModeManager: NSObject {
                 self.logger.error("system voice failed: \(error.localizedDescription, privacy: .public)")
                 GatewayDiagnostics.log(
                     "talk tts: providerSelection=\(self.talkProviderSelection.rawValue) "
-                        + "runtimeRoute=\(self.runtimeRoute) edge=fallbackSystem=failed reason=\(error.localizedDescription)")
+                        + "runtimeRoute=\(self.runtimeRoute) "
+                        + "edge=fallbackSystem=failed reason=\(error.localizedDescription)")
             }
         }
     }

@@ -772,7 +772,10 @@ struct ChatProTab: View {
     }
 
     private var gatewayAccessibilityLabel: String {
-        String(localized: "Gateway: \(Self.gatewayStatusTitle(state: self.gatewayDisplayState, isGatewayUsable: self.gatewayConnected))")
+        let gatewayStatus = Self.gatewayStatusTitle(
+            state: self.gatewayDisplayState,
+            isGatewayUsable: self.gatewayConnected)
+        return String(localized: "Gateway: \(gatewayStatus)")
     }
 
     private var gatewayStatusColor: Color {
