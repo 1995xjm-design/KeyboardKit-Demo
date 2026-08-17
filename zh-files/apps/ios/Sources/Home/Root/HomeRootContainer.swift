@@ -75,7 +75,7 @@ struct HomeRootContainer: View {
         }
         guard !self.didEvaluateOnboarding else { return }
         self.didEvaluateOnboarding = true
-        let route = RootTabsNavigation.startupPresentationRoute(
+        let route = RootTabs.startupPresentationRoute(
             gatewayConnected: self.appModel.gatewayServerName != nil,
             hasConnectedOnce: self.hasConnectedOnce,
             onboardingComplete: self.onboardingComplete,
