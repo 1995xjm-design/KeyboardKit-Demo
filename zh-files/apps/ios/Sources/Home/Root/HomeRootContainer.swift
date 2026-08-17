@@ -1,3 +1,5 @@
+import OpenClawKit
+import OpenClawProtocol
 import SwiftUI
 
 /// App 根容器视图（A-root）：
@@ -8,10 +10,27 @@ import SwiftUI
 /// appearanceModel / appModel / voiceWake / gatewayController（保持原有链不动），
 /// 本视图再通过 environmentObject 注入 HomeRouterModel 给主页使用；
 /// 全屏推入的 RootTabs() 从本视图继承同一环境，RootTabs 内部逻辑/布局零改动。
+///
+/// 首次启动引导：官方 OnboardingWizardView 原本由 RootTabs 评估与呈现；根替换为本容器后，
+/// 由本容器沿用官方同判定逻辑（RootTabsNavigation.startupPresentationRoute +
+/// OnboardingStateStore.shouldPresentOnLaunch）负责首次引导，确保全新安装先进引导页。
 struct HomeRootContainer: View {
     @Environment(NodeAppModel.self) private var appModel
+    @Environment(GatewayConnectionController.self) private var gatewayController
 
-    @State private var router = HomeRouterModel()
+    @StateObject private var router = HomeRouterModel()
+
+    @AppStorage("gateway.onboardingComplete") private var onboardingComplete: Bool = false
+    @AppStorage("gateway.hasConnectedOnce") private var hasConnectedOnce: Bool = false
+    @AppStorage("gateway.preferredStableID") private var preferredGatewayStableID: String = ""
+    @AppStorage("gateway.manual.enabled") private var manualGatewayEnabled: Bool = false
+    @AppStorage("gateway.manual.host") private var manualGatewayHost: String = ""
+    @AppStorage("onboarding.requestID") private var onboardingRequestID: Int = 0
+
+    @State private var showOnboarding: Bool = false
+    @State private var onboardingAllowSkip: Bool = true
+    @State private var didEvaluateOnboarding: Bool = false
+    @State private var didRequestLocalNetworkAccessOnLaunch: Bool = false
 
     var body: some View {
         HomeTabView()
@@ -19,9 +38,74 @@ struct HomeRootContainer: View {
             .task {
                 self.router.startObservingGatewayStatus(appModel: self.appModel)
             }
+            .onAppear {
+                self.evaluateOnboardingPresentation(force: false)
+            }
+            .onChange(of: self.onboardingRequestID) { _, _ in
+                self.evaluateOnboardingPresentation(force: true)
+            }
+            .fullScreenCover(isPresented: self.$showOnboarding) {
+                OnboardingWizardView(
+                    allowSkip: self.onboardingAllowSkip,
+                    onRequestLocalNetworkAccess: { reason in
+                        self.gatewayController.requestLocalNetworkAccess(reason: reason)
+                    },
+                    onClose: {
+                        self.showOnboarding = false
+                    },
+                    onComplete: {
+                        self.showOnboarding = false
+                    })
+                    .environment(self.appModel)
+                    .environment(self.appModel.voiceWake)
+                    .environment(self.gatewayController)
+            }
             .fullScreenCover(isPresented: self.$router.isOpenClawPresented) {
                 OpenClawFullScreenHost(router: self.router)
             }
+    }
+
+    // MARK: - 首次启动引导（与官方 RootTabs 同判定逻辑）
+
+    private func evaluateOnboardingPresentation(force: Bool) {
+        if force {
+            self.onboardingAllowSkip = true
+            self.showOnboarding = true
+            return
+        }
+        guard !self.didEvaluateOnboarding else { return }
+        self.didEvaluateOnboarding = true
+        let route = RootTabsNavigation.startupPresentationRoute(
+            gatewayConnected: self.appModel.gatewayServerName != nil,
+            hasConnectedOnce: self.hasConnectedOnce,
+            onboardingComplete: self.onboardingComplete,
+            hasExistingGatewayConfig: self.hasExistingGatewayConfig(),
+            shouldPresentOnLaunch: OnboardingStateStore.shouldPresentOnLaunch(appModel: self.appModel))
+        switch route {
+        case .none:
+            self.maybeRequestLocalNetworkAccess()
+        case .onboarding:
+            self.onboardingAllowSkip = true
+            self.showOnboarding = true
+        case .settings:
+            // 主页本身可直达设置；仅请求本地网络权限，不跳转。
+            self.maybeRequestLocalNetworkAccess()
+        }
+    }
+
+    private func hasExistingGatewayConfig() -> Bool {
+        if self.appModel.activeGatewayConnectConfig != nil { return true }
+        if GatewaySettingsStore.activeGatewayEntry() != nil { return true }
+        let preferredStableID = self.preferredGatewayStableID.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !preferredStableID.isEmpty { return true }
+        let manualHost = self.manualGatewayHost.trimmingCharacters(in: .whitespacesAndNewlines)
+        return self.manualGatewayEnabled && !manualHost.isEmpty
+    }
+
+    private func maybeRequestLocalNetworkAccess() {
+        guard !self.didRequestLocalNetworkAccessOnLaunch else { return }
+        self.didRequestLocalNetworkAccessOnLaunch = true
+        self.gatewayController.requestLocalNetworkAccess(reason: "home_root_appear")
     }
 }
 

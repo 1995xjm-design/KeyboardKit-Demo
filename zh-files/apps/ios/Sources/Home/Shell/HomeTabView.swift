@@ -87,6 +87,17 @@ struct HomeTabView: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 0)
+                NavigationLink {
+                    SettingsProTab(ownsNavigationStack: false)
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(OpenClawType.subheadSemiBold)
+                        .foregroundStyle(OpenClawBrand.accent)
+                        .frame(width: 34, height: 34)
+                        .background(Circle().fill(Color(.systemGray5)))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(String(localized: "Settings"))
                 if isEditingCards {
                     Button(String(localized: "Done")) {
                         withAnimation(.easeOut(duration: 0.2)) { isEditingCards = false }
