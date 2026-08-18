@@ -65,7 +65,6 @@ struct CloneTalkChatView: View {
                             !appModel.voiceNoteRecorder.ownsPendingChatAttachment
                     })
                     .environment(\.openClawAssistantBubblesInCleanChrome, true)
-                )
             } else {
                 VStack(spacing: 12) {
                     ProgressView()
