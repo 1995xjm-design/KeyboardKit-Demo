@@ -226,7 +226,7 @@ struct WritingEditorView: View {
                     if recorder.phase == .recording {
                         TimelineView(.periodic(from: .now, by: 1)) { _ in
                             let seconds = Int(Date().timeIntervalSince(recordingStartedAt ?? Date()))
-                            Text("录音中 " + String(format: "%02d:%02d", seconds / 60, seconds % 60))
+                            Text(String(localized: "Recording") + " " + String(format: "%02d:%02d", seconds / 60, seconds % 60))
                         }
                     } else {
                         Text(String(localized: "Record.Note.VoiceAddPoint"))

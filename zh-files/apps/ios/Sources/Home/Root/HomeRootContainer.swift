@@ -72,6 +72,7 @@ struct HomeRootContainer: View {
                     }
                 self.openClawEnterEdge(width: proxy.size.width)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxHeight: .infinity, alignment: .leading)
                     .ignoresSafeArea()
                     .zIndex(1)
                     .allowsHitTesting(!self.router.isOpenClawPresented)
@@ -100,7 +101,7 @@ struct HomeRootContainer: View {
     /// Home left-edge 36pt strip: drag right to pull OpenClaw in from the left edge.
     private func openClawEnterEdge(width: CGFloat) -> some View {
         Color.clear
-            .frame(width: 36)
+            .frame(width: 36, maxHeight: .infinity)
             .contentShape(Rectangle())
             .highPriorityGesture(self.enterOpenClawGesture(width: width))
     }
@@ -108,8 +109,10 @@ struct HomeRootContainer: View {
     private func enterOpenClawGesture(width: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
+                guard abs(value.translation.width) > abs(value.translation.height),
+                      value.translation.width > 0
+                else { return }
                 self.isOpenClawDragActive = true
-                guard value.translation.width > 0 else { return }
                 if !self.router.isOpenClawPresented {
                     // 复位上次齿轮入口残留的目的地，保证拖动进入从官方默认（聊天）开始。
                     self.router.openOpenClaw()
@@ -226,7 +229,7 @@ private struct OpenClawFullScreenHost: View {
     /// OpenClaw root-page right-edge 36pt strip: drag left to follow, release past the threshold to return home.
     private func returnGestureEdge(width: CGFloat) -> some View {
         Color.clear
-            .frame(width: 36)
+            .frame(width: 36, maxHeight: .infinity)
             .contentShape(Rectangle())
             .highPriorityGesture(self.returnDragGesture(width: width))
     }
@@ -234,7 +237,10 @@ private struct OpenClawFullScreenHost: View {
     private func returnDragGesture(width: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
-                guard self.isRootPageVisible else { return }
+                guard self.isRootPageVisible,
+                      abs(value.translation.width) > abs(value.translation.height),
+                      value.translation.width < 0
+                else { return }
                 self.isReturnDismissPending = false
                 self.dragOffset = max(-width, min(0, value.translation.width))
             }

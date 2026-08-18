@@ -70,7 +70,7 @@ struct HomeFileSafeView: View {
         .searchable(
             text: $searchText,
             placement: .navigationBarDrawer(displayMode: .always),
-            prompt: Text("Search files")
+            prompt: Text(String(localized: "Search files"))
         )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

@@ -1127,6 +1127,7 @@ final class TalkModeManager: NSObject {
     }
 
     func endPushToTalk(captureId: String) -> OpenClawTalkPTTStopPayload {
+        GatewayDiagnostics.log("talk ptt: end requested id=\(captureId)")
         guard let activePushToTalk,
               activePushToTalk.captureId == captureId
         else {
@@ -1207,6 +1208,7 @@ final class TalkModeManager: NSObject {
             canStartCapture: canStartCapture,
             onCaptureReserved: onCaptureReserved)
         let captureId = start.captureId
+        GatewayDiagnostics.log("talk ptt: capture reserved id=\(captureId)")
         do {
             #if DEBUG
             if let testPTTOnceStartedHandler {
@@ -1220,6 +1222,7 @@ final class TalkModeManager: NSObject {
             self.pttAutoStopEnabled = true
             self.startSilenceMonitor(pttCaptureId: captureId)
             self.schedulePTTTimeout(seconds: maxDurationSeconds, captureId: captureId)
+            GatewayDiagnostics.log("talk ptt: capture active id=\(captureId)")
             return .started(captureId: captureId)
         } catch {
             _ = self.cancelPushToTalk(captureId: captureId)
@@ -1500,6 +1503,9 @@ final class TalkModeManager: NSObject {
     }
 
     private func startRecognition(pttCaptureId: String? = nil) throws {
+        GatewayDiagnostics.log(
+            "talk speech: startRecognition enter mode=\(String(describing: self.captureMode)) "
+                + "tapInstalled=\(self.inputTapInstalled) engineRunning=\(self.audioEngine.isRunning)")
         self.stopRecognition()
         let recognitionGeneration = self.recognitionGeneration
         #if targetEnvironment(simulator)
@@ -1535,13 +1541,23 @@ final class TalkModeManager: NSObject {
         GatewayDiagnostics.log("talk audio: session \(Self.describeAudioSession())")
 
         let input = self.audioEngine.inputNode
-        let format = input.inputFormat(forBus: 0)
+        // AVAudioEngine's inputFormat can report a zero-channel format while the
+        // route is still settling. installTap requires the output format; using
+        // the invalid input format can trigger an Obj-C assertion and terminate
+        // the app before Swift error handling runs.
+        let format = input.outputFormat(forBus: 0)
         guard format.sampleRate > 0, format.channelCount > 0 else {
+            GatewayDiagnostics.log(
+                "talk speech: invalid input format rate=\(format.sampleRate) channels=\(format.channelCount)")
             throw NSError(domain: "TalkMode", code: 3, userInfo: [
                 NSLocalizedDescriptionKey: String(localized: "Invalid audio input format"),
             ])
         }
+        // Always clear the node after stopping the engine. The local flag can be
+        // stale after an interrupted start, and installTap otherwise hard-crashes
+        // with AVAudioIONodeImpl "nullptr == Tap()".
         input.removeTap(onBus: 0)
+        self.inputTapInstalled = false
         let tapDiagnostics = AudioTapDiagnostics(label: "talk") { [weak self] level in
             Task { @MainActor in
                 self?.updateMicLevel(level, recognitionGeneration: recognitionGeneration)
@@ -1551,6 +1567,8 @@ final class TalkModeManager: NSObject {
         let tapBlock = Self.makeAudioTapAppendCallback(request: request, diagnostics: tapDiagnostics)
         input.installTap(onBus: 0, bufferSize: 2048, format: format, block: tapBlock)
         self.inputTapInstalled = true
+        GatewayDiagnostics.log(
+            "talk speech: input tap installed rate=\(format.sampleRate) channels=\(format.channelCount)")
 
         self.audioEngine.prepare()
         do {
@@ -1746,11 +1764,12 @@ final class TalkModeManager: NSObject {
         self.noiseFloor = nil
         self.noiseFloorReady = false
         self.audioTapDiagnostics = nil
-        if self.inputTapInstalled {
-            self.audioEngine.inputNode.removeTap(onBus: 0)
-            self.inputTapInstalled = false
-        }
         self.audioEngine.stop()
+        // Remove unconditionally: a failed/interrupted engine start can leave a
+        // tap on the node while inputTapInstalled is false.
+        self.audioEngine.inputNode.removeTap(onBus: 0)
+        self.inputTapInstalled = false
+        GatewayDiagnostics.log("talk speech: recognition stopped and input tap removed")
         self.speechRecognizer = nil
     }
 

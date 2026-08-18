@@ -202,6 +202,40 @@ enum HomeAutomationCardProvider: HomeCardDestinationProviding {
         return try JSONDecoder().decode(CronJob.self, from: data)
     }
 
+    /// 创建任务。Home 卡直接使用网关 cron.add，避免把“新建”伪装成跳转到管理页。
+    @MainActor
+    static func createCronJob(
+        name: String,
+        expression: String,
+        message: String,
+        appModel: NodeAppModel) async throws -> CronJob {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedExpression = expression.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedMessage = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { throw HomeCronActionError.invalidResponse }
+        guard !trimmedExpression.isEmpty else { throw HomeCronActionError.invalidResponse }
+        guard !trimmedMessage.isEmpty else { throw HomeCronActionError.invalidResponse }
+
+        let params: [String: Any] = [
+            "name": trimmedName,
+            "schedule": ["kind": "cron", "expr": trimmedExpression],
+            "payload": ["kind": "agentTurn", "message": trimmedMessage],
+            "sessionTarget": "isolated",
+            "wakeMode": "now",
+            "enabled": true,
+            "deleteAfterRun": false,
+        ]
+        let data = try await Self.requestGateway(
+            appModel: appModel,
+            method: "cron.add",
+            paramsJSON: try Self.jsonParams(params))
+        if let job = try? JSONDecoder().decode(CronJob.self, from: data) {
+            return job
+        }
+        struct Envelope: Decodable { let job: CronJob }
+        return try JSONDecoder().decode(Envelope.self, from: data).job
+    }
+
     /// 删除任务（cron.remove）。
     @MainActor
     static func removeCronJob(_ job: CronJob, appModel: NodeAppModel) async throws {
@@ -248,8 +282,7 @@ struct HomeAutomationDestinationView: View {
     @State private var jobMessages: [String: HomeJobActionMessage] = [:]
     /// 待删除确认的任务。
     @State private var confirmDeleteJob: CronJob?
-    /// 「新建任务」入口是否展开 Agent Pro 自动化区。
-    @State private var isPresentingAgentPro = false
+    @State private var isPresentingCreate = false
 
     var body: some View {
         List {
@@ -314,21 +347,8 @@ struct HomeAutomationDestinationView: View {
         } message: { _ in
             Text(String(localized: "This action cannot be undone."))
         }
-        .sheet(isPresented: $isPresentingAgentPro) {
-            NavigationStack {
-                AgentProTab(
-                    directRoute: .cron,
-                    headerSidebarAction: nil,
-                    headerTitle: String(localized: "Automations"),
-                    openSettings: nil)
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button(String(localized: "Close")) {
-                                isPresentingAgentPro = false
-                            }
-                        }
-                    }
-            }
+        .sheet(isPresented: $isPresentingCreate) {
+            HomeAutomationCreateView { await load() }
         }
     }
 
@@ -377,12 +397,10 @@ struct HomeAutomationDestinationView: View {
         appModel.connectedGatewayID != nil
     }
 
-    /// 「新建任务」入口：AgentAutomationDetailScreen 只能编辑已存在任务（init 必须传 CronJob），
-    /// 全工程没有 cron.create 流程，因此这里不重造表单，改为跳 Agent Pro 自动化区管理。
     private var newTaskRow: some View {
         VStack(alignment: .leading, spacing: 6) {
             Button {
-                isPresentingAgentPro = true
+                isPresentingCreate = true
             } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "plus.circle.fill")
@@ -400,7 +418,7 @@ struct HomeAutomationDestinationView: View {
             .disabled(!gatewayConnected)
             .accessibilityLabel(String(localized: "New Task"))
 
-            Text(String(localized: "Automation creation isn't available in the app. This opens Agent Pro to manage existing tasks."))
+            Text(String(localized: "Create a scheduled task on the connected Gateway."))
                 .font(OpenClawType.caption2)
                 .foregroundStyle(.secondary)
         }
@@ -620,5 +638,83 @@ struct HomeAutomationDestinationView: View {
 
     private static func timeText(fromMilliseconds ms: Int) -> String {
         timeFormatter.string(from: Date(timeIntervalSince1970: TimeInterval(ms) / 1000))
+    }
+}
+
+/// Home 自动化卡的新建表单。字段映射到官方 cron.add RPC，不依赖 Agent Pro 页面。
+@MainActor
+private struct HomeAutomationCreateView: View {
+    @Environment(NodeAppModel.self) private var appModel
+    @Environment(\.dismiss) private var dismiss
+
+    let onCreated: () async -> Void
+    @State private var name = ""
+    @State private var expression = "0 9 * * *"
+    @State private var message = ""
+    @State private var isCreating = false
+    @State private var errorText: String?
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section(String(localized: "Task")) {
+                    TextField(String(localized: "Name"), text: $name)
+                    TextField(String(localized: "Cron expression"), text: $expression)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    TextField(String(localized: "What should the agent do?"), text: $message, axis: .vertical)
+                        .lineLimit(3...8)
+                }
+                Section {
+                    Text(String(localized: "Runs in an isolated session on the connected Gateway."))
+                        .font(OpenClawType.caption)
+                        .foregroundStyle(.secondary)
+                    if let errorText {
+                        Text(errorText)
+                            .font(OpenClawType.caption)
+                            .foregroundStyle(OpenClawBrand.warn)
+                    }
+                }
+            }
+            .navigationTitle(String(localized: "New Task"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(String(localized: "Cancel")) { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        Task { await create() }
+                    } label: {
+                        if isCreating { ProgressView() } else { Text(String(localized: "Create")) }
+                    }
+                    .disabled(isCreating || !canCreate)
+                }
+            }
+        }
+    }
+
+    private var canCreate: Bool {
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !expression.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func create() async {
+        guard canCreate else { return }
+        isCreating = true
+        errorText = nil
+        defer { isCreating = false }
+        do {
+            _ = try await HomeAutomationCardProvider.createCronJob(
+                name: name,
+                expression: expression,
+                message: message,
+                appModel: appModel)
+            await onCreated()
+            dismiss()
+        } catch {
+            errorText = error.localizedDescription
+        }
     }
 }

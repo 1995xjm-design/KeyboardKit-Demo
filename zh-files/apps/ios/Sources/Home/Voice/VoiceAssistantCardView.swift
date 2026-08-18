@@ -34,7 +34,7 @@ enum VoiceAssistantCardPhase: Equatable {
     case error(String)
 }
 
-/// 大卡交互模式：点按说话（PTT）与实时通话互斥切换，默认点按说话。
+/// 大卡交互模式。语音助手默认使用持续通话；DeepSeek 直连仍保留一次性转写。
 enum VoiceAssistantCardMode: String, CaseIterable, Identifiable {
     case pushToTalk
     case realtime
@@ -126,7 +126,7 @@ struct VoiceAssistantCardView: View {
         VoiceAssistantTheme(rawValue: self.themeRaw) ?? .pulse
     }
 
-    /// 实时模式下由 TalkMode 状态驱动；PTT 模式用本地 phase。
+    /// 持续通话由 TalkMode 的真实状态驱动；DeepSeek 直连使用本地 phase。
     private var displayPhase: VoiceAssistantCardPhase {
         if self.isRealtimeMode {
             if self.talkMode.isSpeaking { return .speaking }
@@ -162,7 +162,7 @@ struct VoiceAssistantCardView: View {
     private var modeSubtitle: String {
         self.isRealtimeMode
             ? String(localized: "Realtime call · always available")
-            : String(localized: "Point-to-talk · DeepSeek fallback")
+            : String(localized: "Tap to start or end a call")
     }
 
     private var statusCaption: String {
@@ -235,7 +235,6 @@ struct VoiceAssistantCardView: View {
 
             VStack(spacing: 6) {
                 self.topBar
-                self.modeCapsule
                 Spacer(minLength: 0)
                 self.centerStatus
                 Spacer(minLength: 0)
@@ -283,7 +282,7 @@ struct VoiceAssistantCardView: View {
                 .foregroundStyle(Color.white.opacity(0.95))
 
             VStack(alignment: .leading, spacing: 1) {
-                Text("Voice Assistant")
+                Text(String(localized: "Voice Assistant"))
                     .font(OpenClawType.title3SemiBold)
                     .foregroundStyle(.white)
                 Text(self.modeSubtitle)
@@ -315,49 +314,6 @@ struct VoiceAssistantCardView: View {
                     .foregroundStyle(Color.white.opacity(0.9))
             }
         }
-    }
-
-    /// 顶部胶囊：点按说话 / 实时通话（互斥切换）。
-    private var modeCapsule: some View {
-        HStack(spacing: 3) {
-            self.modeCapsuleItem(
-                title: VoiceAssistantCardMode.pushToTalk.displayName,
-                icon: "record.circle",
-                selected: !self.isRealtimeMode) {
-                    self.setRealtimeMode(false)
-                }
-            self.modeCapsuleItem(
-                title: VoiceAssistantCardMode.realtime.displayName,
-                icon: "phone.fill",
-                selected: self.isRealtimeMode) {
-                    self.setRealtimeMode(true)
-                }
-        }
-        .padding(3)
-        .background(Capsule().fill(Color.black.opacity(0.25)))
-    }
-
-    private func modeCapsuleItem(
-        title: String,
-        icon: String,
-        selected: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 10, weight: .semibold))
-                Text(title)
-                    .font(OpenClawType.caption2SemiBold)
-            }
-            .foregroundStyle(selected ? Color.black.opacity(0.78) : Color.white)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .background(Capsule().fill(selected ? Color.white : Color.clear))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(title)
-        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 
     private var centerStatus: some View {
@@ -453,7 +409,7 @@ struct VoiceAssistantCardView: View {
                 Button {
                     self.switchChannel()
                 } label: {
-                    Text("Switch to DeepSeek Direct")
+                    Text(String(localized: "Switch to DeepSeek Direct"))
                         .font(OpenClawType.captionSemiBold)
                         .foregroundStyle(.white)
                         .padding(.horizontal, 10)
@@ -468,8 +424,21 @@ struct VoiceAssistantCardView: View {
     // MARK: - 交互
 
     private func handleTap() {
-        if self.isRealtimeMode {
-            // 实时通话中：点按说话与实时互斥，忽略点按。
+        if self.effectiveChannel == .talk {
+            if self.isRealtimeMode {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                self.stopRealtimeSession()
+            } else {
+                guard self.isGatewayOnline else {
+                    self.phase = .error(String(localized:
+                        "Gateway offline: OpenClaw Talk is unavailable right now. Switch to DeepSeek Direct to keep talking."))
+                    return
+                }
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                self.isRealtimeMode = true
+                self.phase = .idle
+                self.startRealtimeSession()
+            }
             return
         }
         if self.isBusy {
@@ -502,12 +471,7 @@ struct VoiceAssistantCardView: View {
         self.activeTask?.cancel()
         self.activeTask = nil
         VoiceAssistantSpeechPlayer.shared.stop()
-        if self.isRealtimeMode {
-            self.realtimeTask?.cancel()
-            self.realtimeTask = nil
-            self.talkMode.stop()
-            self.isRealtimeMode = false
-        }
+        self.stopRealtimeSession()
         switch self.effectiveChannel {
         case .talk:
             self.channelRaw = VoiceAssistantChannel.deepSeek.rawValue
@@ -520,32 +484,21 @@ struct VoiceAssistantCardView: View {
         self.transcriptText = ""
     }
 
-    /// 切换点按说话 / 实时通话（互斥）。
-    private func setRealtimeMode(_ enabled: Bool) {
-        guard enabled != self.isRealtimeMode else { return }
-        self.activeTask?.cancel()
-        self.activeTask = nil
-        VoiceAssistantSpeechPlayer.shared.stop()
-        _ = self.talkMode.cancelPushToTalk()
-        if enabled {
-            self.isRealtimeMode = true
-            self.phase = .idle
-            self.transcriptText = ""
-            self.startRealtimeSession()
-        } else {
-            self.isRealtimeMode = false
-            self.realtimeTask?.cancel()
-            self.realtimeTask = nil
-            self.talkMode.stop()
-            self.phase = .idle
-            self.transcriptText = ""
-        }
+    private func stopRealtimeSession() {
+        self.realtimeTask?.cancel()
+        self.realtimeTask = nil
+        self.talkMode.stop()
+        self.isRealtimeMode = false
+        self.phase = .idle
+        self.transcriptText = ""
+        self.recordingStartedAt = nil
     }
 
     /// 实时通话：setEnabled(true) + start()（网关 Realtime 优先、连续识别兜底一直可聊）。
     private func startRealtimeSession() {
         self.realtimeTask?.cancel()
         self.realtimeTask = Task { @MainActor in
+            GatewayDiagnostics.log("voice.card call start tap")
             self.talkMode.setEnabled(true)
             await self.talkMode.start()
         }
@@ -681,7 +634,7 @@ struct VoiceAssistantCardView: View {
         VoiceAssistantSpeechPlayer.shared.stop()
         // 主题选择 sheet 弹出也会触发 onDisappear，不能因此打断实时通话。
         if self.isRealtimeMode && !self.showsThemePicker {
-            self.talkMode.stop()
+            self.stopRealtimeSession()
         }
     }
 }

@@ -1,3 +1,4 @@
+import AVFAudio
 import OpenClawChatUI
 import OpenClawKit
 import OpenClawProtocol
@@ -19,6 +20,7 @@ struct CloneTalkChatView: View {
     @State private var showsAssistantTrace = false
     @State private var transcriptShareItem: TranscriptShareItem?
     @State private var showsTranscriptExportError = false
+    @State private var speech: OpenClawChatSpeechController?
 
     private struct TranscriptShareItem: Identifiable {
         let id = UUID()
@@ -43,10 +45,26 @@ struct CloneTalkChatView: View {
                     showsAssistantAvatars: true,
                     composerChrome: .clean,
                     isComposerEnabled: appModel.isOperatorGatewayConnected,
-                    isAttachmentInputEnabled: false,
+                    isAttachmentInputEnabled: appModel.isOperatorGatewayConnected,
                     messagePlaceholder: String(localized: "Message your AI clone…"),
                     emptyAssistantIntro: String(
-                        localized: "You are chatting with \(personaStore.persona.name). The clone answers through the OpenClaw gateway.")
+                        localized: "You are chatting with \(personaStore.persona.name). The clone answers through the OpenClaw gateway."),
+                    talkControl: Self.shouldExposeCaptureControl(
+                        isAttachmentOwnerPinned: viewModel.isAttachmentOwnerPinned,
+                        isCaptureInFlight: appModel.talkMode.isEnabled) ? talkControl : nil,
+                    dictationControl: Self.shouldExposeCaptureControl(
+                        isAttachmentOwnerPinned: viewModel.isAttachmentOwnerPinned,
+                        isCaptureInFlight: appModel.isChatDictationPending || appModel.isChatDictationActive)
+                        ? dictationControl
+                        : nil,
+                    voiceNoteControl: voiceNoteControl,
+                    speech: speech,
+                    mediaPlaybackAllowed: {
+                        !appModel.talkMode.isEnabled &&
+                            !appModel.talkMode.hasActivePushToTalkSession &&
+                            !appModel.voiceNoteRecorder.ownsPendingChatAttachment
+                    })
+                    .environment(\.openClawAssistantBubblesInCleanChrome, true)
                 )
             } else {
                 VStack(spacing: 12) {
@@ -118,6 +136,12 @@ struct CloneTalkChatView: View {
         }
         .task {
             await setupChat()
+            if speech == nil {
+                let gateway = appModel.operatorSession
+                speech = OpenClawChatSpeechController { text in
+                    try await ChatMessageSpeechClient.synthesize(text: text, gateway: gateway)
+                }
+            }
         }
         .onDisappear {
             personaInjectionTask?.cancel()
@@ -154,6 +178,63 @@ struct CloneTalkChatView: View {
 
     private var avatarText: String {
         personaStore.persona.avatarEmoji.isEmpty ? "🤖" : String(personaStore.persona.avatarEmoji.prefix(2))
+    }
+
+    nonisolated private static func shouldExposeCaptureControl(
+        isAttachmentOwnerPinned: Bool,
+        isCaptureInFlight: Bool) -> Bool
+    {
+        !isAttachmentOwnerPinned || isCaptureInFlight
+    }
+
+    private var talkControl: OpenClawChatTalkControl {
+        OpenClawChatTalkControl(
+            isEnabled: appModel.talkMode.isEnabled,
+            isListening: appModel.talkMode.isListening,
+            isSpeaking: appModel.talkMode.isSpeaking,
+            isGatewayConnected: appModel.talkMode.isGatewayConnected,
+            statusText: appModel.talkMode.statusText,
+            providerLabel: appModel.talkMode.gatewayTalkProviderLabel,
+            level: talkLevel,
+            inputDevices: talkInputDevices,
+            selectedInputDeviceID: selectedTalkInputDeviceID,
+            selectInputDevice: { deviceID in appModel.talkMode.selectInputDevice(deviceID) },
+            cameraFacing: appModel.preferredCameraFacing == .front ? .front : .back,
+            flipCamera: { appModel.flipPreferredCameraFacing() },
+            toggle: { _ in appModel.setTalkEnabled(!appModel.talkMode.isEnabled) })
+    }
+
+    private var talkInputDevices: [OpenClawChatAudioInputDevice] {
+        (AVAudioSession.sharedInstance().availableInputs ?? []).map { input in
+            OpenClawChatAudioInputDevice(id: input.uid, name: input.portName)
+        }
+    }
+
+    private var selectedTalkInputDeviceID: String? {
+        guard let preferredID = appModel.talkMode.preferredInputDeviceID,
+              talkInputDevices.contains(where: { $0.id == preferredID }) else { return nil }
+        return preferredID
+    }
+
+    private var talkLevel: Double {
+        if appModel.talkMode.isSpeaking { return appModel.talkMode.playbackLevel ?? 0 }
+        if appModel.talkMode.isListening { return appModel.talkMode.micLevel }
+        return 0
+    }
+
+    private var dictationControl: OpenClawChatDictationControl {
+        OpenClawChatDictationControl(
+            isActive: appModel.isChatDictationActive,
+            isAvailable: !appModel.isTalkCaptureActive || appModel.isChatDictationActive,
+            start: { try await appModel.transcribeChatDraft() },
+            finish: { appModel.finishChatDictation() },
+            cancel: { appModel.cancelChatDictation() })
+    }
+
+    private var voiceNoteControl: OpenClawChatVoiceNoteControl {
+        OpenClawChatVoiceNoteControl(
+            recorder: appModel.voiceNoteRecorder,
+            isTalkActive: appModel.isTalkCaptureActive)
     }
 
     // MARK: - 场景菜单动作
@@ -234,7 +315,7 @@ struct CloneTalkChatView: View {
             transport: transport,
             activeAgentId: appModel.chatDeliveryAgentId,
             sessionRoutingContract: nil,
-            attachmentOwnerIsActive: { false },
+            attachmentOwnerIsActive: { appModel.voiceNoteRecorder.ownsPendingChatAttachment },
             transcriptCache: offlineStore,
             outbox: offlineStore,
             onSessionChanged: nil,

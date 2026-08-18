@@ -33,6 +33,18 @@ enum HomeKnowledgeAskSupport {
             sessionBaseKey: "knowledge")
     }
 
+    /// 对连接 Agent 的知识上下文发起真实摘要请求，仍通过网关会话返回结果。
+    static func summarizeKnowledge(appModel: NodeAppModel, focus: String) async throws -> String {
+        let trimmed = focus.trimmingCharacters(in: .whitespacesAndNewlines)
+        let prompt = trimmed.isEmpty
+            ? "请总结当前知识库中最重要的主题、事实和待确认信息。用中文分点回答。"
+            : "请围绕“\(trimmed)”总结当前知识库中的相关内容。若信息不足请明确说明，用中文分点回答。"
+        return try await HomeAgentPromptClient.prompt(
+            appModel: appModel,
+            prompt: prompt,
+            sessionBaseKey: "knowledge")
+    }
+
     /// 基于网关文件内容提问：把文件内容作为上下文发给 Agent。
     /// 内容过长时截断（避免刷爆上下文），截断后如实告知 Agent。
     static func ask(

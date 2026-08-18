@@ -61,7 +61,7 @@ struct RootTabs: View {
 
     /// 由主页（HomeRootContainer）作为宿主呈现时为 true：跳过自身 onboarding / quick-setup 逻辑。
     private let hostedByHome: Bool
-    /// 侧边栏根页可见性变化回调（根页 = isSidebarDetailRootVisible && 路径为空），用于宿主控制返回按钮。
+    /// 侧边栏根页可见性变化回调（根页 = isSidebarDetailRootVisible && 路径为空），用于宿主控制返回手势。
     private let onRootVisibilityChange: ((Bool) -> Void)?
 
     init(
@@ -1040,7 +1040,7 @@ extension RootTabs {
     }
 
     /// 宿主（主页）需要知道当前是否处于根页（= 侧边栏根页可见且导航路径为空），
-    /// 用于只在根页显示「← 返回」胶囊。
+    /// 用于只在根页启用右边缘返回手势。
     private func notifyRootVisibilityChange() {
         self.onRootVisibilityChange?(self.isSidebarDetailRootVisible && self.sidebarNavigationPath.isEmpty)
     }
