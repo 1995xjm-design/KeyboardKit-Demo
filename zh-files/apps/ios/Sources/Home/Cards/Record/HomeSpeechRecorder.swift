@@ -90,9 +90,22 @@ final class HomeSpeechRecorder {
         let inputNode = audioEngine.inputNode
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
+            GatewayDiagnostics.log(
+                "record speech: invalid input format "
+                    + "rate=\(recordingFormat.sampleRate) channels=\(recordingFormat.channelCount)")
             errorMessage = String(localized: "Record.Error.MicrophoneStart")
             return false
         }
+        // installTap on a running engine hard-crashes; make sure we start stopped.
+        if audioEngine.isRunning {
+            audioEngine.stop()
+        }
+        // Always clear the node before installing a tap. The local flag can be
+        // stale after an interrupted session, and installTap otherwise hard-crashes
+        // with AVAudioIONodeImpl "nullptr == Tap()".
+        inputNode.removeTap(onBus: 0)
+        hasTap = false
+        GatewayDiagnostics.log("record speech: input tap removed before install")
 
         let queue = HomeAudioBufferQueue()
         tapQueue = queue
@@ -101,6 +114,9 @@ final class HomeSpeechRecorder {
         }
         inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat, block: tapBlock)
         hasTap = true
+        GatewayDiagnostics.log(
+            "record speech: input tap installed "
+                + "rate=\(recordingFormat.sampleRate) channels=\(recordingFormat.channelCount)")
 
         recognitionGeneration &+= 1
         let generation = recognitionGeneration
@@ -200,10 +216,12 @@ final class HomeSpeechRecorder {
         if audioEngine.isRunning {
             audioEngine.stop()
         }
-        if hasTap {
-            audioEngine.inputNode.removeTap(onBus: 0)
-            hasTap = false
-        }
+        // Remove unconditionally: a failed/interrupted start can leave a tap on the
+        // node while hasTap is false. The engine is stopped above, which is required
+        // before removing a tap.
+        audioEngine.inputNode.removeTap(onBus: 0)
+        hasTap = false
+        GatewayDiagnostics.log("record speech: pipeline torn down, input tap removed")
         recognitionRequest = nil
         try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
     }
