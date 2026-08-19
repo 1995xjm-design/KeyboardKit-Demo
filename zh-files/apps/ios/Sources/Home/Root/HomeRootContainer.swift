@@ -101,7 +101,8 @@ struct HomeRootContainer: View {
     /// Home left-edge 36pt strip: drag right to pull OpenClaw in from the left edge.
     private func openClawEnterEdge(width: CGFloat) -> some View {
         Color.clear
-            .frame(width: 36, maxHeight: .infinity)
+            .frame(width: 36)
+            .frame(maxHeight: .infinity)
             .contentShape(Rectangle())
             .highPriorityGesture(self.enterOpenClawGesture(width: width))
     }
@@ -229,7 +230,8 @@ private struct OpenClawFullScreenHost: View {
     /// OpenClaw root-page right-edge 36pt strip: drag left to follow, release past the threshold to return home.
     private func returnGestureEdge(width: CGFloat) -> some View {
         Color.clear
-            .frame(width: 36, maxHeight: .infinity)
+            .frame(width: 36)
+            .frame(maxHeight: .infinity)
             .contentShape(Rectangle())
             .highPriorityGesture(self.returnDragGesture(width: width))
     }
