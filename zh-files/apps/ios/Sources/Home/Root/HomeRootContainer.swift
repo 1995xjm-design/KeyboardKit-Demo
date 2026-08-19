@@ -37,6 +37,9 @@ struct HomeRootContainer: View {
     @State private var openClawDragOffset: CGFloat = 0
     /// True while pulling OpenClaw in with the left-edge gesture (disables entry animation).
     @State private var isOpenClawDragActive = false
+    /// True once the enter-swipe direction (rightward, horizontal-dominant) is locked,
+    /// so mid-drag axis checks cannot pause the view and make it jitter.
+    @State private var isEnterDragDirectionLocked = false
 
     var body: some View {
         GeometryReader { proxy in
@@ -109,19 +112,23 @@ struct HomeRootContainer: View {
     private func enterOpenClawGesture(width: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
-                guard abs(value.translation.width) > abs(value.translation.height),
-                      value.translation.width > 0
-                else { return }
+                let dx = value.translation.width
+                let dy = value.translation.height
+                if !self.isEnterDragDirectionLocked {
+                    guard dx > 0, abs(dx) > abs(dy) else { return }
+                    self.isEnterDragDirectionLocked = true
+                }
                 self.isOpenClawDragActive = true
                 if !self.router.isOpenClawPresented {
                     // 复位上次齿轮入口残留的目的地，保证拖动进入从官方默认（聊天）开始。
                     self.router.openOpenClaw()
                 }
-                let proposed = -width + value.translation.width
+                let proposed = -width + dx
                 self.openClawDragOffset = max(-width, min(0, proposed))
             }
             .onEnded { value in
                 self.isOpenClawDragActive = false
+                self.isEnterDragDirectionLocked = false
                 let shouldEnter = value.translation.width > 80
                     || value.predictedEndTranslation.width > 240
                 if shouldEnter {
@@ -198,6 +205,9 @@ private struct OpenClawFullScreenHost: View {
     @State private var isRootPageVisible = false
     /// True while the return-settle animation runs; a new drag cancels the pending close.
     @State private var isReturnDismissPending = false
+    /// True once the return-swipe direction (leftward, horizontal-dominant) is locked,
+    /// so mid-drag axis checks cannot pause the view and make it jitter.
+    @State private var isReturnDragDirectionLocked = false
 
     init(router: HomeRouterModel, dragOffset: Binding<CGFloat>) {
         self.router = router
@@ -238,14 +248,18 @@ private struct OpenClawFullScreenHost: View {
     private func returnDragGesture(width: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 12)
             .onChanged { value in
-                guard self.isRootPageVisible,
-                      abs(value.translation.width) > abs(value.translation.height),
-                      value.translation.width < 0
-                else { return }
+                guard self.isRootPageVisible else { return }
+                let dx = value.translation.width
+                let dy = value.translation.height
+                if !self.isReturnDragDirectionLocked {
+                    guard dx < 0, abs(dx) > abs(dy) else { return }
+                    self.isReturnDragDirectionLocked = true
+                }
                 self.isReturnDismissPending = false
-                self.dragOffset = max(-width, min(0, value.translation.width))
+                self.dragOffset = max(-width, min(0, dx))
             }
             .onEnded { value in
+                self.isReturnDragDirectionLocked = false
                 guard self.isRootPageVisible else { return }
                 let shouldDismiss = value.translation.width < -80
                     || value.predictedEndTranslation.width < -240
