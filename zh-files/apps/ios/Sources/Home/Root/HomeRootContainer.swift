@@ -81,7 +81,6 @@ struct HomeRootContainer: View {
                         router: self.router,
                         dragOffset: self.$openClawDragOffset)
                         .transition(.move(edge: .leading))
-                        .ignoresSafeArea()
                         .zIndex(2)
                 }
             }
