@@ -40,11 +40,16 @@ struct HomeRootContainer: View {
     /// True once the enter-swipe direction (rightward, horizontal-dominant) is locked,
     /// so mid-drag axis checks cannot pause the view and make it jitter.
     @State private var isEnterDragDirectionLocked = false
+    /// True only while the home tab is on its root page (no pushed detail page);
+    /// the home left-edge swipe into OpenClaw is disabled on any home subpage.
+    @State private var isHomeRootVisible = true
 
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                HomeTabView()
+                HomeTabView(onRootVisibilityChange: { visible in
+                    self.isHomeRootVisible = visible
+                })
                     .environmentObject(self.router)
                     .task {
                         self.router.startObservingGatewayStatus(appModel: self.appModel)
@@ -78,7 +83,7 @@ struct HomeRootContainer: View {
                     .frame(maxHeight: .infinity, alignment: .leading)
                     .ignoresSafeArea()
                     .zIndex(1)
-                    .allowsHitTesting(!self.router.isOpenClawPresented)
+                    .allowsHitTesting(!self.router.isOpenClawPresented && self.isHomeRootVisible)
                 if self.router.isOpenClawPresented {
                     OpenClawFullScreenHost(
                         router: self.router,

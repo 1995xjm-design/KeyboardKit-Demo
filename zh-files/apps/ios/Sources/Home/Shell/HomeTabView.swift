@@ -25,12 +25,16 @@ struct HomeTabView: View {
     @State private var wobbleTick = false
     /// 今日概览数据源（OpenClaw 真实服务）。
     @State private var overview = HomeOverviewModel()
+    /// 主页导航路径：非空 = 已进入卡片详情等子页，此时禁用主页左缘滑入 OpenClaw 手势。
+    @State private var homeNavigationPath: [HomeNavigationRoute] = []
+    /// 主页根页可见性回调（根页 = 导航路径为空），供 HomeRootContainer 控制左缘手势热区。
+    let onRootVisibilityChange: ((Bool) -> Void)? = nil
 
     /// 2 列弹性网格（小卡 1 列 / 中卡 2 列 / 大卡 4 列，对齐 iOS 小组件比例；明哥要求一行 2 个）。
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: self.$homeNavigationPath) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     assistantSection
@@ -45,9 +49,26 @@ struct HomeTabView: View {
             .navigationBarTitleDisplayMode(.inline)
             // 壁纸垫在滚动内容后面（扩展到导航栏/标签栏区域），避免被容器背景盖住。
             .background { HomeWallpaper.background().ignoresSafeArea() }
+            .navigationDestination(for: HomeNavigationRoute.self) { route in
+                switch route {
+                case .card(let kind):
+                    self.destination(for: kind)
+                case .quickAction(let kind, let actionID):
+                    if let action = HomeDestinationProviderRegistry.quickActions(for: kind)
+                        .first(where: { $0.id == actionID }) {
+                        action.destination()
+                    } else {
+                        HomeCardPlaceholderView(kind: kind)
+                    }
+                }
+            }
+            .onChange(of: self.homeNavigationPath) { _, path in
+                self.onRootVisibilityChange?(path.isEmpty)
+            }
             .onAppear {
                 migrateCardStorageIfNeeded()
                 overview.loadIfNeeded(appModel: appModel)
+                self.onRootVisibilityChange?(self.homeNavigationPath.isEmpty)
             }
             .onChange(of: isEditingCards) { _, editing in
                 if editing {
@@ -302,9 +323,7 @@ struct HomeTabView: View {
                 }
                 .gridCellColumns(gridSpan(for: size))
         } else {
-            NavigationLink {
-                destination(for: kind)
-            } label: {
+            NavigationLink(value: HomeNavigationRoute.card(kind)) {
                 cardContent(for: kind, size: size)
                     .contentShape(Rectangle())
             }
@@ -312,7 +331,7 @@ struct HomeTabView: View {
             .accessibilityHint(String(localized: "Open \(kind.title)"))
             .contextMenu {
                 ForEach(HomeDestinationProviderRegistry.quickActions(for: kind)) { action in
-                    NavigationLink(destination: action.destination()) {
+                    NavigationLink(value: HomeNavigationRoute.quickAction(kind: kind, actionID: action.id)) {
                         Label(action.title, systemImage: action.icon)
                     }
                 }
@@ -474,6 +493,12 @@ struct HomeTabView: View {
         }
         .padding(.horizontal, 16)
     }
+}
+
+/// 主页导航路由：卡片详情 / 卡片长按快捷动作目标页。
+private enum HomeNavigationRoute: Hashable {
+    case card(HomeCardKind)
+    case quickAction(kind: HomeCardKind, actionID: String)
 }
 
 /// 今日概览数据源（B-home）：全部来自 OpenClaw 真实服务——
