@@ -6876,7 +6876,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "'queued', 'sending', 'awaiting_confirmation'"
+            "value": "'排队中', '发送中', '等待确认'"
           }
         },
         "zh-TW": {
@@ -7012,7 +7012,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "'queued', 'sending', 'awaiting_confirmation', 'failed'"
+            "value": "'排队中', '发送中', '等待确认', '失败'"
           }
         },
         "zh-TW": {
@@ -8100,7 +8100,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "<redacted secret>"
+            "value": "<已隐藏的密钥>"
           }
         },
         "zh-TW": {
@@ -30268,7 +30268,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Chat transcript"
+            "value": "聊天记录"
           }
         },
         "zh-TW": {
@@ -44956,7 +44956,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Copied"
+            "value": "已复制"
           }
         },
         "zh-TW": {
@@ -85348,7 +85348,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "ID"
+            "value": "编号"
           }
         },
         "zh-TW": {
@@ -86164,7 +86164,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Image"
+            "value": "图像"
           }
         },
         "zh-TW": {
@@ -90244,7 +90244,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Just received your iOS share + request, working on it."
+            "value": "已收到你的 iOS 分享和请求，正在处理。"
           }
         },
         "zh-TW": {
@@ -103708,7 +103708,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Message…"
+            "value": "输入消息…"
           }
         },
         "zh-TW": {
@@ -111596,7 +111596,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "No diary prose for this day."
+            "value": "这一天没有日记内容。"
           }
         },
         "zh-TW": {
@@ -150900,7 +150900,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Review command below"
+            "value": "请审核下面的命令"
           }
         },
         "zh-TW": {
@@ -152532,7 +152532,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Routed on this phone"
+            "value": "已在本机路由"
           }
         },
         "zh-TW": {
@@ -161644,7 +161644,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "See attached."
+            "value": "见附件。"
           }
         },
         "zh-TW": {
@@ -163276,7 +163276,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Sending decision..."
+            "value": "正在发送决定…"
           }
         },
         "zh-TW": {
@@ -169668,7 +169668,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Skill"
+            "value": "技能"
           }
         },
         "zh-TW": {
@@ -180412,7 +180412,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "Talk Voice"
+            "value": "通话语音"
           }
         },
         "zh-TW": {
@@ -211828,7 +211828,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gateway"
+            "value": "网关"
           }
         },
         "zh-TW": {
@@ -211964,7 +211964,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "gateway connect failed"
+            "value": "网关连接失败"
           }
         },
         "zh-TW": {
@@ -218628,7 +218628,7 @@
         "zh-CN": {
           "stringUnit": {
             "state": "new",
-            "value": "unknown relay error"
+            "value": "未知中继错误"
           }
         },
         "zh-TW": {

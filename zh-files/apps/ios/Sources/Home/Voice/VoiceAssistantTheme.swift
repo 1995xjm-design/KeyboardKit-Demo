@@ -439,14 +439,14 @@ struct VoiceAssistantSpectrumBars: View {
     private static let barWidth: CGFloat = 3
     private static let barSpacing: CGFloat = 1.5
     private static let baseHeight: CGFloat = 6
-    private static let waveAmplitude: CGFloat = 10
-    private static let micBoostScale: Double = 22
+    private static let waveAmplitude: CGFloat = 12
+    private static let micBoostScale: Double = 26
 
     private var intensity: Double {
         switch self.phase {
         case .listening: return 1.0
         case .speaking: return 0.85
-        default: return 0.55
+        default: return 0.45
         }
     }
 
@@ -460,10 +460,14 @@ struct VoiceAssistantSpectrumBars: View {
 
                 HStack(alignment: .bottom, spacing: Self.barSpacing) {
                     ForEach(0..<Self.barCount, id: \.self) { index in
-                        let wave = sin(time * 2.8 + Double(index) * 0.6)
-                        let boost = self.micLevel * Self.micBoostScale
+                        // 中间高两边低的频谱形似，叠加两个不同频率正弦产生流动感。
+                        let normalized = Double(index) / Double(Self.barCount - 1)
+                        let centerBias = sin(normalized * .pi)
+                        let wave = sin(time * 3.1 + Double(index) * 0.55) * 0.62
+                            + sin(time * 1.6 + Double(index) * 1.15) * 0.38
+                        let boost = self.micLevel * Self.micBoostScale * (0.35 + 0.65 * centerBias)
                         let barHeight = Self.baseHeight
-                            + CGFloat(wave) * Self.waveAmplitude * CGFloat(self.intensity)
+                            + CGFloat(wave * centerBias) * Self.waveAmplitude * CGFloat(self.intensity)
                             + CGFloat(boost)
                         Capsule()
                             .fill(
@@ -471,10 +475,11 @@ struct VoiceAssistantSpectrumBars: View {
                                     colors: self.theme.gradient,
                                     startPoint: .top,
                                     endPoint: .bottom))
+                            .shadow(color: self.theme.accent.opacity(0.45), radius: 3, x: 0, y: 0)
                             .frame(
                                 width: Self.barWidth,
                                 height: max(Self.baseHeight, barHeight))
-                            .opacity(0.6 + 0.4 * self.intensity)
+                            .opacity(0.55 + 0.45 * self.intensity)
                     }
                 }
             }

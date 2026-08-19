@@ -149,6 +149,15 @@ struct VoiceAssistantCardView: View {
         self.displayPhase == .capturing || self.displayPhase == .speaking
     }
 
+    /// 当前音波电平：说话用播放电平，录音用麦克风电平，空闲 0。
+    private var displayLevel: Double {
+        if self.isRealtimeMode {
+            if self.talkMode.isSpeaking { return self.talkMode.playbackLevel ?? 0 }
+            if self.talkMode.isListening { return self.talkMode.micLevel }
+        }
+        return 0
+    }
+
     private var centerIcon: String {
         switch self.displayPhase {
         case .capturing: return "mic.fill"
@@ -245,12 +254,12 @@ struct VoiceAssistantCardView: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: Self.cardHeight)
-        .scaleEffect(self.isBreathing ? 1.0 : 0.97)
+        .scaleEffect(self.isBreathing ? 1.0 : 0.96)
         .opacity(self.isBreathing ? 1.0 : 0.9)
         .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
         .onTapGesture { self.handleTap() }
         .onAppear {
-            withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) {
+            withAnimation(.easeInOut(duration: 1.8).repeatForever(autoreverses: true)) {
                 self.isBreathing = true
             }
             if self.isRealtimeMode {
@@ -322,7 +331,7 @@ struct VoiceAssistantCardView: View {
                 VoiceAssistantThemeLayer(
                     theme: self.theme,
                     phase: self.themePhase,
-                    micLevel: self.talkMode.micLevel)
+                    micLevel: self.displayLevel)
                     .frame(width: 118, height: 76)
 
                 Image(systemName: self.centerIcon)
@@ -335,15 +344,14 @@ struct VoiceAssistantCardView: View {
                         .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
                         value: self.isPulsingIcon)
 
-                if self.isPulsingIcon {
-                    VoiceAssistantSpectrumBars(
-                        theme: self.theme,
-                        phase: self.themePhase,
-                        micLevel: self.talkMode.micLevel,
-                        width: 100,
-                        height: 38)
-                        .frame(width: 118, height: 76, alignment: .bottom)
-                }
+                // 音波常驻：空闲低幅呼吸，录音/说话随电平大幅波动。
+                VoiceAssistantSpectrumBars(
+                    theme: self.theme,
+                    phase: self.themePhase,
+                    micLevel: self.displayLevel,
+                    width: 100,
+                    height: 38)
+                    .frame(width: 118, height: 76, alignment: .bottom)
             }
             .frame(height: 76)
 
