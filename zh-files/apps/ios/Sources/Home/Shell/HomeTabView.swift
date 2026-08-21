@@ -28,7 +28,7 @@ struct HomeTabView: View {
     /// 主页导航路径：非空 = 已进入卡片详情等子页，此时禁用主页左缘滑入 OpenClaw 手势。
     @State private var homeNavigationPath: [HomeNavigationRoute] = []
     /// 主页根页可见性回调（根页 = 导航路径为空），供 HomeRootContainer 控制左缘手势热区。
-    let onRootVisibilityChange: ((Bool) -> Void)? = nil
+    var onRootVisibilityChange: ((Bool) -> Void)?
 
     /// 2 列弹性网格（小卡 1 列 / 中卡 2 列 / 大卡 4 列，对齐 iOS 小组件比例；明哥要求一行 2 个）。
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
