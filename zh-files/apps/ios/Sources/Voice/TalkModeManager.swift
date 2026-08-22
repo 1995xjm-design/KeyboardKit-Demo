@@ -1553,11 +1553,10 @@ final class TalkModeManager: NSObject {
                 NSLocalizedDescriptionKey: String(localized: "Invalid audio input format"),
             ])
         }
-        // Always clear the node after stopping the engine. The local flag can be
-        // stale after an interrupted start, and installTap otherwise hard-crashes
-        // with AVAudioIONodeImpl "nullptr == Tap()".
-        input.removeTap(onBus: 0)
-        self.inputTapInstalled = false
+        // Only remove a tap we actually installed; calling removeTap on a bus
+        // with no tap triggers AVAEInternal "NULL != tap" and terminates the app.
+        // This was the first-tap crash on the voice button.
+        removeInputTapIfInstalled()
         let tapDiagnostics = AudioTapDiagnostics(label: "talk") { [weak self] level in
             Task { @MainActor in
                 self?.updateMicLevel(level, recognitionGeneration: recognitionGeneration)
@@ -1765,12 +1764,19 @@ final class TalkModeManager: NSObject {
         self.noiseFloorReady = false
         self.audioTapDiagnostics = nil
         self.audioEngine.stop()
-        // Remove unconditionally: a failed/interrupted engine start can leave a
-        // tap on the node while inputTapInstalled is false.
+        removeInputTapIfInstalled()
+        GatewayDiagnostics.log("talk speech: recognition stopped")
+        self.speechRecognizer = nil
+    }
+
+    private func removeInputTapIfInstalled() {
+        guard self.inputTapInstalled else {
+            GatewayDiagnostics.log("talk speech: no input tap installed; skipping removeTap")
+            return
+        }
         self.audioEngine.inputNode.removeTap(onBus: 0)
         self.inputTapInstalled = false
-        GatewayDiagnostics.log("talk speech: recognition stopped and input tap removed")
-        self.speechRecognizer = nil
+        GatewayDiagnostics.log("talk speech: input tap removed")
     }
 
     private func stopNativeCaptureAndDiscardTranscript() {

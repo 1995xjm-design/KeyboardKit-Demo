@@ -100,12 +100,7 @@ final class HomeSpeechRecorder {
         if audioEngine.isRunning {
             audioEngine.stop()
         }
-        // Always clear the node before installing a tap. The local flag can be
-        // stale after an interrupted session, and installTap otherwise hard-crashes
-        // with AVAudioIONodeImpl "nullptr == Tap()".
-        inputNode.removeTap(onBus: 0)
-        hasTap = false
-        GatewayDiagnostics.log("record speech: input tap removed before install")
+        removeInputTapIfInstalled()
 
         let queue = HomeAudioBufferQueue()
         tapQueue = queue
@@ -216,14 +211,20 @@ final class HomeSpeechRecorder {
         if audioEngine.isRunning {
             audioEngine.stop()
         }
-        // Remove unconditionally: a failed/interrupted start can leave a tap on the
-        // node while hasTap is false. The engine is stopped above, which is required
-        // before removing a tap.
-        audioEngine.inputNode.removeTap(onBus: 0)
-        hasTap = false
-        GatewayDiagnostics.log("record speech: pipeline torn down, input tap removed")
+        removeInputTapIfInstalled()
+        GatewayDiagnostics.log("record speech: pipeline torn down")
         recognitionRequest = nil
         try? AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+    }
+
+    private func removeInputTapIfInstalled() {
+        guard hasTap else {
+            GatewayDiagnostics.log("record speech: no input tap installed; skipping removeTap")
+            return
+        }
+        audioEngine.inputNode.removeTap(onBus: 0)
+        hasTap = false
+        GatewayDiagnostics.log("record speech: input tap removed")
     }
 
     private func updateLevel(from buffer: AVAudioPCMBuffer) {

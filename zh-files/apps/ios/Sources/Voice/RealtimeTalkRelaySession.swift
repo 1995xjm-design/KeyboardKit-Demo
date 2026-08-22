@@ -151,6 +151,7 @@ final class RealtimeTalkRelaySession {
     private var outputEnvelope: PCMPlaybackEnvelope?
 
     private let audioEngine = AVAudioEngine()
+    private var inputTapInstalled = false
     private var relaySessionId: String?
     private var hasReceivedReady = false
     private var hasReceivedFailure = false
@@ -1033,6 +1034,7 @@ extension RealtimeTalkRelaySession {
             bufferSize: Self.audioFrameBufferSize,
             format: format,
             block: tapBlock)
+        self.inputTapInstalled = true
         self.audioEngine.prepare()
         try self.audioEngine.start()
     }
@@ -1115,7 +1117,10 @@ extension RealtimeTalkRelaySession {
     }
 
     private func stopMicrophonePump() {
-        self.audioEngine.inputNode.removeTap(onBus: 0)
+        if self.inputTapInstalled {
+            self.audioEngine.inputNode.removeTap(onBus: 0)
+            self.inputTapInstalled = false
+        }
         self.audioEngine.stop()
     }
 }

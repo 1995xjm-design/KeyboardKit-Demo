@@ -107,6 +107,7 @@ final class VoiceWakeManager: NSObject {
     var lastTriggeredCommand: String?
 
     private let audioEngine = AVAudioEngine()
+    private var inputTapInstalled = false
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
@@ -351,7 +352,7 @@ final class VoiceWakeManager: NSObject {
         self.recognitionRequest = request
 
         let inputNode = self.audioEngine.inputNode
-        inputNode.removeTap(onBus: 0)
+        removeInputTapIfInstalled()
 
         let recordingFormat = inputNode.outputFormat(forBus: 0)
         guard recordingFormat.sampleRate > 0, recordingFormat.channelCount > 0 else {
@@ -366,6 +367,7 @@ final class VoiceWakeManager: NSObject {
             bufferSize: 1024,
             format: recordingFormat,
             block: tapBlock)
+        self.inputTapInstalled = true
 
         self.audioEngine.prepare()
         try self.audioEngine.start()
@@ -391,8 +393,6 @@ final class VoiceWakeManager: NSObject {
         // callback owner before any task or audio teardown begins.
         self.recognitionGeneration &+= 1
         self.invalidateCommandTask()
-        let hadRecognitionPipeline = self.recognitionRequest != nil
-
         self.tapDrainTask?.cancel()
         self.tapDrainTask = nil
         self.tapQueue?.clear()
@@ -404,14 +404,16 @@ final class VoiceWakeManager: NSObject {
         if self.audioEngine.isRunning {
             self.audioEngine.stop()
         }
-        if hadRecognitionPipeline {
-            // Accessing inputNode initializes RemoteIO. Only touch it after
-            // startRecognition created a request and may have installed a tap.
-            self.audioEngine.inputNode.removeTap(onBus: 0)
-        }
+        removeInputTapIfInstalled()
         self.recognitionRequest = nil
 
         self.deactivateOwnedAudioSession()
+    }
+
+    private func removeInputTapIfInstalled() {
+        guard self.inputTapInstalled else { return }
+        self.audioEngine.inputNode.removeTap(onBus: 0)
+        self.inputTapInstalled = false
     }
 
     private nonisolated func makeRecognitionResultHandler(
